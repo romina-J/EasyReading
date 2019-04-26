@@ -4,6 +4,6 @@
   "private": true,
   "dependencies": {},
   "scripts": {
-    "start": "node app.js"
+    "start": "node --inspect app.js"
   }
 }
