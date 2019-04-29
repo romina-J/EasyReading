@@ -2,9 +2,7 @@
   "name": "Elastic-Beanstalk-Sample-App",
   "version": "0.0.1",
   "private": true,
-  "dependencies": {
-    "cfenv": "^1.2.2"
-  },
+  "dependencies": {},
   "scripts": {
     "start": "node --inspect app.js"
   }

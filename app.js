@@ -30,14 +30,12 @@ var server = http.createServer(function (req, res) {
         // for more info, see: https://www.npmjs.com/package/cfenv
         const cfenv = require('cfenv');
 
-        // get the app environment from Cloud Foundry
-        let appEnv = cfenv.getAppEnv();
 
-        if (appEnv.isLocal) {
-            html = "APP is local";
-        }else{
-            html =" APP is not local! :)";
+        var html = "running on local"
+        if(process.env.CLOUD_ENV){
+            html = "running in cloud";
         }
+
         res.writeHead(200);
         res.write(html);
         res.end();
