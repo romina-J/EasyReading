@@ -26,10 +26,6 @@ var server = http.createServer(function (req, res) {
             res.end();
         });
     } else {
-        // cfenv provides access to your Cloud Foundry environment
-        // for more info, see: https://www.npmjs.com/package/cfenv
-        const cfenv = require('cfenv');
-
 
         var html = "running on local"
         if(process.env.CLOUD_ENV){
