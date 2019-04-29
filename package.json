@@ -6,6 +6,7 @@
     "ajv": "^6.10.0",
     "aws-sdk": "^2.442.0",
     "body-parser": "^1.18.3",
+    "cfenv": "^1.2.2",
     "cookie-parser": "^1.4.4",
     "css-parse": "^2.0.0",
     "css-url-parser": "^1.1.3",
