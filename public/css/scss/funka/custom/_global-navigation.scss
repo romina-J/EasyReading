@@ -1,0 +1,72 @@
+//
+// Variables
+//
+
+
+//--------------------------------------------------------------*/
+// FUNKAs CSS
+//--------------------------------------------------------------*/
+
+// CSS FOR ALL DEVICES
+
+.global-navigation {
+    margin-top: 1rem;
+
+    ul, li {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    li {
+        display: inline-block;
+        margin: 3px 2rem 0 0;
+
+        a {
+            font-family: $font-regular;
+            padding: 4px;
+            display: block;
+            color: $dark-grey;
+            position: relative;
+            border-bottom: 2px solid $color-white;
+            font-size: 17px;
+
+            &:hover {
+                border-bottom-color: $light-navy;
+            }
+        }
+
+        &.active {
+            a {
+                border-bottom-color: $dark-grey;
+                //color: $light-navy;
+                font-weight: bold;
+
+                &:hover {
+                    border-bottom-color: $light-navy;
+                }
+            }
+        }
+    }
+}
+
+
+
+//--------------------------------------------------------------*/
+// CODE ABOVE IS FOR ALL SCREENS
+// MEDIA QUERIES BELOW IS FOR MEDIUM + LARGE OR JUST LARGE
+//--------------------------------------------------------------*/
+//--------------------------------------------------------------*/
+// MEDIUM + LARGE SCREEN
+@include breakpoint(medium) {
+
+
+
+}
+
+// LARGE SCREEN
+@include breakpoint(large) {
+
+
+
+}

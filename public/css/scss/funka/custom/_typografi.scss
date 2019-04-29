@@ -1,0 +1,140 @@
+//
+// Variables
+//
+
+$font-regular: "Open Sans", Helvetica, Arial, sans-serif;
+$font-bold: "Open Sans", Helvetica, Arial, sans-serif;
+
+
+$header-font-family: $font-regular;
+$header-font-family-smaller: $font-regular;
+
+// We use these to control header font sizes
+$h1-font-size-special: 47px;
+
+$h1-font-size-start: 45px;
+$h2-font-size-start: 36px;
+
+
+
+
+// We use these to style ingress
+$ingress-font-family: $font-regular;
+$ingress-font-size: 18px;
+
+//--------------------------------------------------------------*/
+// FUNKAs CSS
+//--------------------------------------------------------------*/
+
+// CSS FOR ALL DEVICES
+
+
+
+
+
+// Ingress
+.ingress {
+    font-size: 16px;
+    line-height: 1.35;
+    padding-top: 0.2rem;
+    font-family: $ingress-font-family;
+    max-width: 36rem;
+}
+
+// Header font
+
+h1 {
+    margin: 2rem 0 1rem 0;
+    line-height: 1.1;
+}
+
+h2 {
+    margin: 16px 0 10px 0;
+    clear: both;
+    line-height: 1.1;
+}
+
+h3, h4 {
+    margin: 0;
+}
+
+
+// ul + ol + li
+ul, ol {
+    padding-left: 0.5em;
+
+    li {
+        padding-left: 0.5em;
+        padding-bottom: 5px;
+    }
+
+    &.listing, &.no-bullet, &.listing-border {
+        list-style: none;
+        margin-left: 0;
+        padding-left: 0;
+
+        li {
+            padding-left: 0;
+        }
+    }
+
+    &.listing {
+        padding-left: 0;
+        margin: 1rem 0;
+
+        ul, ol {
+            padding-left: 0;
+            margin-left: 0;
+            list-style: none;
+        }
+    }
+
+    &.listing-border {
+        padding-left: 0;
+        margin: 1rem 0;
+        border-top: 1px solid $border-color;
+
+        li {
+            padding: 0.125rem 0;
+            border-bottom: 1px solid $border-color;
+        }
+
+        .listing-social-security-number {
+            margin: 0.5rem 0 !important;
+            display: inline-block;
+        }
+
+        .button {
+            margin: 0.25rem 0 !important;
+        }
+    }
+}
+
+.show-for-sr-only {
+    position: absolute;
+    top: -10000px;
+}
+
+
+//--------------------------------------------------------------*/
+// CODE ABOVE IS FOR ALL SCREENS
+// MEDIA QUERIES BELOW IS FOR MEDIUM + LARGE OR JUST LARGE
+//--------------------------------------------------------------*/
+//--------------------------------------------------------------*/
+// MEDIUM + LARGE SCREEN
+@include breakpoint(medium) {
+
+    .ingress {
+        font-size: $ingress-font-size;
+    }
+
+    h1 {
+        margin: 2rem 0 1rem 0;
+    }
+}
+
+// LARGE SCREEN
+@include breakpoint(large) {
+
+
+}

@@ -1,0 +1,130 @@
+/*
+    tabSlideOUt v2.2
+
+    By  Michael Fielding / www.hawkip.com
+    License: GPL v2.0
+*/
+
+/* Uncomment this to hide tabs and panels when printed.
+@media print {
+    .tabSlideOutPanel, .tabSlideOutTab {
+        display: none;
+    }
+}
+*/
+
+.lds-ring {
+    display: inline-block;
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    z-index: 99999999;
+}
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 51px;
+    height: 51px;
+    margin: 6px;
+    border: 6px solid blue;
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: blue transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+#tab-slide-out-grid-container {
+    display: grid;
+    grid-template-columns: auto auto;
+    max-width: 200px;
+    min-width:200px;
+
+}
+.tab-slide-out-grid-item {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    max-width: 100px;
+    text-align: center;
+}
+
+
+#tab-slide-out-handle{
+    background: url("images/logo.png") no-repeat center;
+    width: 60px;
+    height: 60px;
+    -webkit-background-size: contain;
+    -moz-background-size: contain;
+    -o-background-size: contain;
+    background-size: contain;
+    background-size: 100% !important;
+}
+
+.ui-slideouttab-panel {
+    border: 2px solid black;
+}
+.ui-slideouttab-handle, .ui-slideouttab-panel {
+    background-color: white;
+    padding: 0.4em;
+    box-sizing: border-box;
+}
+.ui-slideouttab-handle {
+    cursor: pointer;
+    color: white;
+    border: 2px solid black;
+}
+
+.ui-slideouttab-handle-image {
+    transform: rotate(0);
+}
+
+.ui-slideouttab-right .ui-slideouttab-handle {
+    transform-origin: 0% 0%;
+    transform: rotate(-90deg) translate(-100%,-100%);
+}
+.ui-slideouttab-right .ui-slideouttab-handle-reverse {
+    transform-origin: 0% 100%;
+    transform: rotate(-90deg);
+}
+.ui-slideouttab-left .ui-slideouttab-handle {
+    transform-origin: 100% 0%;
+    transform: rotate(-90deg);
+}
+.ui-slideouttab-left .ui-slideouttab-handle-reverse {
+    transform-origin: 100% 100%;
+    transform: rotate(-90deg) translate(100%,100%);
+}
+
+/* turn font awesome icon in a tab upright */
+.ui-slideouttab-left .ui-slideouttab-handle>.fa-icon,
+.ui-slideouttab-right .ui-slideouttab-handle>.fa-icon {
+    transform: rotate(90deg);
+}
+.ui-slideouttab-handle>.fa-icon {
+    margin-left: 0.5em;
+}
+
+.ui-slideouttab-top .ui-slideouttab-handle-rounded,
+.ui-slideouttab-left .ui-slideouttab-handle-rounded {
+    border-radius: 0 0 4px 4px;
+}
+.ui-slideouttab-right .ui-slideouttab-handle-rounded,
+.ui-slideouttab-bottom .ui-slideouttab-handle-rounded {
+    border-radius: 4px 4px 0 0;
+}

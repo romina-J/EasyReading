@@ -1,0 +1,12 @@
+.easy-reading-continuous-choice>img{
+    max-width: 100%;
+}
+
+.easy-reading-continuous-choice-active{
+    background-color: #ffc679;
+}
+
+.easy-reading-continuous-choice{
+    -webkit-appearance: none !important;
+    -webkit-border-radius: 0 !important;
+}

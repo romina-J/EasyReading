@@ -1,0 +1,50 @@
+﻿//
+// Variables
+//
+
+
+//--------------------------------------------------------------*/
+// FUNKAs CSS
+//--------------------------------------------------------------*/
+
+// CSS FOR ALL DEVICES
+
+
+/* Template specific code
+--------------------------------------------------------------*/
+// Skiplinks
+#skiplinks {
+    position: absolute;
+    z-index: 1;
+
+    a {
+        margin: 0 16px;
+        padding: 10px;
+        display: inline-block;
+        text-decoration: underline;
+        font-weight: bold;
+    }
+
+}
+
+/* GLOBAL
+--------------------------------------------------------------*/
+
+
+
+/* Page specific code
+--------------------------------------------------------------*/
+//--------------------------------------------------------------*/
+// CODE ABOVE IS FOR ALL SCREENS
+// MEDIA QUERIES BELOW IS FOR MEDIUM + LARGE OR JUST LARGE
+//--------------------------------------------------------------*/
+//--------------------------------------------------------------*/
+// MEDIUM + LARGE SCREEN
+@include breakpoint(medium) {
+
+}
+
+// LARGE SCREEN
+@include breakpoint(large) {
+
+}
