@@ -37,6 +37,6 @@
     "node": "8.x"
   },
   "scripts": {
-    "start": "npm update"
+    "start": "node --inspect app.js"
   }
 }
