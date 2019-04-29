@@ -1,0 +1,16 @@
+#overlay-grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto;
+
+}
+.overlay-grid-item {
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    max-width: 100px;
+    text-align: center;
+}
+
+.overlay-fixed-dialog{
+    position: fixed;
+    top: 50px;
+    right: 50px;
+}

@@ -1,0 +1,89 @@
+//
+// Variables
+//
+
+// We use these to control button text styles.
+
+// We use these to controls background-color. Alert and success colors is in forms.scss
+$button-bgColor-std:                    #2E7589;
+$button-bgColor-white:					$color-white;
+
+
+
+//--------------------------------------------------------------*/
+// FUNKAs CSS
+//--------------------------------------------------------------*/
+
+// CSS FOR ALL DEVICES
+
+
+
+
+button, .button, input[type="button"], input[type="submit"] {
+    width: 100%;
+    @include button;
+
+    &.small {
+    }
+
+    &.large {
+    }
+
+    &.cancel {
+    }
+
+    &.delete {
+    }
+
+    &.export {
+    }
+
+    &.add {
+    }
+
+    &.logout {
+    }
+
+    &.update {
+    }
+
+    &.back {
+    }
+
+    &.white {
+        background-color: $color-white;
+        color: $color-black;
+    }
+
+    &.tabbed {
+        outline: 2px solid $tabbed-color;
+    }
+}
+
+
+
+a, input[type=text], input[type=number], textarea, select {
+    &.tabbed {
+        outline: 2px solid $tabbed-color;
+    }
+}
+
+//--------------------------------------------------------------*/
+// CODE ABOVE IS FOR ALL SCREENS
+// MEDIA QUERIES BELOW IS FOR MEDIUM + LARGE OR JUST LARGE
+//--------------------------------------------------------------*/
+//--------------------------------------------------------------*/
+
+
+// MEDIUM + LARGE SCREEN
+@include breakpoint(medium) {
+
+    button, .button, input[type="button"], input[type="submit"] {
+        width: auto;
+    }
+}
+
+// LARGE SCREEN
+@include breakpoint(large) {
+
+}

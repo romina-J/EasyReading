@@ -1,3 +1,11 @@
+var core = require("./core/core");
+core.debugMode = false;
+
+core.startUp().catch(function (error) {
+    console.log(error);
+});
+
+/*
 var port = process.env.PORT || 3000,
     http = require('http'),
     fs = require('fs'),
@@ -43,3 +51,4 @@ server.listen(port);
 
 // Put a friendly message on the terminal
 console.log('Server running at http://127.0.0.1:' + port + '/');
+*/

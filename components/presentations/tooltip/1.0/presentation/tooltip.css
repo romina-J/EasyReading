@@ -1,0 +1,27 @@
+.easy-reading-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+.easy-reading-tooltip .easy-reading-tooltip-text {
+    visibility: hidden;
+    /*width: 120px; */
+    height:auto;
+    background-color: #ffffff;
+    color: #000000;
+    text-align: center;
+    border: 3px solid black;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+}
+
+.easy-reading-tooltip:hover .easy-reading-tooltip-text {
+    visibility: visible;
+    z-index: 99999999;
+}
+.easy-reading-tooltip-text>img{
+    width: 110px;
+}

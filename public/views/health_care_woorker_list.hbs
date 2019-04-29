@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>Health care worker</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="row columns">
+
+            <h1>Select health care worker to configure</h1>
+
+            <ul class="no-bullet">
+                {{#each profiles}}
+                <li>
+                    <a href="#" class="js-select-profile profile" data-user-id="{{ id }}">
+                        {{ email }}
+                    </a>
+                </li>
+                {{/each}}
+            </ul>
+                <br /><br /><a href="/">Back to start</a>
+        </div>
+
+    </main>
+
+    <script type="text/javascript">
+
+        const setUserAndRedirect = event => {
+            sessionStorage.setItem('active-user', event.target.dataset.userId)
+            window.location = `/healthcareworker/${event.target.dataset.userId}`
+        }
+
+        const addHandlers = () =>
+            [...document.getElementsByClassName('js-select-profile')]
+                .forEach(el => el.addEventListener('click', setUserAndRedirect))
+
+        addHandlers()
+
+    </script>
+
+</body>
+
+</html>
