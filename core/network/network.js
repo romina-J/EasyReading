@@ -35,6 +35,8 @@ let network = {
             server: this.server
         });
 
+        console.log("WS init complete");
+
         this.webSocketServer.on('connection', function connection(ws, req) {
             //Host url
 
