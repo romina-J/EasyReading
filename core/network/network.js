@@ -27,8 +27,9 @@ let network = {
         } else {
 
             this.server = http.createServer(app);
-          //  this.server.listen(process.env.PORT || 3000);
-            this.server.listen(443);
+            let port = process.env.PORT || 3000;
+            this.server.listen(port);
+            console.log("Listening to port:"+port);
         }
 
         let WebSocketServerClass = require('ws').Server;
