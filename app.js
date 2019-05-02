@@ -4,7 +4,7 @@ core.debugMode = false;
 core.startUp().catch(function (error) {
     console.log(error);
 });
- 
+
 /*
 var port = process.env.PORT || 3000,
     http = require('http'),
