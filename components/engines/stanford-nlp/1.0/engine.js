@@ -93,7 +93,11 @@ class StanfordNLP extends base.EngineBase {
             }, function(error, response, body){
                 if (error){
                     console.log(error);
-                    callback(err);
+                    req.result = new ioType.IOTypes.Paragraph("Error handling request");
+                    req.outputType = ioType.IOTypes.Paragraph.className;
+                    req.type = "cloudRequestResult";
+                    webSocketConnection.sendMessage(req);
+                //    callback(err);
                 }
                 let parsed_sentences = JSON.parse(body);
                 if ('sentences' in parsed_sentences && parsed_sentences.sentences.length > 0) {
