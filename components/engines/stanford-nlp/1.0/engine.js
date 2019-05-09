@@ -97,6 +97,8 @@ class StanfordNLP extends base.EngineBase {
                     req.outputType = ioType.IOTypes.Paragraph.className;
                     req.type = "cloudRequestResult";
                     webSocketConnection.sendMessage(req);
+
+                    return;
                 //    callback(err);
                 }
                 let parsed_sentences = JSON.parse(body);
