@@ -28,14 +28,21 @@ class WebSocketConnection {
 
     async messageReceived(msg) {
 
-        console.log("Message received:");
-        console.log(msg);
+
 
         let errorMsg = null;
 
         try {
 
+            if(typeof msg === 'object'){
+                return;
+            }
+
             let req = JSON.parse(msg);
+            if(req.type !== "ping"){
+                console.log("Message received:");
+                console.log(msg);
+            }
 
             if (req.type === "userLogin") {
                 //Just send default profile back
