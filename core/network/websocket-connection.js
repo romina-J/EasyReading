@@ -34,7 +34,7 @@ class WebSocketConnection {
 
         try {
 
-            if(typeof msg === 'object'){
+            if(msg === "[object Object]"){
                 return;
             }
 
