@@ -30,6 +30,15 @@ class MysqlConnection extends DatabaseConnectionBase{
 
             });
 
+            //KEEP DATABASE CONNECTION ALIVE
+            //
+            setInterval(function () {
+                connection.query('SELECT 1',function (error, results, fields) {
+                    if (error) throw error;
+
+                });
+            }, 5000);
+
         });
 
 
