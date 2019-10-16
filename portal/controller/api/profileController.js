@@ -1,68 +1,116 @@
 module.exports = {
 
-    getProfileByRole: async (req, res, next) => {
-
-
-        try {
-            if (isNaN(req.params.role))
-                return res.send("no a number");
-
-            const core = rootRequire("core/core");
-            const databaseManager = core.databaseManager;
-
-            const getProfileRequest = databaseManager.createRequest("profile").where("role", "=", req.params.role);
-            const getProfileRequestResult = await databaseManager.executeRequest(getProfileRequest);
-            //req.params.role
-
-            return res.send("get" + JSON.stringify(getProfileRequestResult));
-        } catch (e) {
-            return res.send("Failed to get profiles" + JSON.stringify(e));
-        }
-    },
-    createProfile: async (req, res, next) => {
-
-        
-        const profileData = {
-            email: req.body.profile.email,
-            role: rootRequire("core/profile/profile-role").HEALTH_CARE_WORKER
-        };
-
+    updateUserInterface: async (req, res, next) => {
         try {
 
-            const core = rootRequire("core/core");
-            const databaseManager = core.databaseManager;
+            if (!req.body || (!req.body.id && !req.user.id) || !req.body.config) {
+                return res.sendStatus(401).end()
+            }
 
-            const saveProfileRequest = databaseManager.createRequest("profile").insert(profileData);
-            const saveProfileRequestResult = await databaseManager.executeRequest(saveProfileRequest);
-                        
-            return res.status(200).json({action: "added"});
-        } catch (e) {            
-            return res.status(500).json(e);
-        }
-    },
-    updateProfile: async (req, res, next) => {
+            let id = req.user.id;
+            if (req.body.id) {
+                id = req.body.id;
+            }
 
-        try {
-            const profile = req.body.profile;
-            //console.log(JSON.stringify(profile));
+            let config = req.body.config;
+            let userInterfaceType = "";
+            for (let i = 0; i < config.length; i++) {
 
-            const core = rootRequire("core/core");
-            const databaseManager = core.databaseManager;
-
-            const deleteRequest = databaseManager.createRequest("health_care_worker_patient").where("health_care_worker_id", "=", profile.id).delete();
-            const deleteRequestResult = await databaseManager.executeRequest(deleteRequest);
-
-            for (const patient of profile.patients) {
-                if (patient.connected === 1) {
-
-                    const sql = `INSERT INTO health_care_worker_patient
-                        (health_care_worker_id, patient_id)
-                        VALUES (?, ?);`;
-                    const sqlParamters = [profile.id, patient.id];
-
-                    const insertResult = await databaseManager.executeSql(sql, sqlParamters);
+                if (config[i].name === "userInterfaceType") {
+                    userInterfaceType = config[i].value;
+                    break;
                 }
             }
+
+            let uiConfig = {};
+            for (let i = 0; i < config.length; i++) {
+                if (config[i].name !== "userInterfaceType") {
+
+                    let propertyInfo = config[i].name.split("_");
+                    if (propertyInfo[1] === userInterfaceType) {
+                        uiConfig[propertyInfo[2]] = config[i].value;
+                    }
+                }
+            }
+            const core = require("../../../core/core");
+            const databaseManager = core.databaseManager;
+
+            let loadActiveUserInterfaceRequest = databaseManager.createRequest("ui_collection").where("pid", "=", id);
+
+            let loadActiveUserInterfaceRequestResult = await databaseManager.executeRequest(loadActiveUserInterfaceRequest);
+
+            if (loadActiveUserInterfaceRequestResult.result.length > 0) {
+
+                for (let k = 0; k < loadActiveUserInterfaceRequestResult.result.length; k++) {
+
+                    let loadUserInterfacesRequest = databaseManager.createRequest("ui_conf").where("ui_collection", "=", loadActiveUserInterfaceRequestResult.result[k].id);
+                    let loadUserInterfacesRequestResult = await databaseManager.executeRequest(loadUserInterfacesRequest);
+                    let userInterfaces = [];
+                    for (let i = 0; i < loadUserInterfacesRequestResult.result.length; i++) {
+
+
+                        let uiInfo = loadUserInterfacesRequestResult.result[i];
+
+                        //Delete old configuration
+                        let oldUserInterface = core.getUserInterface(uiInfo.ui_id);
+                        if (oldUserInterface.hasConfigurationSchema()) {
+                            let tableName = databaseManager.getConfigTableNameForComponent(oldUserInterface);
+
+                            let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).where("id", "=", uiInfo.ui_conf_id).delete();
+                            let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
+
+
+
+                        }
+
+
+
+                        //Insert new configuration
+                        let newUserInterface = core.getUserInterface(userInterfaceType);
+                        if (newUserInterface.hasConfigurationSchema()) {
+                            let tableName = databaseManager.getConfigTableNameForComponent(newUserInterface);
+                            let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).insert(uiConfig);
+                            let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
+                            uiInfo.ui_conf_id = userInterfaceConfigurationRequestResult.id;
+
+                        }
+
+
+
+                        //Update uiConf
+                        uiInfo.ui_id = newUserInterface.id;
+                        uiInfo.ui_version = newUserInterface.versionID;
+                        let updateUiConfRequest = databaseManager.createRequest("ui_conf").update(uiInfo).where("id", "=", uiInfo.id);
+                        let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(updateUiConfRequest);
+
+
+                        let toolConfigurationRequest = databaseManager.createRequest("tool_conf").where("ui_conf_id", "=", uiInfo.id).orderBy("order_in_ui", "ASC");
+                        let toolConfigurationRequestResult = await databaseManager.executeRequest(toolConfigurationRequest);
+                        for (let j = 0; j < toolConfigurationRequestResult.result.length; j++) {
+
+                            let toolConfiguration = toolConfigurationRequestResult.result[j];
+
+                            if(toolConfiguration.layout_conf_id){
+                                let layoutConfigurationDeleteRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForLayout(oldUserInterface)).where("id", "=", toolConfiguration.layout_conf_id).delete();
+                                let layoutConfigurationDeleteRequestResult = await databaseManager.executeRequest(layoutConfigurationDeleteRequest);
+
+
+                            }
+
+                            toolConfiguration.layout_conf_id = null;
+                            let updateToolConfigurationRequest = databaseManager.createRequest("tool_conf").update(toolConfiguration).where("id", "=", toolConfiguration.id);
+                            let updateToolConfigurationRequestResult = await databaseManager.executeRequest(updateToolConfigurationRequest);
+
+                        }
+
+
+                    }
+
+                }
+
+
+            }
+
 
             return res.status(200).json({action: "updated"});
         } catch (e) {

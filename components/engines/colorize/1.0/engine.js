@@ -13,6 +13,47 @@ class Colorize extends base.EngineBase{
 
     }
 
+    getConfigurationDataOptions() {
+        return [
+            
+            {
+            type: "colorCombination",
+            propertyMapping: [
+                {dataSchemaProerty: "fontColor", configurableDataOptionProerty: "text-color"},
+                {dataSchemaProerty: "backgroundColor", configurableDataOptionProerty: "background-color"}
+            ],
+            configurableDataOption: [
+                {"label": "Text", "text-color": "#FFFFFF", "background-color": "#000000" },
+                {"label": "Text", "text-color": "#f9dc5c", "background-color": "#00006e" },
+                {"label": "Text", "text-color": "#333333", "background-color": "#f8f8f8"},
+                {"label" : "Text","text-color": "#0000cc", "background-color": "#FFFFFF"}
+               
+            ]
+            }
+            /*{
+                type: "colorPicker",
+                dataSchemaProerty: ["fontColor", "backgroundColor"]
+            }*/
+           /*
+            {
+                type: "singleSelectList",
+                dataSchemaProerty: ["fontColor", "backgroundColor"],
+                configurableDataOption: [
+                    {"label" : "white","value": "#FFFFFF"},
+                    {"label" : "Red","value": "#FF0000"},
+                    {"label" : "#0000FF","value": "#0000FF"},
+                    {"label" : "#00BB00","value": "#00BB00"},
+                    {"label" : "#00BB00","value": "#000000"}
+                ]
+            }
+            */
+            /*{
+                type: "text",
+                dataSchemaProerty: ["fontColor", "backgroundColor"]
+            }
+            */
+        ]
+    }
 
     getDataSchema(){
         return {
@@ -44,7 +85,11 @@ class Colorize extends base.EngineBase{
                 name: "Colorize",
                 description : "Colors a page according to your favorite color",
                 defaultIcon : "assets/colorize.png",
+                includeInDefaultProfile: true,
+                supportedLanguages: [],
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],

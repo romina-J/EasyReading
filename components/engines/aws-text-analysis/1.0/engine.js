@@ -33,10 +33,14 @@ class AWSTextAnalysis extends base.EngineBase {
         return [
             {
                 id: "pos-tagger",
-                name: "PoS Tagger",
+                name: "AWS PoS Tagger",
                 description: "A simple part-of-speech tagger",
                 defaultIcon: "assets/pos.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: ["en","de","sv"],
+                visibleInConfiguration: false,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.NLP,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
                     "name": "Input paragraph",
@@ -67,18 +71,21 @@ class AWSTextAnalysis extends base.EngineBase {
      * @param req
      * @param config
      */
-    getPosTags(webSocketConnection, req, config) {
+    getPosTags(callback, input, config, profile, constants) {
         let engine = this;
-        let sentences = this.getSentences(req.input.value);
-        sentences.forEach((sentence) => {
+        let sentences = this.getSentences(input.paragraph);
+        let parsed_sentences_buffer = {};
+        sentences.forEach((sentence, i) => {
             let params = {
-                LanguageCode: 'en',
+                LanguageCode: input.lang,
                 Text: sentence,
             };
             this.comprehend.detectSyntax(params, function(err, data) {
                 if (err) {
+                    //Error:
+                    callback(new ioType.IOTypes.Error("Error comprehend"));
                     console.log(err);
-                    callback(err);
+
                 }
                 else if ('SyntaxTokens' in data) {
                     let t_open = '<span class="easy-reading-highlight">(';
@@ -87,61 +94,24 @@ class AWSTextAnalysis extends base.EngineBase {
                     for(let i=0; i < data.SyntaxTokens.length; i++) {
                         new_paragraph += data.SyntaxTokens[i].Text + t_open + data.SyntaxTokens[i].PartOfSpeech.Tag + t_close;
                     }
-                    req.result = new ioType.IOTypes.Paragraph(new_paragraph);
-                    req.outputType = ioType.IOTypes.Paragraph.className;
-                    req.type = "cloudRequestResult";
-                    webSocketConnection.sendMessage(req);
+                    parsed_sentences_buffer[i] = new_paragraph;
+                    if(Object.keys(parsed_sentences_buffer).length == sentences.length) {
+                        let parsed_paragraph = '';
+                        Object.keys(parsed_sentences_buffer).sort().forEach(function(j) {
+                            parsed_paragraph += parsed_sentences_buffer[j];
+                        });
+
+                        let result = new ioType.IOTypes.Paragraph(new_paragraph);
+                        callback(result);
+                    }
                 } else {
                     console.log('getPosTags: SyntaxTokens attribute not found in request');
+                    //Error:
+                    callback(new ioType.IOTypes.Error("SyntaxTokens attribute not found in request"));
                 }
             });
         });
     }
-
-    getSynonyms(webSocketConnection, req, config) {
-
-
-        let request = require('request');
-        let engine = this;
-
-        let sentences = this.getSentences(req.input.value);
-        for (let i=0; i < sentences.length; i++) {
-            let options = {
-                method: 'POST',
-                url: 'http://nlp.easyreading.eu/api/v1/parse/pos',
-                json: {
-                    sentence: sentences[i],
-                    pos_tag: 'noun',
-                },
-            };
-
-            request(options, function (err, res, body) {
-                if (err) {
-                    console.log(err);
-                    callback(err);
-                    return;
-                }
-
-                try {
-
-                    if (body.status === "success") {
-
-                        callback(null);
-                    } else {
-                        console.log(body.data.message);
-                    }
-
-
-                } catch (err) {
-                    console.log(err);
-                    callback(err);
-                }
-            });
-
-        }
-
-    }
-
 
 }
 

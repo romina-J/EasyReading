@@ -6,6 +6,7 @@ class WidgetBase{
         this.targetID = targetID;
         this.configuration = configuration;
         this.toolId = this.functionInfo.toolId;
+        this.widgetID = +userInterface.id+"_"+functionInfo.source.id+"_"+functionInfo.toolId;
     }
 
     disable(){
@@ -20,9 +21,39 @@ class WidgetBase{
     presentationFinished(presentation){
 
     }
+    activateWidget(){
+
+
+    }
+    deactivateWidget(){
+        if(easyReading.userInterfaces[this.userInterface.uiId]){
+            if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolIndex]){
+                if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolIndex].presentation){
+                    easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolIndex].presentation.removeAnimatedResult();
+
+
+                }
+            }
+        }
+        requestManager.cancelRequest(this);
+    }
+
 
     widgetActivated(widget){
+        if(widget !== this){
 
+            /*
+            if(easyReading.userInterfaces[this.userInterface.uiId]){
+                if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId]){
+                    if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId].presentation){
+                        easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId].presentation.removeResult();
+                    }
+                }
+            }
+            */
+            requestManager.cancelRequest(this);
+            this.deactivateWidget();
+        }
     }
 
     requestFinished(){
@@ -31,7 +62,7 @@ class WidgetBase{
 
     getPresentation(){
 
-        return this.userInterface.tools[this.toolId].presentation;
+        return this.userInterface.tools[this.toolIndex].presentation;
     }
 
     stopPresentation(){
@@ -47,6 +78,16 @@ class WidgetBase{
 
     remove(){
         console.log("Removing widget:");
+    }
+
+    setToolIndex(toolIndex){
+        this.toolIndex = toolIndex;
+    }
+
+    updateConfigurationAndFunction(configuration,functionInfo){
+        this.functionInfo = functionInfo;
+        this.configuration = configuration;
+        this.toolId = this.functionInfo.toolId;
     }
 
 

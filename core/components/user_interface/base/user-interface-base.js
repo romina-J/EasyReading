@@ -22,6 +22,10 @@ class UserInterfaceBase extends ComponentBase{
         return {}
     }
 
+    hasLayoutConfigurationSchema(){
+        return Object.keys(this.getToolLayoutConfigurationSchema() ).length !== 0;
+    }
+
     getDefaultToolLayoutConfiguration() {
         let defaults = require('json-schema-defaults');
         return defaults(this.getToolLayoutConfigurationSchema());

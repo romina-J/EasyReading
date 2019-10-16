@@ -4,8 +4,9 @@ class SingleChoiceButton extends WidgetBase {
         super(functionInfo, userInterface, targetID, configuration);
 
         this.active = false;
+        this.outputTypeClass = null;
         this.requestInProgress = false;
-        this.widgetID = 'er_single_choice_button_' + userInterface.id + "_" + functionInfo.source.id;
+        this.widgetID = 'er_single_choice_button_' + this.widgetID;
         $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-single-choice'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
 
         this.enable();
@@ -35,17 +36,23 @@ class SingleChoiceButton extends WidgetBase {
                 case Paragraph.className:
                     globalEventListener.addParagraphClickListener(this);
                     break;
+                case AnnotatedParagraph.className:
+                    globalEventListener.addParagraphClickListener(this);
+                    break;
                 default:
                     break;
             }
+            this.outputTypeClass = this.functionInfo.source.inputTypes[i].inputType;
         }
 
         globalEventListener.widgetActivated(this);
 
         this.active = true;
+
     }
 
     deactivateWidget(){
+        super.deactivateWidget();
         console.log("Single Choice Button Not Active");
         $("#" + this.widgetID).removeClass("easy-reading-single-choice-active");
 
@@ -57,20 +64,17 @@ class SingleChoiceButton extends WidgetBase {
                 case Paragraph.className:
                     globalEventListener.removeParagraphClickListener(this);
                     break;
+                case AnnotatedParagraph.className:
+                    globalEventListener.removeParagraphClickListener(this);
+                    break;
                 default:
                     break;
-            }
-        }
 
 
-        if(easyReading.userInterfaces[this.userInterface.uiId]){
-            if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId]){
-                if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId].presentation){
-                    easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId].presentation.removeResult();
-                }
+
             }
+
         }
-        requestManager.cancelRequest(this);
 
         this.active = false;
     }
@@ -104,7 +108,15 @@ class SingleChoiceButton extends WidgetBase {
 
         easyReading.busyAnimation.startAnimation();
         if(!this.filterUserInterfaceElements(paragraph)){
-            requestManager.createRequest(this, paragraph);
+
+            if(this.outputTypeClass === Paragraph.className){
+
+                requestManager.createRequest(this, paragraph);
+            }else if(this.outputTypeClass === AnnotatedParagraph.className){
+
+                paragraph.type = AnnotatedParagraph.className;
+                requestManager.createRequest(this, paragraph);
+            }
         }
 
 
@@ -114,16 +126,17 @@ class SingleChoiceButton extends WidgetBase {
         return $(element).parents('.easy-reading-interface').length;
     }
 
-    widgetActivated(widget){
-        if(widget !== this){
-
-            this.deactivateWidget();
-        }
-
-    }
 
     requestFinished(){
         easyReading.busyAnimation.stopAnimation();
         this.requestInProgress = false;
+    }
+
+    remove(){
+        if(this.active){
+            this.deactivateWidget();
+        }
+        $("#" + this.widgetID).remove();
+
     }
 }

@@ -44,6 +44,13 @@ router.get('/', function(req,res,next){
 });
 
 router.post('/',async function(req,res,next){
+    res.send( {
+        success: false,
+    });
+
+    return;
+
+    //TODO
     if(req.query.token){
         req.session._clientToken = req.query.token;
 
@@ -62,6 +69,7 @@ router.post('/',async function(req,res,next){
 
                             await currentProfile.login(req.user.googleID, webSocketConnection);
                             webSocketConnection.profile = currentProfile;
+                            currentProfile.webSocketConnection = webSocketConnection;
                             let loginResult = {
                                 type: "userLoginResult",
                                 result : currentProfile,

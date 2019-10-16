@@ -1,7 +1,8 @@
 class UserInterfaceBase{
-    constructor(configuration){
+    constructor(configuration,tabConfiguration){
 
         this.configuration = configuration;
+        this.tabConfiguration = tabConfiguration;
     }
 
 
@@ -19,13 +20,27 @@ class UserInterfaceBase{
 
     }
 
-    getContainerIDForLayout(functionUIConfig){
+    getToolContainerIDForLayout(toolID,layoutConfig,order){
+
+    }
+
+    removeContainerForTool(toolID){
+
+    }
+
+    toolsLoaded() {
 
     }
 
     remove(){
         console.log("Remooving user interface:");
     }
+
+    uiUpdated(){
+
+
+    }
+
 
 
 }

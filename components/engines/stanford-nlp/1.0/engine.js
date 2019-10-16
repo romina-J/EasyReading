@@ -17,10 +17,14 @@ class StanfordNLP extends base.EngineBase {
         return [
             {
                 id: "pos-tagger-sfd",
-                name: "PoS Tagger",
+                name: "Stanford PoS Tagger",
                 description: "A part-of-speech tagger",
                 defaultIcon: "assets/pos.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: ["en"],
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.NLP,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
                     "name": "Input paragraph",
@@ -71,39 +75,37 @@ class StanfordNLP extends base.EngineBase {
      * @param req
      * @param config
      */
-    getPosTags(webSocketConnection, req, config) {
+    getPosTags(callback, input, config, profile, constants) {
         this.credentials = this.getCredentials();
         if (!this.credentials) {
-            console.log("No credentials found for Stanford NLP!");
+            console.log("No credentials found for Stanford NLP!")  //Error:
+            callback(new ioType.IOTypes.Error("No credentials found for Standford NLP!"));
             return;
         }
         let request = require('request');
-        let sentences = this.getSentences(req.input.value);
+        let sentences = this.getSentences(input.paragraph);
         let authstring = 'Basic ' + new Buffer(this.credentials.stf_user + ':' + this.credentials.stf_pw).toString('base64');
         let parsed_sentences_buffer = {};
         let post_url = this.credentials.stf_endpoint + '/?annotators=pos&outputFormat=json';
         sentences.forEach((sentence, i) => {
             request.post({
                 headers: {
-                    'content-type' : 'application/x-www-form-urlencoded',
-                    'Authorization' : authstring,
+                    'content-type': 'application/x-www-form-urlencoded',
+                    'Authorization': authstring,
                 },
-                url:     post_url,
-                body:    sentence,
-            }, function(error, response, body){
-                if (error){
+                url: post_url,
+                body: sentence,
+            }, function (error, response, body) {
+                if (error) {
                     console.log(error);
-                    req.result = new ioType.IOTypes.Paragraph("Error handling request");
-                    req.outputType = ioType.IOTypes.Paragraph.className;
-                    req.type = "cloudRequestResult";
-                    webSocketConnection.sendMessage(req);
 
-                    return;
-                //    callback(err);
+                    //Error:
+                    callback(new ioType.IOTypes.Error("Error processing request"));
+
                 }
                 let parsed_sentences = JSON.parse(body);
                 if ('sentences' in parsed_sentences && parsed_sentences.sentences.length > 0) {
-                    let new_sentence= '';
+                    let new_sentence = '';
                     let t_open = '<span class="easy-reading-highlight">(';
                     let t_close = ')</span> ';
                     parsed_sentences.sentences.forEach((psentence) => {
@@ -118,21 +120,20 @@ class StanfordNLP extends base.EngineBase {
                         });
                     });
                     parsed_sentences_buffer[i] = new_sentence;
-                    if(Object.keys(parsed_sentences_buffer).length == sentences.length) {
+                    if (Object.keys(parsed_sentences_buffer).length === sentences.length) {
                         let parsed_paragraph = '';
-                        Object.keys(parsed_sentences_buffer).sort().forEach(function(j) {
+                        Object.keys(parsed_sentences_buffer).sort().forEach(function (j) {
                             parsed_paragraph += parsed_sentences_buffer[j];
                         });
-                        req.result = new ioType.IOTypes.Paragraph(parsed_paragraph);
-                        req.outputType = ioType.IOTypes.Paragraph.className;
-                        req.type = "cloudRequestResult";
-                        webSocketConnection.sendMessage(req);
+                        let result = new ioType.IOTypes.Paragraph(parsed_paragraph);
+
+                        callback(result);
                     }
                 } else {
                     parsed_sentences_buffer[i] = '';
                 }
             });
-    });
+        });
     }
 }
 

@@ -1,34 +1,74 @@
-<!DOCTYPE html>
+﻿﻿﻿<!DOCTYPE html>
 
 <html lang="en">
 
 <head>
-    <title>Welcome {{user.email}}</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/css/style.css">
+    <title>{{page_client_welcome_title}}</title>
+    {{> head }}
 </head>
 
 <body>
+    <div class="row wrapper">
 
-<main class="container">
+        <div class="medium-3 columns">
+            <nav>
+                {{> nav_client }}
+                {{> nav_user_info }}
+            </nav>
+        </div>
 
-    <div class="row columns">
+        <div class="medium-9 columns">
 
-        <h1 id="message">Welcome  {{user.email}}</h1>
+            <main>
+                <div class="row">
+                    <div class="column">
+                        <h1 id="message">{{page_client_welcome_title}}</h1>
+                    </div>
+                </div>
 
-        <h2>Manage configuration</h2>
-        <ul>
-            <li>
-                <a href="configure?gid={{user.googleID}}">Edit profile</a>
-            </li>
-        </ul>
+                <div class="row">
+                        <div class="small-12 columns">
+                      
+                                <h2 class="page-client-welcome-intro-title">{{page_client_welcome_intro_title}}</h2>
 
-        <a href="logout">Logout</a>
+                                <p class="page-client-welcome-intro-description">{{page_client_welcome_intro_description_1}}</p>
+                                <ul class="no-bullet">
+                                    <li>{{page_client_welcome_intro_description_2}}</li>
+                                    <li>{{page_client_welcome_intro_description_3}}</li>
+                                    <li>{{page_client_welcome_intro_description_4}}</li>
+                                    <li>{{page_client_welcome_intro_description_5}}</li>
+                                </ul>
+
+
+                            <!--<div class="medium-4 columns">
+                                <p>
+                                    <br />
+                                    {{page_client_welcome_tool_panel_layout_description}}
+                                    <br />
+                                    <br />
+                                    <img class="page-client-welcome-tool-panel-layou-img" aria-hidden="true" alt="{{page_client_welcome_tool_panel_layout_description}}" src="../images/tool_layout.png">
+                                </p>
+                            </div>-->
+                        </div>
+                   
+
+                    {{#if user}}
+                        {{#hasRole user "client"}}
+                            <div class="small-12 columns">
+                                <br />
+                                <!--<img class="page-client-welcome-settings-icon" aria-hidden="true" alt="welcome settings" src="../images/settings_icon.png">-->
+                                <a class="button button-settings" href="/client/configure?id={{user.id}}">{{page_client_welcome_to_configuration_link_text}}</a>
+                                <!--<div class="page-client-welcome-to-configuration-description">{{page_client_welcome_to_configuration_description}}</div>-->
+                            </div>
+                 
+                        {{/hasRole}}
+                    {{/if}}
+                </div>
+            </main>
+
+        </div>
+
     </div>
-</main>
 
 </body>
-
 </html>

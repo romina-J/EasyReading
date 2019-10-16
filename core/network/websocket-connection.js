@@ -14,7 +14,7 @@ class WebSocketConnection {
         this.profile = null;
         console.log("Base URL:", url);
         const webSocketConnection = this;
-
+        this.customFunctions = [];
 
         ws.on('message', function incoming(msg) {
             webSocketConnection.messageReceived(msg);
@@ -28,12 +28,9 @@ class WebSocketConnection {
 
     async messageReceived(msg) {
 
-
-
         let errorMsg = null;
 
         try {
-
             if(msg === "[object Object]"){
                 return;
             }
@@ -43,7 +40,6 @@ class WebSocketConnection {
                 console.log("Message received:");
                 console.log(msg);
             }
-
             if (req.type === "userLogin") {
                 //Just send default profile back
 
@@ -172,7 +168,9 @@ class WebSocketConnection {
         this.ws.send(JSON.stringify(msg));
     }
 
-    connectionClosed() {
+    async connectionClosed() {
+
+        await this.logoutUser();
 
         let network = require("./network");
         network.removeWebSocketConnection(this);
@@ -183,20 +181,22 @@ class WebSocketConnection {
     createUserDirectory() {
 
     }
-    logout(){
+    async logout(){
         let request = {
             type: "userLogout",
             result: null,
         };
         this.sendMessage(request);
+        await this.logoutUser();
     }
 
     updateProfile(profile,normalized){
         profile.uuid = this.profile.uuid;
+        let profileBuilder = require("../profile/profile-builder");
+        profileBuilder.createClassMappings(profile);
 
         if(!normalized){
-            let profileBuilder = require("../profile/profile-builder");
-            profileBuilder.createClassMappings(profile);
+
             if (!profile.debugMode) {
                 profileBuilder.normalizeCSSPaths(profile, this.url);
             }
@@ -233,6 +233,14 @@ class WebSocketConnection {
             googleId: payload['sub'],
             email: payload['email']
         };
+    }
+
+    async logoutUser(){
+        if(this.profile){
+
+            await this.profile.logout();
+            this.profile = null;
+        }
     }
 }
 

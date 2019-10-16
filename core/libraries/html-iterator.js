@@ -139,7 +139,8 @@ class HTMLIterator{
                 let currentTextNodes = this.getTextNodes(this.currentElements[i]);
                 for(let k=0; k < currentTextNodes.length; k++){
 
-                    if($(currentTextNodes[k].parentNode).is(":visible")){
+                    if($(currentTextNodes[k].parentNode).is(":visible") && $(currentTextNodes[k].parentNode).css('display') !== 'none' && $(currentTextNodes[k].parentNode).css("visibility") !== "hidden"){
+                        // element is not hidden
                         this.textNodes.push(currentTextNodes[k]);
 
                         if(!oneTextNodeHasText){

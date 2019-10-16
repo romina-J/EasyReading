@@ -24,6 +24,9 @@ let globalEventListener = {
         globalEventListener.listenersInitialized = true;
 
         $(document).on("click touch", function (e) {
+            if(alertManager.suppressClick()){
+                return;
+            }
             if (!$(e.target).closest('.easy-reading-interface').length) {
 
                 if (globalEventListener.activeClickListeners.length || globalEventListener.activeWordClickListeners.length || globalEventListener.activeParagraphClickListeners.length) {
@@ -255,40 +258,51 @@ let globalEventListener = {
 
      */
 
-    addWordClickListener: function (clickListener) {
-        globalEventListener.activeWordClickListeners.push(clickListener);
+    addWordClickListener: function (clickListener,compatibleWithOtherPresentations= false) {
+        globalEventListener.activeWordClickListeners.push({
+            listener: clickListener,
+            compatibleWithOtherPresentations: compatibleWithOtherPresentations
+        });
 
     },
 
 
     removeWordClickListener: function (clickListener) {
+
+        for(let i=0; i < globalEventListener.activeWordClickListeners.length; i++){
+            if(globalEventListener.activeWordClickListeners[i].listener === clickListener){
+                globalEventListener.activeWordClickListeners.splice(i, 1);
+                return;
+            }
+        }
+        /*
         const index = globalEventListener.activeWordClickListeners.indexOf(clickListener);
         if (index !== -1) {
             globalEventListener.activeWordClickListeners.splice(index, 1);
         }
+        */
 
     },
-
-    addParagraphClickListener: function (clickListner) {
-        globalEventListener.activeParagraphClickListeners.push(clickListner);
-    },
-
-
-    removeParagraphClickListener: function (clickListener) {
-        const index = globalEventListener.activeParagraphClickListeners.indexOf(clickListener);
-        if (index !== -1) {
-            globalEventListener.activeParagraphClickListeners.splice(index, 1);
-        }
-    },
-
-
     wordClickListener: function (e) {
         if (globalEventListener.activeWordClickListeners.length > 0) {
+
+
+            for(let i=0; i < globalEventListener.activeWordClickListeners.length; i++){
+
+                if(!globalEventListener.activeWordClickListeners[i].compatibleWithOtherPresentations){
+
+                    pageUtils.removeDisplayUnderPosition(e.clientX,e.clientY);
+                    break;
+                }
+
+            }
+
+
             let currentWord = pageUtils.getWordUnderPosition(e.clientX, e.clientY);
             if (currentWord) {
                 for (let i = 0; i < globalEventListener.activeWordClickListeners.length; i++) {
 
-                    globalEventListener.activeWordClickListeners[i].onWordClick(currentWord, e);
+                    globalEventListener.activeWordClickListeners[i].listener.onWordClick(currentWord, e);
 
                 }
             }
@@ -297,13 +311,50 @@ let globalEventListener = {
 
     },
 
+    addParagraphClickListener: function (clickListener,compatibleWithOtherPresentations= false) {
+        globalEventListener.activeParagraphClickListeners.push({
+            listener: clickListener,
+            compatibleWithOtherPresentations: compatibleWithOtherPresentations
+        });
+    },
+
+
+    removeParagraphClickListener: function (clickListener) {
+        for(let i=0; i < globalEventListener.activeParagraphClickListeners.length; i++){
+            if(globalEventListener.activeParagraphClickListeners[i].listener === clickListener){
+                globalEventListener.activeParagraphClickListeners.splice(i, 1);
+                return;
+            }
+        }
+        /*
+        const index = globalEventListener.activeParagraphClickListeners.indexOf(clickListener);
+        if (index !== -1) {
+            globalEventListener.activeParagraphClickListeners.splice(index, 1);
+        }
+        */
+    },
+
+
     paragraphClickListener: function (e) {
         if (globalEventListener.activeParagraphClickListeners.length > 0) {
+
+
+            for(let i=0; i < globalEventListener.activeParagraphClickListeners.length; i++){
+
+                if(!globalEventListener.activeParagraphClickListeners[i].compatibleWithOtherPresentations){
+
+                    pageUtils.removeDisplayInParagraph(e);
+                    break;
+                }
+
+            }
+
+
             let currentParagraph = pageUtils.getParagraph(e);
             if (currentParagraph) {
                 for (let i = 0; i < globalEventListener.activeParagraphClickListeners.length; i++) {
 
-                    globalEventListener.activeParagraphClickListeners[i].onParagraphCLick(currentParagraph, e);
+                    globalEventListener.activeParagraphClickListeners[i].listener.onParagraphCLick(currentParagraph, e);
 
                 }
             }
@@ -388,6 +439,7 @@ let globalEventListener = {
     },
 
     widgetActivated(widget) {
+
         for (let i = 0; i < globalEventListener.widgetActivatedListeners.length; i++) {
             globalEventListener.widgetActivatedListeners[i].widgetActivated(widget);
         }

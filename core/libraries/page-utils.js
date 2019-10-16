@@ -1,6 +1,30 @@
 var pageUtils = {
+    sentenceTokenizer: new SentenceTokenizer(),
+
+    removeDisplayUnderPosition:function (x,y) {
+        let oldResult = $(document.elementFromPoint(x, y)).closest('.easy-reading-result');
+        if (oldResult.length) {
+
+
+            let presentationID = oldResult.data("presentationid").split('-');
+
+            easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult(oldResult.data("requestid"));
+        }
+    },
 
     getWordUnderPosition: function (x, y) {
+
+
+        /*
+        let oldResult = $(document.elementFromPoint(x, y)).closest('.easy-reading-result');
+        if (oldResult.length) {
+
+
+            let presentationID = oldResult.data("presentationid").split('-');
+            easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult(oldResult.attr('id'));
+        }
+        */
+
         let range, textNode, offset;
         // Internet Explorer
         if (document.body.createTextRange) {
@@ -129,6 +153,8 @@ var pageUtils = {
         }
 
         textNodes = pageUtils.util.getTextNodes(textNodes);
+
+
         /*
         Used to mark
         textNodes[textNodes.length-1].splitText(end+1);
@@ -160,6 +186,87 @@ var pageUtils = {
 
         //REMOVE &shy;
         word = word.replace(/\u00AD/g, '');
+        let iterator = new HTMLIterator(textNodes[0]);
+        let paragraph_container = iterator.getContainerOfTextNode(textNodes[0]);
+
+        let text = $(paragraph_container).text();
+        text = text.trim().replace(/(\r\n\t|\n|\r\t)/gm, "");
+        text = text.replace(/\t/g, '');
+        text = text.replace(/\n/g, '');
+        let textPieces = text.split(word);
+
+        console.log(textPieces);
+
+        let maxSentenceLength = 150;
+
+        let beginString = textNodes[0].textContent.substring(0,begin);
+        if(beginString.length < maxSentenceLength){
+            let prevNode = pageUtils.util.getPrevNode(textNodes[0]);
+            while(prevNode){
+
+                let prevTextNodes = [];
+                if(prevNode.nodeName !== '#text'){
+                    prevTextNodes = pageUtils.util.getChildTextNodes(prevNode);
+                }else{
+                    prevTextNodes.push(prevNode);
+                }
+
+                let finished = false;
+                for(let i= prevTextNodes.length-1; i >=0; i--){
+                    beginString = prevTextNodes[i].textContent + beginString;
+                    if(beginString.length >=maxSentenceLength){
+                        finished = true;
+                        break;
+                    }
+                }
+
+                if(!finished){
+                    prevNode = pageUtils.util.getPrevNode(prevNode);
+                }else{
+                    break;
+                }
+            }
+        }
+
+        let endString = textNodes[textNodes.length-1].textContent.substring(end+1);
+
+        if(endString.length < maxSentenceLength){
+            let nextNode = pageUtils.util.getNextNode(textNodes[textNodes.length-1]);
+            while(nextNode){
+
+                let nextTextNodes = [];
+                if(nextNode.nodeName !== '#text'){
+                    nextTextNodes = pageUtils.util.getChildTextNodes(nextNode);
+                }else{
+                    nextTextNodes.push(nextNode);
+                }
+
+                let finished = false;
+                for(let i= nextTextNodes.length-1; i >=0; i--){
+                    endString =  endString+nextTextNodes[i].textContent;
+                    if(endString.length >=maxSentenceLength){
+                        finished = true;
+                        break;
+                    }
+                }
+
+                if(!finished){
+                    nextNode = pageUtils.util.getNextNode(nextNode);
+                }else{
+                    break;
+                }
+            }
+        }
+
+
+        beginString = beginString.trim().replace(/(\s+)/gm, " ").replace(/([\r\n])/gm, "");
+        this.sentenceTokenizer.setEntry(beginString);
+        let beginSentences = this.sentenceTokenizer.getSentences();
+
+
+        endString = endString.trim().replace(/(\s+)/gm, " ").replace(/([\r\n])/gm, "");
+        this.sentenceTokenizer.setEntry(endString);
+        let endSentences = this.sentenceTokenizer.getSentences();
 
 
         return {
@@ -169,20 +276,80 @@ var pageUtils = {
             begin: begin,
             end: end,
             textNodes: textNodes,
+            sentenceBegin: beginSentences[beginSentences.length-1],
+            sentenceEnd: endSentences[0],
             lang: pageUtils.util.getLanguageOfElement(textNodes[0]),
             container: container,
+
 
         }
 
     },
 
+    removeDisplayInParagraph(e){
+        let target = $(e.target);
+        if (target.length > 0) {
+
+            let oldResult = $(e.target).closest('.easy-reading-result');
+            if (oldResult.length) {
+
+
+                let presentationID = oldResult.data("presentationid").split('-');
+                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult(oldResult.data("requestid"));
+            }
+
+            $(e.target).children('.easy-reading-result').each(function () {
+
+                let presentationID = $(this).data("presentationid").split('-');
+                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult($(this).data("requestid"));
+            });
+        }
+    },
+
     getParagraph(e) {
         let target = $(e.target);
         if (target.length > 0) {
+
+            /*
+            let oldResult = $(e.target).closest('.easy-reading-result');
+            if (oldResult.length) {
+
+
+                let presentationID = oldResult.data("presentationid").split('-');
+                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult(oldResult.attr('id'));
+            }
+
+            $(e.target).children('.easy-reading-result').each(function () {
+
+                let presentationID = $(this).data("presentationid").split('-');
+                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult($(this).attr('id'));
+            });
+
+            */
+
             let paragraph = '';
             let iterator = new HTMLIterator(target[0]);
             let textNodes = iterator.getChildTextNodes(target[0]);
             let paragraph_container = iterator.getContainerOfTextNode(textNodes[0]);
+
+            if(!paragraph_container){
+                //Element got removed-was old result - get new element
+                target = $(document.elementFromPoint(e.clientX,e.clientY));
+                if (target.length > 0) {
+                    iterator = new HTMLIterator(target[0]);
+                    textNodes = iterator.getChildTextNodes(target[0]);
+                    paragraph_container = iterator.getContainerOfTextNode(textNodes[0]);
+
+                    if(!paragraph_container){
+                        return;
+                    }
+                }
+
+
+
+
+
+            }
             if (paragraph_container.length > 0) {
                 paragraph = paragraph_container[0].innerText.trim().replace(/(\r\n\t|\n|\r\t)/gm, "");
                 return {
@@ -217,14 +384,20 @@ var pageUtils = {
         }
     },
 
-    wrapWordIn: function (word, element, classes) {
+    wrapWordIn: function (word, element, classes,attributes="",id="") {
         word.textNodes[word.textNodes.length - 1].splitText(word.end + 1);
 
         if (word.begin !== 0) {
             word.textNodes[0] = word.textNodes[0].splitText(word.begin);
 
         }
-        $(word.textNodes).wrap("<" + element + " class='" + classes + "'></" + element + ">");
+
+        let idString= "";
+        if(id){
+            idString = " id='" + id + "' ";
+        }
+
+        return ($(word.textNodes).wrap("<" + element + idString + " class='" + classes + "' "+attributes+"></" + element + ">").parent());
         /*for(let i=0; i < word.textNodes.length; i++){
             $( word.textNodes[i] ).wrap( "<"+element+" class='"+classes+"'></"+element+">" );
 
@@ -509,7 +682,7 @@ var pageUtils = {
         getLanguageOfElement(element) {
 
             if (typeof element === "undefined") {
-                return "en";
+                return "undefined";
             }
 
             if (typeof element.lang === "undefined" || element.lang === "") {
@@ -519,7 +692,7 @@ var pageUtils = {
                     return pageUtils.util.getLanguageOfElement(element.parentNode);
                 } else {
                     //Return english as default language
-                    return "en";
+                    return "undefined";
                 }
 
             }

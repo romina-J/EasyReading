@@ -51,8 +51,8 @@ class PostrgreSQLConnection extends DatabaseConnectionBase{
         let description = "CREATE TABLE IF NOT EXISTS "+tableName+" (";
         description+="id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,";
         description+="user_id INT NOT NULL";
-        for(let i=0; i < columnDescription.length; i++){
-            description+=","+columnDescription[i];
+        for(let col in columnDescription){
+            description+=","+columnDescription[col];
         }
         description+=")";
 

@@ -58,13 +58,13 @@
 
         /**
          * True if the tab is open.
-         * 
+         *
          * @returns boolean
          */
         function isOpen() {
             return panel.hasClass('ui-slideouttab-open');
         }
-        
+
         /**
          * Return the desired height of the panel to maintain both offsets.
          */
@@ -77,7 +77,7 @@
         }
 
         var panel = this;
-            
+
         if ( typeof callerSettings == 'string' )
         {
             // param is a string, use command mode
@@ -130,10 +130,14 @@
                 onClose: function(){} // handler called after closing
             }, callerSettings||{});
 
-            var edge = settings.tabLocation; 
+            var startX = 0;
+            var startY = 0;
+
+            var edge = settings.tabLocation;
             var handle = settings.tabHandle = $(settings.tabHandle,panel);
             panel.addClass('ui-slideouttab-panel');
             panel.addClass('ui-slideouttab-'+edge);
+            panel.addClass('ui-slideouttab-closed');
             if ( settings.offsetReverse ) panel.addClass('ui-slideouttab-panel-reverse');
             handle.addClass('ui-slideouttab-handle'); // need this to find it later
             if ( settings.handleOffsetReverse ) handle.addClass('ui-slideouttab-handle-reverse');
@@ -149,13 +153,13 @@
                 var imageHeight = 0;
                 var imageWidth = 0;
                 if (settings.tabImageHeight !== null && settings.tabImageWidth !== null) {
-                   imageHeight = settings.tabImageHeight;
-                   imageWidth = settings.tabImageWidth;
+                    imageHeight = settings.tabImageHeight;
+                    imageWidth = settings.tabImageWidth;
                 } else {
-                   var img = new Image();
-                   img.src = settings.tabImage;
-                   imageHeight = img.naturalHeight;
-                   imageWidth = img.naturalWidth;
+                    var img = new Image();
+                    img.src = settings.tabImage;
+                    imageHeight = img.naturalHeight;
+                    imageWidth = img.naturalWidth;
                 }
 
                 handle.addClass('ui-slideouttab-handle-image');
@@ -177,46 +181,50 @@
 
             // set up alignment information based on settings
             if ( edge === 'top' || edge === 'bottom' ){
-                settings.panelOffsetFrom = 
-                        settings.offsetReverse ? 'right' : 'left';
-                settings.handleOffsetFrom = 
-                        settings.handleOffsetReverse ? 'right' : 'left';
+                settings.panelOffsetFrom =
+                    settings.offsetReverse ? 'right' : 'left';
+                settings.handleOffsetFrom =
+                    settings.handleOffsetReverse ? 'right' : 'left';
             } else {
-                settings.panelOffsetFrom = 
-                        settings.offsetReverse ? 'bottom' : 'top';
-                settings.handleOffsetFrom = 
-                        settings.handleOffsetReverse ? 'bottom' : 'top';
+                settings.panelOffsetFrom =
+                    settings.offsetReverse ? 'bottom' : 'top';
+                settings.handleOffsetFrom =
+                    settings.handleOffsetReverse ? 'bottom' : 'top';
             }
-            
+
             /* autodetect the correct offset for the handle using appropriate panel border*/
             if (settings.handleOffset === null) {
                 settings.handleOffset = '-'+borderWidth(panel,settings.handleOffsetFrom)+'px';
             }
-            
-            var sizes = {
-                        panelWidth: parseInt(panel.outerWidth()+1, 10) + 'px',
-                        panelHeight: parseInt(panel.outerHeight()+1, 10) + 'px',
-                        handleWidth: parseInt(handle.outerWidth(), 10) + 'px',
-                        handleHeight: parseInt(handle.outerHeight()+1, 10) + 'px'
-                    };
 
-            // 
+            var sizes = {
+                panelWidth: parseInt(panel.outerWidth()+1, 10) + 'px',
+                panelHeight: parseInt(panel.outerHeight()+1, 10) + 'px',
+                handleWidth: parseInt(handle.outerWidth(), 10) + 'px',
+                handleHeight: parseInt(handle.outerHeight()+1, 10) + 'px'
+            };
+
             if(edge === 'top' || edge === 'bottom') {
+
                 /* set left or right edges */
                 panel.css( settings.panelOffsetFrom, settings.offset);
                 handle.css( settings.handleOffsetFrom, settings.handleOffset );
-                
+
                 // possibly drive the panel size
                 if ( settings.otherOffset !== null ) {
                     panel.css( 'width', calculatePanelSize() + 'px' );
                     // install resize handler
-                    $(window).resize(function() { 
+                    $(window).resize(function() {
                         panel.css( 'width', calculatePanelSize() + 'px');
                     });
                 }
-            
+
+
+                //sizes.panelHeight = parseInt(panel.outerHeight()+100, 10) + 'px';
+
                 if(edge === 'top') {
-                    panel.css({'top' : '-' + sizes.panelHeight});
+
+                    //panel.css({'top' : '-' + sizes.panelHeight});
                     handle.css({'bottom' : '-' + sizes.handleHeight});
                 }
                 else {
@@ -235,11 +243,11 @@
                 if ( settings.otherOffset !== null ) {
                     panel.css( 'height', calculatePanelSize() + 'px' );
                     // install resize handler
-                    $(window).resize(function() { 
+                    $(window).resize(function() {
                         panel.css( 'height', calculatePanelSize() + 'px');
                     });
                 }
-            
+
                 if(edge === 'left') {
                     panel.css({ 'left': '-' + sizes.panelWidth});
                     handle.css({'right' : '0'});
@@ -264,37 +272,48 @@
                 {
                     case 'top':
                     case 'bottom':
-                        size = sizes.panelHeight;
+                        size = parseInt(panel.outerHeight()+1, 10) + 'px';
                         break;
                     case 'left':
                     case 'right':
-                        size = sizes.panelWidth;
+                        size = parseInt(panel.outerWidth()+1, 10) + 'px';
                 }
-                
+
                 var param = [];
+                var tab_elem_classes = document.getElementById('easy-reading-tab-slide-out').className.split(/\s+/);
+                if (tab_elem_classes.includes('ui-slideouttab-right')) {
+                    panel.css('left', '');
+                } else if (tab_elem_classes.includes('ui-slideouttab-left')) {
+                    panel.css('right', '');
+                }
                 param[edge] = '-' + size;
                 panel.removeClass('ui-slideouttab-open').animate(param, settings.speed, function(){
                     panel.trigger('slideouttabclose');
                     settings.onClose();
-                });
+                }).addClass('ui-slideouttab-closed');
             };
 
             var slideOut = function() {
                 var param = [];
+                if (edge === "right") {
+                    panel.css('left', '');
+                } else if (edge === "left") {
+                    panel.css('right', '');
+                }
                 // show everything except the border along the edge we're on
                 param[edge] = '-'+borderWidth(panel,edge)+'px';
-                panel.animate(param,  settings.speed, function(){
+                panel.removeClass('ui-slideouttab-closed').animate(param,  settings.speed, function(){
                     panel.addClass('ui-slideouttab-open').trigger('slideouttabopen');
                     settings.onOpen();
                 });
             };
-            
+
             // animate the tab in and out
             var moveIn = [];
             moveIn[edge] = '-=' + settings.bounceDistance;
             var moveOut = [];
             moveOut[edge] = '+=' + settings.bounceDistance;
-            
+
             var bounceIn = function() {
                 var temp = panel;
                 for ( var i = 0; i < settings.bounceTimes; i++ )
@@ -335,12 +354,38 @@
 
             var clickAction = function(){
                 handle.click(function(event){
-                    if (isOpen()) {
-                        slideIn();
+                    var endX = event.clientX;
+                    var endY = event.clientY;
+                    let animate = false;
+                    if(!endY){
+                        animate=true;
+                    }
+                    if (edge === "right" || edge === "left") {
+                        let handle_h = handle.height();
+                        if (Math.abs(startY - endY) <= handle_h/2) {
+                            animate = true;
+                        }
                     } else {
-                        slideOut();
+                        let handle_w = handle.width();
+                        if (Math.abs(startX - endX) <= handle_w/2) {
+                            animate = true;
+                        }
+                    }
+
+                    if (animate) {
+                        if (isOpen()) {
+                            slideIn();
+                        } else {
+                            slideOut();
+                        }
                     }
                 });
+
+                handle.mousedown(function(event) {
+                    startX = event.clientX;
+                    startY = event.clientY;
+                });
+
                 settings.toggleButton.click(function(event){
                     if (isOpen()) {
                         slideIn();
@@ -366,22 +411,22 @@
                         }
                     });
 
-                    handle.click(function(event){
-                        if (isOpen()) {
-                            slideIn();
-                        }
-                    });
+                handle.click(function(event){
+                    if (isOpen()) {
+                        slideIn();
+                    }
+                });
 
-                    settings.toggleButton.click(function(event){
-                        if (isOpen()) {
-                            slideIn();
-                        } else {
-                            slideOut();
-                        }
-                    });
+                settings.toggleButton.click(function(event){
+                    if (isOpen()) {
+                        slideIn();
+                    } else {
+                        slideOut();
+                    }
+                });
 
-                    if ( settings.clickScreenToClose )
-                        clickScreenToClose();
+                if ( settings.clickScreenToClose )
+                    clickScreenToClose();
 
             };
 
@@ -402,7 +447,7 @@
             if (settings.onLoadSlideOut) {
                 slideOutOnLoad();
             }
-            
+
             handle.on('bounce', function(event){
                 if (isOpen()) {
                     bounceIn();

@@ -42,7 +42,11 @@ class ContentClarifier extends base.EngineBase {
                 name: "Contextual Simplify",
                 description: "This API accepts a string of English text as input and returns a simplified or enhanced version of it.",
                 defaultIcon: "assets/ibm-ccf.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: ["en",],
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
 
@@ -60,7 +64,11 @@ class ContentClarifier extends base.EngineBase {
                 name: "Contextual Simplify with AAC",
                 description: "This API accepts a string of English text as input and returns a simplified or enhanced version of it.",
                 defaultIcon: "assets/ibm-aac.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: ["en",],
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
                 }],
@@ -76,21 +84,24 @@ class ContentClarifier extends base.EngineBase {
     }
 
 
-    contextualSimplify(webSocketConnection, req, config) {
+    contextualSimplify(callback, input, config, profile, constants) {
 
         let credentials = this.getCredentials();
-        if(!credentials){
+        if (!credentials) {
+
+            //Error:
+            callback(new ioType.IOTypes.Error("No credentials found for IBM CCF!"));
             console.log("No credentials found for IBM CCF!");
             return;
         }
 
-        if (!req.input.value) {
+        if (!input.paragraph) {
             return;
         }
         let data = {
             id: credentials.id,
             apikey: credentials.apikey,
-            data: req.input.value,
+            data: input.paragraph,
         };
 
         let options = {
@@ -106,34 +117,37 @@ class ContentClarifier extends base.EngineBase {
         let request = require('request');
         let component = this;
         request(options, function (err, res, body) {
-            try{
+            try {
                 let replacements = component.parseResponse(body.simplified);
                 let simplified = component.replaceWordsWithHighlights(body.simplified, replacements);
-                req.result = new ioType.IOTypes.Paragraph(component.repairChars(simplified));
-                req.type = "cloudRequestResult";
-                req.outputType = ioType.IOTypes.Paragraph.className;
-                webSocketConnection.sendMessage(req);
-            }catch (error){
-                console.log(error);
+                let result = new ioType.IOTypes.Paragraph(component.repairChars(simplified));
+                callback(result);
+
+            } catch (error) {
+                //Error:
+                callback(new ioType.IOTypes.Error("Error in creating request"));
             }
         });
     }
 
-    contextualSimplifyAAC(webSocketConnection, req, config) {
+    contextualSimplifyAAC(callback, input, config, profile, constants) {
         let credentials = this.getCredentials();
-        if(!credentials){
-            console.log("No credentials found for IBM CCF!");
+        if (!credentials) {
+            //Error:
+            callback(new ioType.IOTypes.Error("No credentials found for IBM CCF!"));
             return;
         }
 
-        if (!req.input.value) {
+        if (!input.paragraph) {
+            //Error:
+            callback(new ioType.IOTypes.Error("No input found"));
             return;
         }
 
         let data = {
             id: credentials.id,
             apikey: credentials.apikey,
-            data: req.input.value,
+            data: input.paragraph,
             options: {
                 "enhanceContentMode": 3,
 
@@ -155,15 +169,15 @@ class ContentClarifier extends base.EngineBase {
         request(options, function (err, res, body) {
 
 
-            try{
+            try {
                 let replacements = component.parseResponseAAC(body.simplified);
                 let simplified = component.replaceWordsWithAAC(body.simplified, replacements);
-                req.result = new ioType.IOTypes.Paragraph(component.repairCharsAAC(simplified));
-                req.type = "cloudRequestResult";
-                req.outputType = ioType.IOTypes.Paragraph.className;
-                webSocketConnection.sendMessage(req);
-            }catch (error){
-                console.log(error);
+
+                let result = new ioType.IOTypes.Paragraph(component.repairCharsAAC(simplified));
+                callback(result);
+            } catch (error) {
+                //Error:
+                callback(new ioType.IOTypes.Error("Error in creating request"));
             }
 
 

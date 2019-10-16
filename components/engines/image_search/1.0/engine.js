@@ -20,7 +20,11 @@ class ImageSearch extends base.EngineBase {
                 name: "Image Search",
                 description: "Simple image search using Google Image Search",
                 defaultIcon: "assets/image-search.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: [],
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Word.className,
                     "name": "Input word",
@@ -42,12 +46,12 @@ class ImageSearch extends base.EngineBase {
         return {};
     }
 
-    getImage(webSocketConnection, req, config) {
+    getImage(callback, input, config,profile,constants) {
 
         let https = require('follow-redirects').https;
         let optionsget = {
             host : 'www.googleapis.com',
-            path : '/customsearch/v1?key=AIzaSyB20eOh1pzH6686EvT4FvXkFzyXVLbA5tE&cx=006907531626359346862:z3verovlhta&q='+encodeURIComponent(req.input.value)+'&searchType=image&alt=json&num=10&start=1&imgType=clipart',
+            path : '/customsearch/v1?key=AIzaSyB20eOh1pzH6686EvT4FvXkFzyXVLbA5tE&cx=006907531626359346862:z3verovlhta&q='+encodeURIComponent(input.word)+'&searchType=image&alt=json&num=10&start=1&imgType=clipart',
             method : 'GET',
 
         };
@@ -66,26 +70,27 @@ class ImageSearch extends base.EngineBase {
 
             res.on('end', function () {
                 try {
-                    let result =  JSON.parse(unescape(allData));
+                    let imgSearchResult =  JSON.parse(unescape(allData));
                     let ioType = rootRequire("core/IOtypes/iotypes");
-                    let img = new ioType.IOTypes.ImageIOType("");
-                    if(result.items[0].link !== null){
-                        img.url = result.items[0].link;
-                        img.alt = result.items[0].title;
-                        img.title = result.items[0].title;
+                    let result = new ioType.IOTypes.ImageIOType("");
+                    if(imgSearchResult.items[0].link !== null){
+                        result.url = imgSearchResult.items[0].link;
+                        result.alt = imgSearchResult.items[0].title;
+                        result.title = imgSearchResult.items[0].title;
                     }
-                    req.result = img;
-                    res.outputType = ioType.IOTypes.ImageIOType.className;
-                    req.type = "cloudRequestResult";
-                    webSocketConnection.sendMessage(req);
+                   callback(result);
                 }catch(error){
-                    console.log("errors occured while getting images");
+                    //Error:
+                    callback(new ioType.IOTypes.Error("Error retrieving images"));
+
                 }
             });
         });
         reqGet.end();
         reqGet.on('error', function(e) {
             console.error(e);
+            //Error:
+            callback(new ioType.IOTypes.Error("Error retrieving images"));
         });
 
 

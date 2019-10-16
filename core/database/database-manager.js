@@ -60,8 +60,7 @@ let DatabaseManager = {
         });
     },
 
-
-    createOrSyncTablesFromSchema: async function (schema, tableName) {
+        createOrSyncTablesFromSchema: async function (schema, tableName) {
 
         let errorMsg = null;
 
@@ -238,21 +237,21 @@ async function createTablesFromSchema(tableName, schema, referencingTableName, t
 
     try {
         let properties = Object.keys(schema.properties);
-        let columnDescriptions = [];
+        let columnDescriptions = {};
         for (let i = 0; i < properties.length; i++) {
 
             switch (schema.properties[properties[i]].type) {
                 case "boolean":
-                    columnDescriptions.push(activeDatabase.getColumnDescriptionForBool(properties[i], schema.properties[properties[i]]));
+                    columnDescriptions[properties[i]] = activeDatabase.getColumnDescriptionForBool(properties[i], schema.properties[properties[i]]);
                     break;
                 case "string":
-                    columnDescriptions.push(activeDatabase.getColumnDescriptionForString(properties[i], schema.properties[properties[i]]));
+                    columnDescriptions[properties[i]] = activeDatabase.getColumnDescriptionForString(properties[i], schema.properties[properties[i]])
                     break;
                 case "integer":
-                    columnDescriptions.push(activeDatabase.getColumnDescriptionForInteger(properties[i], schema.properties[properties[i]]));
+                    columnDescriptions[properties[i]] = activeDatabase.getColumnDescriptionForInteger(properties[i], schema.properties[properties[i]])
                     break;
                 case "number":
-                    columnDescriptions.push(activeDatabase.getColumnDescriptionForNumber(properties[i], schema.properties[properties[i]]));
+                    columnDescriptions[properties[i]] = activeDatabase.getColumnDescriptionForNumber(properties[i], schema.properties[properties[i]])
                     break;
                 case "array":
                     console.log("array");
@@ -260,19 +259,76 @@ async function createTablesFromSchema(tableName, schema, referencingTableName, t
                 case "object":
                     console.log("object");
                     break;
-
-                default:{
+                default:
                     errorMsg =  new Error("Unsupported type:" + schema.properties[properties[i]].type);
                     break;
-                }
-
             }
-
         }
 
-        if(!errorMsg){
-            let sqlCommand = activeDatabase.getTableDescription(tableName, columnDescriptions, schema.unique);
-            let result = await activeDatabase.executeSQL(sqlCommand);
+        if (!errorMsg) {
+            let result = null;
+            if (! await activeDatabase.tableExists(tableName)) {
+                let sqlCommand = activeDatabase.getTableDescription(tableName, columnDescriptions, schema.unique);
+                result = await activeDatabase.executeSQL(sqlCommand);
+            } else {
+                // Check if any columns must be removed
+                result = await activeDatabase.executeSQL(activeDatabase.getTableColumnDescriptions(tableName));
+                for (let j=0; j<result.result.length; j++) {
+                    let field_name = result.result[j].Field;
+                    let drop_column = false;
+                    if (field_name !== "id") {
+                        let found = false;
+                        for (let k = 0; k < properties.length; k++) {
+                            if (properties[k] === field_name) {
+                                found = true;
+                                if ('type' in schema.properties[properties[k]]) {
+                                    let compatible = await activeDatabase.areColumnTypesCompatible(
+                                                                            result.result[j].Type,
+                                                                            schema.properties[properties[k]]['type']);
+                                    drop_column = !compatible;
+                                }
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            drop_column = true;
+                        }
+                        if (drop_column) {
+                            let col_drop_sql = activeDatabase.dropColumnDescription(tableName, field_name);
+                            result = await activeDatabase.executeSQL(col_drop_sql)
+                        }
+                    }
+                }
+
+                for (let col in columnDescriptions) {
+
+                    // Check if any new columns must be added
+                    if (! await activeDatabase.columnExists(tableName, col)) {
+                        let sqlCommand = activeDatabase.getColumnDescription(tableName, columnDescriptions[col]);
+                        result = await activeDatabase.executeSQL(sqlCommand);
+                    }
+
+                    // Check for missing default values
+                    let col_prop = schema.properties[col];
+                    if (typeof col_prop.format === "undefined") {
+                        let def_val = null;
+                        if ('default' in col_prop) {
+                            def_val = col_prop['default'];
+                        }
+                        let col_type = null;
+                        if ('type' in col_prop) {
+                            col_type = col_prop['type'];
+                        }
+                        if (def_val && col_type) {
+                            let sqlCommand = activeDatabase.getUpdateNullValues(tableName, col, def_val, col_type);
+                            if (sqlCommand) {
+                                result = await activeDatabase.executeSQL(sqlCommand);
+                            }
+                        }
+                    }
+
+                }
+            }
         }
 
     } catch (error) {

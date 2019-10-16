@@ -30,8 +30,6 @@ class MysqlConnection extends DatabaseConnectionBase{
 
             });
 
-            //KEEP DATABASE CONNECTION ALIVE
-            //
             setInterval(function () {
                 connection.query('SELECT 1',function (error, results, fields) {
                     if (error) throw error;
@@ -40,7 +38,6 @@ class MysqlConnection extends DatabaseConnectionBase{
             }, 5000);
 
         });
-
 
     }
 
@@ -236,15 +233,23 @@ class MysqlConnection extends DatabaseConnectionBase{
     }
 
 
+    async tableExists(tableName) {
+        let result = await this.executeSQL("SHOW TABLES LIKE '" + tableName + "'");
+        return result.result.length > 0
+    }
 
+    async columnExists(tableName, columnName) {
+        let result = await this.executeSQL("SHOW COLUMNS FROM " + tableName + " LIKE '"+ columnName +"'");
+        return result.result.length > 0
+    }
 
     getTableDescription(tableName,columnDescription,uniqueKeys){
 
         let description = "CREATE TABLE IF NOT EXISTS "+tableName+" (";
         description+="id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY";
     //    description+="user_id INT NOT NULL";
-        for(let i=0; i < columnDescription.length; i++){
-            description+=","+columnDescription[i];
+        for(let col in columnDescription){
+            description+="," + columnDescription[col];
         }
 
         if (uniqueKeys !== undefined && uniqueKeys.length > 0) {
@@ -258,7 +263,6 @@ class MysqlConnection extends DatabaseConnectionBase{
 
 
     }
-
 
     getColumnDescriptionForString(fieldname,specification){
 
@@ -298,6 +302,41 @@ class MysqlConnection extends DatabaseConnectionBase{
         }
     }
 
+    getTableColumnDescriptions(tableName) {
+        return "SHOW FULL columns FROM " + tableName;
+    }
+
+    getColumnDescription(tableName,columnDescription){
+        let desc_sql = "ALTER TABLE " + tableName;
+        desc_sql += " ADD COLUMN " + columnDescription;
+        return desc_sql;
+    }
+
+    dropColumnDescription(tableName, columnName) {
+        return "ALTER TABLE " + tableName + " DROP COLUMN " + columnName;
+    }
+
+    getTableColumnDefaultValue(tableName, columnName) {
+        return "SELECT DEFAULT(" + columnName + ") FROM (SELECT 1) AS dummy LEFT JOIN " + tableName + " ON True LIMIT 1"
+    }
+
+    getUpdateNullValues(tableName, columnName, defaultValue, columnType) {
+        let sql_value = "";
+        if (columnType === "string") {
+            sql_value = "'" + defaultValue + "'";
+        } else if (columnType === "boolean") {
+            if (defaultValue === true || defaultValue === '1' || defaultValue === 'true') {
+                sql_value = 'true';
+            } else {
+                sql_value = 'false';
+            }
+        } else {
+            return "";
+        }
+        return "UPDATE " + tableName + " SET " + columnName + " = " + sql_value + " WHERE " + columnName +
+            " IS NULL"
+    }
+
     getColumnDescriptionForNumber(fieldname,specification){
         return fieldname+" FLOAT"+getDefaultValueOfSpecification(specification);
     }
@@ -312,8 +351,38 @@ class MysqlConnection extends DatabaseConnectionBase{
         return fieldname+" BOOLEAN";
     }
 
+    async areColumnTypesCompatible(type1, type2) {
+        let compatible = false;
+        let type1_norm = type1.toLowerCase();
+        let type2_norm = type2.toLowerCase();
+        if (type1_norm !== type2_norm) {
+            let str_types = ["string", "varchar", "text", "char", "binary", "varbinary", "tinyblob", "blob",
+                "mediumblob", "longblob", "enum", "row"];
+            let int_types = ["int(", "integer", "tinyint", "smallint", "mediumint", "bigint", "auto_increment"];
+            let number_types = ["float", "dec", "numeric", "fixed", "double", "real"];
+            let bool_types = ["boolean", "tinyint(1)", "bit"];
+            let date_types = ["date", "time", "year"];
+            let all_types = [str_types, int_types, number_types, bool_types, date_types];
+            for (let i=0; i<all_types.length; i++) {
+                compatible = all_types[i].some(x => type1_norm.startsWith(x)) &&
+                    all_types[i].some(x => type2_norm.startsWith(x));
+                if (compatible) {
+                    break;
+                }
+            }
+        } else {
+            compatible = true;
+        }
+        return compatible
+    }
+
 
     getFormattedValue(columnValue){
+
+        if(!columnValue.value){
+            return "NULL";
+        }
+
         switch(columnValue.type){
             case "boolean":{
                 return columnValue.value;

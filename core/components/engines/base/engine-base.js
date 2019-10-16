@@ -18,6 +18,8 @@ class EngineBase {
         return {};
     }
 
+
+
     getDefaultData(){
         let defaults = require('json-schema-defaults');
         return defaults(this.getDataSchema());
@@ -47,14 +49,27 @@ class EngineBase {
 
 
         for (let i = 0; i < functions.length; i++) {
+
+            let bundle = null;
+            if ('bundle' in functions[i]) {
+                bundle = functions[i].bundle;
+            }
+
             if(functions[i].type === engineFunction.FuntionType.REMOTE){
 
                 let valid = ajv.validate(engineFunction.RemoteFunctionSchema, functions[i]);
                 if (!valid){
-                    console.log(ajv.errorsText());
+                    throw {
+                        name: "Exception",
+                        message:ajv.errorsText(),
+                        toString: function() {
+                            return this.name + ": " + this.message;
+                        }
+                    };
+
                 }else{
 
-                    let remoteFunction = new engineFunction.RemoteFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].entryPoint);
+                    let remoteFunction = new engineFunction.RemoteFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].entryPoint, bundle);
                     remoteFunction.validateProperties();
                     this.functions.push(remoteFunction);
                 }
@@ -66,7 +81,7 @@ class EngineBase {
                     console.log(ajv.errorsText());
                 }else{
 
-                    let localFunction = new engineFunction.LocalFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].javaScripts,functions[i].styleSheets,functions[i].entryPoint);
+                    let localFunction = new engineFunction.LocalFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].javaScripts,functions[i].styleSheets,functions[i].entryPoint, bundle);
                     localFunction.validateProperties();
                     this.functions.push(localFunction);
                 }
@@ -119,6 +134,14 @@ class EngineBase {
 
 }
 
+class FunctionBundle {
+    constructor(title, description) {
+        this.title = title;
+        this.description = description;
+    }
+}
+
+module.exports.FunctionBundle = FunctionBundle;
 module.exports.EngineBase = EngineBase;
 module.exports.EngineFunction = engineFunction;
 module.exports.EngineContaner = engineContainer;

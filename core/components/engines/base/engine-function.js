@@ -1,5 +1,7 @@
 'use strict';
+const localeService = require("./../../../i18n/locale-service");
 
+let Job = require("./job");
 const InputType = {
     WORD: "word",
     SENTENCE: "sentence",
@@ -27,9 +29,18 @@ const FunctionType = {
     LOCAL: "local"
 };
 
+const FunctionCategory = {
+    SPEECH_SYNTHESIS: "SPEECH_SYNTHESIS",
+    DICTIONARY : "DICTIONARY",
+    NLP :"NLP",
+    TOOLS : "TOOLS",
+
+
+};
+
 
 class Function {
-    constructor(engine, id ,name, description, inputTypes, outputTypes, defaultIcon) {
+    constructor(engine, id ,name, description, inputTypes, outputTypes, defaultIcon, bundle=null) {
         this.engine = engine;
         this.id = id;
         this.name = name;
@@ -37,8 +48,9 @@ class Function {
         this.inputTypes = inputTypes;
         this.outputTypes = outputTypes;
         this.defaultIcon = defaultIcon;
-
+        this.bundle = bundle;
     }
+
 
     validateProperties() {
         let fs = require('fs');
@@ -67,13 +79,13 @@ class Function {
 
     }
 
-    getFunctionInformation() {
+    getFunctionInformation(loc) {
         return {
             id: this.id,
             engine: this.engine.getEngineIdentifier(),
             debugMode: this.engine.debugMode,
-            name: this.name,
-            description: this.description,
+            name: localeService.translateToLanguage(this.name, loc),
+            description: localeService.translateToLanguage(this.description, loc),
             inputTypes: this.inputTypes,
             outputTypes: this.outputTypes,
             defaultIcon: this.defaultIcon,
@@ -87,8 +99,8 @@ class Function {
 }
 
 class RemoteFunction extends Function {
-    constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, entryPoint) {
-        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon);
+    constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, entryPoint, bundle=null) {
+        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon, bundle);
 
         this.type = "RemoteFunction";
         this.entryPoint = entryPoint;
@@ -105,8 +117,8 @@ class RemoteFunction extends Function {
 
     }
 
-    getFunctionInformation() {
-        let functionInfo = super.getFunctionInformation();
+    getFunctionInformation(loc) {
+        let functionInfo = super.getFunctionInformation(loc);
         functionInfo.type = this.type;
         functionInfo.entryPoint = this.entryPoint;
         return functionInfo;
@@ -117,8 +129,9 @@ class RemoteFunction extends Function {
 
 
 class LocalFunction extends Function {
-    constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, javaScripts, styleSheets, entryPoint) {
-        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon);
+    constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, javaScripts, styleSheets,
+                entryPoint, bundle=null) {
+        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon, bundle);
 
         this.type = "LocalFunction";
         this.javaScripts = javaScripts;
@@ -199,8 +212,8 @@ class LocalFunction extends Function {
 
     }
 
-    getFunctionInformation() {
-        let functionInfo = super.getFunctionInformation();
+    getFunctionInformation(loc) {
+        let functionInfo = super.getFunctionInformation(loc);
         functionInfo.type = this.type;
         functionInfo.entryPoint = this.entryPoint;
         functionInfo.remoteAssetDirectory =  this.remoteAssetDirectory;
@@ -236,12 +249,133 @@ class LocalFunction extends Function {
 
 }
 
+class CombinedFunction {
+    constructor(id, functions, connections, name, description,defaultIcon) {
+        this.type = "CombinedFunction";
+        this.functions = functions;
+        this.connections = connections;
 
-let schemas = require("./schemas");
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.inputTypes = [];
+        this.outputTypes = [];
+        this.defaultIcon = defaultIcon;
+        this.jobs =  [];
+        this.startConnections = null;
+        this.endConnections = null;
+
+        this.createJobs();
+        this.defineInputOutputTypes();
+    }
+
+    createJobs(){
+        let core = require("../../../core");
+        for(let i=0; i < this.functions.length; i++) {
+
+            if(this.functions[i].functionInfo.type !== "staticFunction"){
+
+                let connections = this.getConnectionsForFunction(this.functions[i]);
+                let engine = core.getEngine(this.functions[i].functionInfo.engineID, this.functions[i].functionInfo.engineVersison);
+                let curFunction = engine.getFunction(this.functions[i].functionInfo.functionID);
+
+
+                this.jobs.push(new Job(this.functions[i].id, curFunction,connections,engine.getDefaultData()));
+            }else{
+
+                if(this.functions[i].functionInfo.functionID === "function_output"){
+
+                    let connection = this.getConnectionsForFunction(this.functions[i]);
+                    this.endConnections = connection.outputs;
+
+                }else if(this.functions[i].functionInfo.functionID === "function_input"){
+                    let connection = this.getConnectionsForFunction(this.functions[i]);
+                    this.startConnections = connection.inputs;
+
+                }
+
+            }
+        }
+
+    }
+
+    defineInputOutputTypes(){
+
+        for(let i=0; i < this.startConnections.length; i++) {
+            for(let j=0; j < this.jobs.length; j++){
+                if (this.startConnections[i].functionID === this.jobs[j].functionID) {
+
+                    this.inputTypes = this.inputTypes.concat(this.jobs[j].engineFunction.inputTypes[this.startConnections[i].portID]);
+                }
+            }
+        }
+
+        for(let i=0; i < this.endConnections.length; i++) {
+            for(let j=0; j < this.jobs.length; j++){
+                if (this.endConnections[i].functionID === this.jobs[j].functionID) {
+
+                    this.outputTypes = this.outputTypes.concat(this.jobs[j].engineFunction.outputTypes[this.endConnections[i].portID])
+                }
+            }
+        }
+
+
+    }
+
+    getConnectionsForFunction(func){
+        let inputConnections = [];
+        let outputConnections = [];
+        for(let i=0; i < this.connections.length; i++){
+            if(this.connections[i].outputPort.functionID === func.id){
+                inputConnections.push(this.connections[i].inputPort);
+            }
+
+            if(this.connections[i].inputPort.functionID === func.id){
+                outputConnections.push(this.connections[i].outputPort);
+            }
+
+        }
+
+        return {
+            inputs : inputConnections,
+            outputs: outputConnections,
+        }
+
+
+    }
+    getFunctionInformation() {
+        return {
+            id:this.id,
+            name: this.name,
+            type: this.type,
+            description: this.description,
+            inputTypes: this.inputTypes,
+            outputTypes: this.outputTypes,
+            defaultIcon: this.defaultIcon,
+        };
+
+
+    }
+   //
+    executeFunction(callback, input, profile,constants){
+
+        let jobManager = require("./job-manager");
+        let newJobManager = new jobManager(this);
+        newJobManager.executeJobs(callback, input, profile,constants);
+
+    }
+}
+
+
 module.exports.LocalFunction = LocalFunction;
 module.exports.RemoteFunction = RemoteFunction;
+module.exports.CombinedFunction = CombinedFunction;
+
+
+let schemas = require("./schemas");
 module.exports.LocalFunctionSchema = schemas.LocalFunctionSchema;
 module.exports.RemoteFunctionSchema = schemas.RemoteFunctionSchema;
 module.exports.InputType = InputType;
 module.exports.OutputType = OutputType;
 module.exports.FuntionType = FunctionType;
+module.exports.FunctionCategory = FunctionCategory;

@@ -6,7 +6,8 @@
 
 .easy-reading-tooltip .easy-reading-tooltip-text {
     visibility: hidden;
-    /*width: 120px; */
+    min-width: 200px;
+    max-width: 320px;
     height:auto;
     background-color: #ffffff;
     color: #000000;

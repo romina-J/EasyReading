@@ -12,6 +12,20 @@ class Dictionary extends base.EngineBase {
 
     }
 
+    getConfigurationDataOptions() {
+        return [{
+                type: "singleSelectList",
+                dataSchemaProerty: ["language"],
+                configurableDataOption: [
+                    {"label" : "English","value": "en"},
+                    {"label" : "French","value": "fr"},
+                    {"label" : "German","value": "de"},
+                    {"label" : "Spanish","value": "es"},
+                    {"label" : "Swedish","value": "se"}
+                ]
+            }]
+    }
+
     getDataSchema() {
         return {
             "type": "object",
@@ -40,10 +54,14 @@ class Dictionary extends base.EngineBase {
         return [
             {
                 id: "simple_dict",
-                name: "Dictionary",
+                name: "Globse Dictionary",
                 description: "A dictionary using globse.com",
                 defaultIcon: "assets/dictionary.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: [],
+                visibleInConfiguration: false,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.DICTIONARY,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Word.className,
                     "name": "Input word",
@@ -67,12 +85,16 @@ class Dictionary extends base.EngineBase {
         ];
     }
 
-    dictionary(webSocketConnection, req, config) {
+    dictionary(callback, input, config,profile,constants) {
+
+        alert("dictionary started. config.language= "+config.language);
+        console.log("dictionary started. config.language= "+config.language);
+
 
         let https = require('follow-redirects').https;
         let options = {
             host: 'glosbe.com',
-            path: '/gapi/translate?from=' + encodeURIComponent(req.input.lang.split('-')[0]) + '&dest='+encodeURIComponent(config.language)+'&format=json&phrase=' + encodeURIComponent(req.input.value) + '&pretty=true',
+            path: '/gapi_v0_1/translate?from=' + encodeURIComponent(input.lang.split('-')[0]) + '&dest='+encodeURIComponent(config.language)+'&format=json&phrase=' + encodeURIComponent(input.value) + '&pretty=true',
             method: 'GET',
 
         };
@@ -112,16 +134,13 @@ class Dictionary extends base.EngineBase {
                     }else{
                         wordText = "No results found.";
                     }
-                    req.result = new ioType.IOTypes.Word(wordText);
-                    res.outputType = ioType.IOTypes.Word.className;
-                    req.type = "cloudRequestResult";
-                    webSocketConnection.sendMessage(req);
+                    let result = new ioType.IOTypes.Word(wordText,config.language);
+                    callback(result);
+
                 } catch (e) {
                     console.error(e.message);
-                    req.result = new ioType.IOTypes.Word("Error handling request.");
-                    res.outputType = ioType.IOTypes.Word.className;
-                    req.type = "cloudRequestResult";
-                    webSocketConnection.sendMessage(req);
+                    //Error:
+                    callback(new ioType.IOTypes.Error("Error handling request"));
                 }
             });
 
@@ -129,11 +148,9 @@ class Dictionary extends base.EngineBase {
 
         reqGet.end();
         reqGet.on('error', function (e) {
-            console.error(e);
-            req.result = new ioType.IOTypes.Word("Error handling request.");
-            res.outputType = ioType.IOTypes.Word.className;
-            req.type = "cloudRequestResult";
-            webSocketConnection.sendMessage(req);
+            console.error(e.message);
+            //Error:
+            callback(new ioType.IOTypes.Error("Error handling request"));
         });
 
 

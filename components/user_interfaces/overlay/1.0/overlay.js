@@ -22,26 +22,22 @@ class OverlayUserInterface extends UserInterfaceBase{
             "properties": {
                 "startPositionXInPercent": {
                     "type": "integer",
-                    "title": "Dialog start position x in percent",
+                    "title" : "X Start Position",
+                    "description": "Dialog start position x in percent",
                     "default": 20,
+                    "minimum": 0,
+                    "maximum": 100,
 
                 },
                 "startPositionYInPercent": {
                     "type": "integer",
-                    "title": "Dialog start position y in percent",
+                    "title" : "Y Start Position",
+                    "description": "Dialog start position Y in percent",
                     "default": 20,
+                    "minimum": 0,
+                    "maximum": 100,
                 },
-                "maxWidthInPercent": {
-                    "type": "integer",
-                    "title": "Dialog max width in percent",
-                    "default": 30,
 
-                },
-                "maxHeightInPercent": {
-                    "type": "integer",
-                    "title": "Dialog max height in percent",
-                    "default": 15,
-                }
             }
         }
     }

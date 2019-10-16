@@ -12,7 +12,7 @@ $callout-background: $white !default;
 
 /// Default fade value for callout backgrounds.
 /// @type Number
-$callout-background-fade: 85% !default;
+$callout-background-fade: % !default;
 
 /// Default border style for callouts.
 /// @type List
@@ -44,21 +44,35 @@ $callout-link-tint: 30% !default;
 
 /// Adds basic styles for a callout, including padding and margin.
 @mixin callout-base() {
-  position: relative;
-  margin: $callout-margin;
-  padding: $callout-padding;
+    position: relative;
+    margin: $callout-margin;
+    padding: 0;
+    border: $callout-border;
+    border-radius: $callout-radius;
+    // Respect the padding, fool.
+    > :first-child {
+        margin-top: 0;
+    }
 
-  border: $callout-border;
-  border-radius: $callout-radius;
+    > :last-child {
+        margin-bottom: 0;
+    }
 
-  // Respect the padding, fool.
-  > :first-child {
-    margin-top: 0;
-  }
+    p {
+        padding: $callout-padding;
+        margin: 0;
+    }
 
-  > :last-child {
-    margin-bottom: 0;
-  }
+    .close-button {
+        right: 0;
+        top: 0;
+        font-size: 2em;
+        border: 0;
+        &.small {
+            right: 0;
+            top: 0;
+        }
+    }
 }
 
 /// Generate quick styles for a callout using a single color as a baseline.

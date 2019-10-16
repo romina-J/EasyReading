@@ -1,92 +1,95 @@
 const core = rootRequire("core/core");
 const databaseManager = core.databaseManager;
 const profileBuilder = rootRequire("core/profile/profile-builder");
+const profileRepo = require("../../repository/profileRepo");
 
-const loadProfileWithNewEngineConfig = (engineConfigObjs, profile) => {
+function loadFunctions(userInterfaceConfig, engineFunctionConfigObjects) {
+    for (const engineFunction of engineFunctionConfigObjects) {
+        const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(engineFunction.engineId, engineFunction.engineVersion, core.getUserInterface(userInterfaceConfig.source.id));
+        const defaultConfigurationForEngineFunction = defaultConfigurationForEngineFunctions.filter(func => func.function.source.id === engineFunction.id);
 
-    //const core = rootRequire("core/core");
-    const overlay = core.getUserInterface("overlay", "1.0");
-    const overlayConfig = overlay.getDefaultConfiguration();
- 
-    for (const engine of engineConfigObjs) {
-       const defaultConfigurationForEngine = core.createDefaultConfigurationForEngine(engine.id, engine.version, overlay);
-       if (defaultConfigurationForEngine.length > 0 &&
-          defaultConfigurationForEngine[0].function.configuration) {
-          const engineConfigProperties = Object.keys(engine.config[0]).filter(property => property !== "id");
-          for (const engineConfigProperty of engineConfigProperties)
-             defaultConfigurationForEngine[0].function.configuration[engineConfigProperty] = engine.config[0][engineConfigProperty];
-       }
-       overlayConfig.tools = overlayConfig.tools.concat(defaultConfigurationForEngine);
+        if (defaultConfigurationForEngineFunction.length > 0 && defaultConfigurationForEngineFunction[0].function.configuration) {
+            const engineConfigProperties = Object.keys(engineFunction.config[0]).filter(property => property !== "id");
+
+            for (const engineConfigProperty of engineConfigProperties) {
+                defaultConfigurationForEngineFunction[0].function.configuration[engineConfigProperty] = engineFunction.config[0][engineConfigProperty];
+            }
+        }
+        userInterfaceConfig.tools = userInterfaceConfig.tools.concat(defaultConfigurationForEngineFunction);
+
     }
- 
-    profile.userInterfaces.push(overlayConfig);
- 
-    let tabSlideOut = core.getUserInterface("tab-slide-out", "1.0");
-    let tabSlideOutConfig = tabSlideOut.getDefaultConfiguration();
- 
-    for (const engine of engineConfigObjs) {
-       const defaultConfigurationForEngine = core.createDefaultConfigurationForEngine(engine.id, engine.version, tabSlideOut);
-       if (defaultConfigurationForEngine.length > 0 &&
-          defaultConfigurationForEngine[0].function.configuration) {
-          const engineConfigProperties = Object.keys(engine.config[0]).filter(property => property !== "id");
-          for (const engineConfigProperty of engineConfigProperties)
-             defaultConfigurationForEngine[0].function.configuration[engineConfigProperty] = engine.config[0][engineConfigProperty];
-       }
-       tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(defaultConfigurationForEngine);
-    }
- 
-    profile.userInterfaces.push(tabSlideOutConfig);
- 
-    profile.debugMode = core.debugMode;
-    profile.userLoaded = true;
- 
-    return profile;
- };
- 
 
+}
 
 module.exports = {
-
-    updateEngineConfiguratoin : async (req, res) => {
-
-        //console.log("updateEngineConfiguratoin");
-        if (!req.body || (!req.body.gid && !req.user.googleID) || !req.body.engines) {
-           return res.sendStatus(401).end()
+    updateEngineConfiguratoin: async (req, res) => {
+        if (!req.body || (!req.body.id && !req.user.id) || !req.body.engineFunctions) {
+            return res.sendStatus(401).end()
         }
 
-        let profileClass = require("../../../core/profile/profile");
-        let profile = new profileClass();
+
         try {
-            let googleId = req.user.googleID;
-            if(req.body.gid){
-                googleId = req.body.gid;
+            let id = req.user.id;
+
+            if (req.body.id) {
+                id = req.body.id;
             }
 
-           const loadProfileRequest = databaseManager.createRequest("profile").where("googleID", "=", googleId);
-           const loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
-     
-           if (loadProfileRequestResult.result.length > 0) {
-              profile.id = loadProfileRequestResult.result[0].id;
-              await profileBuilder.loadActiveUserInterfaces(profile);
-     
-              // reset userInterfaces
-              profile.userInterfaces = [];
-     
-              const engineConfigObjs = JSON.parse(req.body.engines);
-              const enabledEngineConfigObjs = engineConfigObjs.filter(config => config.enable);
-     
-              loadProfileWithNewEngineConfig(enabledEngineConfigObjs, profile);
+            let profileClass = require("../../../core/profile/profile");
+            let profile = new profileClass();
 
-              await profileBuilder.saveUserInterfaceConfiguration(profile, true);
+            const loadProfileRequest = databaseManager.createRequest("profile").where("id", "=", id);
+            const loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
 
-              let network = require("../../../core/network/network");
-              network.updateProfileForConnectedClients(profile);
+            let loadProfileRoleRequest = databaseManager.createRequest("role").where("user_id", "=", id);
+            let loadProfileRoleRequestResult = await databaseManager.executeRequest(loadProfileRoleRequest);
 
-           }
+            profile.roles = [];
+
+            for (let i = 0; i < loadProfileRoleRequestResult.result.length; i++) {
+                profile.roles.push(loadProfileRoleRequestResult.result[i].role);
+            }
+
+            if (loadProfileRequestResult.result.length > 0) {
+                profile.id = loadProfileRequestResult.result[0].id;
+                profile.type = loadProfileRequestResult.result[0].type;
+                profile.locale = loadProfileRequestResult.result[0].locale;
+
+                await profileBuilder.loadActiveUserInterfaces(profile);
+
+                // reset userInterfaces tools
+
+                for (let i = 0; i < profile.userInterfaces.length; i++) {
+                    profile.userInterfaces[i].tools = [];
+                }
+
+                //Hack!
+                if (profile.userInterfaces.length > 1) {
+                    console.log("This should never happen...")
+                    profile.userInterfaces.length = 1;
+                }
+
+
+                const engineFunctionConfigObjs = JSON.parse(req.body.engineFunctions);
+                const enabledEngineFunctionConfigObjs = engineFunctionConfigObjs.filter(config => config.enable);
+
+
+                profile.debugMode = core.debugMode;
+                profile.userLoaded = true;
+
+                loadFunctions(profile.userInterfaces[0], enabledEngineFunctionConfigObjs);
+                // loadProfileWithNewEngineConfig(enabledEngineFunctionConfigObjs, profile);
+
+                await profileBuilder.saveUserInterfaceConfiguration(profile, true);
+
+                let network = require("../../../core/network/network");
+                network.updateProfileForConnectedClients(profile);
+            }
         } catch (error) {
-           return res.sendStatus(500).end();
+            console.log(error);
+            return res.sendStatus(500).end();
         }
-     
+
         return res.sendStatus(200).end()
-     }
+    }
 }
