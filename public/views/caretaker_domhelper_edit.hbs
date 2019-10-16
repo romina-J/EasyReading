@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>{{page_domhelper_title}}</title>
+    {{> head }}
+</head>
+
+<body>
+<div class="row wrapper">
+
+    <div class="medium-3 columns">
+        <nav>
+            {{> nav_backend }}
+            {{> nav_user_info }}
+        </nav>
+
+    </div>
+
+    <div class="medium-9 columns">
+
+        <main>
+
+            <div class="row columns">
+
+                <h1>{{page_domhelper_title}}</h1>
+
+                {{#if domHelper}}
+
+                    <p>{{page_domhelper_edit_intro_text}}</p>
+
+                    <form method="POST" action="custom-paragraph">
+                        <fieldset class="fieldset">
+                            <legend>
+                                {{#if domHelper.title}}
+                                    {{capitalizeWords domHelper.title }}
+                                {{else}}
+                                    {{ element_fieldset_no_title }}
+                                {{/if}}
+                            </legend>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <label>{{ element_title_label }}
+                                        <input type="text" value="{{ domHelper.title }}"
+                                               class="dom-helper-title" id="dom-helper-title-{{domHelper.id}}"
+                                               name="title-{{domHelper.id}}" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <label>{{ element_desc_label }}
+                                        <input type="text" value="{{ domHelper.description }}"
+                                               class="dom-helper-title" id="dom-helper-desc-{{domHelper.id}}"
+                                               name="description-{{domHelper.id}}" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <label>{{ url_pattern_label }}
+                                        <input type="text" value="{{ domHelper.url_pattern }}"
+                                               class="url-pattern" id="url-pattern-{{domHelper.id}}"
+                                               name="url_pattern-{{domHelper.id}}"/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <label>{{ element_id_pattern_label }}
+                                        <input type="text" value="{{ domHelper.element_id_pattern }}"
+                                               class="id-pattern" id="id-pattern-{{domHelper.id}}"
+                                               name="element_id_pattern-{{domHelper.id}}"/>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="large-12 columns">
+                                    <label>{{ element_content_label }}
+                                        <textarea class="dom-content" id="dom-content-{{domHelper.id}}"
+                                                  name="element_content-{{domHelper.id}}">{{ domHelper.element_content }}</textarea>
+                                    </label>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <div class="text-left">
+                            <input class="btn btn-primary" type="submit" value="{{ Save }}" />
+                        </div>
+                    </form>
+
+                {{else}}
+
+                    <p>{{page_domhelper_new_intro_text}}</p>
+
+                    <form method="POST" action="add-custom-paragraph">
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>{{ element_title_label }}
+                                    <input type="text" value=""
+                                           class="dom-helper-title" id="dom-helper-title"
+                                           name="title" />
+                                </label>about
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>{{ element_desc_label }}
+                                    <input type="text" value=""
+                                           class="dom-helper-title" id="dom-helper-desc"
+                                           name="description" />
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>{{ url_pattern_label }}
+                                    <input type="text" value=""
+                                           class="url-pattern" id="url-pattern"
+                                           name="url_pattern"/>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>{{ element_id_pattern_label }}
+                                    <input type="text" value=""
+                                           class="id-pattern" id="id-pattern"
+                                           name="element_id_pattern"/>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="large-12 columns">
+                                <label>{{ element_content_label }}
+                                    <textarea class="dom-content" id="dom-content"
+                                              name="element_content"></textarea>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="text-left">
+                            <input class="btn btn-primary" type="submit" value="{{ Save }}" />
+                        </div>
+                    </form>
+
+                {{/if}}
+
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

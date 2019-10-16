@@ -2,6 +2,7 @@ let core = {
 
     debugMode: false,
     engines: [],
+    engineFunctionDescriptions: [],
     userInterfaces: [],
     widgets: [],
     presentations: [],
@@ -29,9 +30,17 @@ let core = {
             console.log("Init temp dir complete");
 
 
+            loadi18n(core);
+            console.log("Load i18n complete");
+
+            loadAuthentications(core);
+            console.log("Load authentications complete");
 
             loadEngines(core);
             console.log("Load engines complete");
+
+            createEngineFunctionDescriptions(core);
+            console.log("Create engine function descriptions complete")
 
             loadStaticComponents(core);
             console.log("Load static components complete");
@@ -51,6 +60,9 @@ let core = {
             loadBusyAnimations(core);
             console.log("Load busy animations complete");
 
+            let profileBuilder = require("./profile/profile-builder")
+            await profileBuilder.deleteAnonymousAccounts();
+            console.log("Delete old anonymoous accounts complete");
 
             await createDatabaseTables(core);
             console.log("Database tables init complete");
@@ -59,24 +71,6 @@ let core = {
             console.log("Init server complete");
 
 
-            /*
-
-       Testing saving and reloading a profile
-
-       */
-            /*
-                        let profile = require("./profile/profile");
-                        let defaultProfile = new profile();
-
-                        await defaultProfile.login("hashed google id here....");
-
-                        await defaultProfile.save();
-
-                        await defaultProfile.delete();
-
-
-                        console.log(defaultProfile);
-                        */
 
         } catch (error) {
             errorMsg = error;
@@ -226,6 +220,21 @@ let core = {
 
         return functionConfiguration;
 
+    },
+
+    getDefaultConfigurationForFunction(func,userInterface){
+        let currentConfiguration = {
+            function: {
+                source: func.getFunctionInformation(),
+                configuration: {},
+            },
+            layout: userInterface.getDefaultToolLayoutConfiguration(),
+            widget: this.getDefaultWidgetForFunction(func),
+            presentation: this.getDefaultDisplayForFunction(func),
+
+        };
+
+        return currentConfiguration;
     }
     ,
     getDefaultWidgetForFunction(func) {
@@ -241,16 +250,19 @@ let core = {
 
         } else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Sentence.className ||
-            func.inputTypes[0].inputType === ioType.IOTypes.Paragraph.className) {
+            func.inputTypes[0].inputType === ioType.IOTypes.Paragraph.className  ||
+            func.inputTypes[0].inputType === ioType.IOTypes.AnnotatedParagraph.className) {
             if (func.outputTypes[0].outputType === ioType.IOTypes.AudioType.className) {
 
-                /*
 
+
+/*
                 let continuousChoiceButton = this.getWidget("text-selector");
                 return continuousChoiceButton.getDefaultConfiguration();
                 */
                 let continuousChoiceButton = this.getWidget("continuous-choice-button");
                 return continuousChoiceButton.getDefaultConfiguration();
+
 
 
             } else {
@@ -266,15 +278,15 @@ let core = {
     getDefaultDisplayForFunction(func) {
         let base = require("./components/engines/base/engine-base");
         let ioType = rootRequire("core/IOtypes/iotypes");
-        if( func.outputTypes[0].outputType === ioType.IOTypes.Paragraph.className ||
-            func.outputTypes[0].outputType === ioType.IOTypes.ParsedLanguageType.className){
+        if (func.outputTypes[0].outputType === ioType.IOTypes.Paragraph.className ||
+            func.outputTypes[0].outputType === ioType.IOTypes.ParsedLanguageType.className) {
             let toolTip = this.getPresentation("paragraph-switcher");
             return toolTip.getDefaultConfiguration();
-        }else if (func.outputTypes[0].outputType === ioType.IOTypes.ImageIOType.className) {
+        } else if (func.outputTypes[0].outputType === ioType.IOTypes.ImageIOType.className) {
             let toolTip = this.getPresentation("tippy-tooltip");
             return toolTip.getDefaultConfiguration();
 
-        } else if (func.outputTypes[0].outputType === ioType.IOTypes.Word.className||
+        } else if (func.outputTypes[0].outputType === ioType.IOTypes.Word.className ||
             func.outputTypes[0].outputType === ioType.IOTypes.Sentence.className) {
 
             let toolTip = this.getPresentation("tooltip");
@@ -287,22 +299,104 @@ let core = {
 
             return audioHighlighter.getDefaultConfiguration();
 
+        }else if (func.outputTypes[0].outputType === ioType.IOTypes.AnnotatedParagraph.className) {
+
+
+            let annotatedParagraphTooltipRenderer = this.getPresentation("annotated-paragraph-switcher");
+
+            return annotatedParagraphTooltipRenderer.getDefaultConfiguration();
+
         }
+
 
     }
     ,
 
-    getDefaultBusyAnimation(){
-      return core.getBusyAnimation("spinner").getDefaultConfiguration();
+    getDefaultBusyAnimation() {
+        return core.getBusyAnimation("spinner").getDefaultConfiguration();
+    },
+
+    getTokenForKey(key,callback){
+      this.authManager.getToken(key,callback);
     },
 
     executeRequest(webSocketConnection, req, config) {
 
-        let engine = this.getEngine(req.functionInfo.engineId, req.functionInfo.engineVersison);
 
-        let curFunction = engine.getFunction(req.functionInfo.functionId);
 
-        engine[curFunction.entryPoint](webSocketConnection, req, config);
+        //Convert input
+        req.input  = core.ioUtils.toIOTypeInstance(req.input);
+
+        //Auto correct language if text
+        if(req.input.isText()){
+
+            if(req.input.name === "Word"){
+                req.input.lang = core.languageDetector.detectLanguage(req.input.getSentence(),webSocketConnection.profile.locale,req.input.lang);
+            }else{
+                req.input.lang = core.languageDetector.detectLanguage(req.input.getValue(),webSocketConnection.profile.locale,req.input.lang);
+            }
+
+
+        }
+
+
+        if(req.functionInfo.functionType === "CombinedFunction"){
+
+            for(let i=0; i < webSocketConnection.customFunctions.length; i++){
+
+                  if(req.functionInfo.functionId === webSocketConnection.customFunctions[i].id){
+
+                      webSocketConnection.customFunctions[i].executeFunction(function (result) {
+
+                              req.type = "cloudRequestResult";
+                              req.result = result;
+                              webSocketConnection.sendMessage(req);
+                        //      console.log(result);
+
+                          },
+                          req.input, webSocketConnection.profile,
+                          {
+                              url: webSocketConnection.url,
+                          });
+
+                }
+
+            }
+
+        }else if(req.functionInfo.functionType ==="RemoteFunction"){
+            let engine = this.getEngine(req.functionInfo.engineId, req.functionInfo.engineVersison);
+
+            let curFunction = engine.getFunction(req.functionInfo.functionId);
+
+
+//        engine[curFunction.entryPoint](webSocketConnection, req, config);
+
+            try{
+                engine[curFunction.entryPoint](
+                    function (result) {
+
+                        req.outputType = result.name;
+                        req.type = "cloudRequestResult";
+                        req.result = result;
+                        webSocketConnection.sendMessage(req);
+
+
+                    }, req.input, config, webSocketConnection.profile,
+                    {
+                        url: webSocketConnection.url,
+                    }
+                );
+            }catch (e){
+                let ioType = require("../core/IOtypes/iotypes");
+
+                req.type = "cloudRequestResult";
+                req.result = new ioType.IOTypes.Error("Error handling request");
+                req.outputType = req.result.name;
+                webSocketConnection.sendMessage(req);
+            }
+
+        }
+
 
 
     }
@@ -343,6 +437,22 @@ function loadUtils(core) {
     let credentialManager = require("./util/credential-manager");
     credentialManager.init();
 
+    core.languageDetector = require("./language-detector/language-detector");
+    core.languageDetector.init();
+
+    core.ioUtils = require("./IOtypes/node-iotype-utils");
+
+}
+
+function loadi18n(core) {
+    let localeService = require("./i18n/locale-service");
+    localeService.init();
+}
+
+function loadAuthentications(core){
+    let authenticationManager = require("./authentication/authmanager");
+    authenticationManager.startUp();
+    core.authManager = authenticationManager;
 }
 
 function initDatabases(core) {
@@ -379,12 +489,39 @@ function loadEngines(core) {
 
 }
 
+function createEngineFunctionDescriptions(core) {
+    for (let i = 0; i < core.engines.length; i++) {
+
+        let versions = [];
+
+        for (let j = 0; j < core.engines[i].versions.length; j++) {
+            versions.push({
+                version: core.engines[i].versions[j].version,
+                functions: core.engines[i].versions[j].engine.getFunctions(),
+            });
+        }
+
+        core.engineFunctionDescriptions.push({
+            engine: core.engines[i].engine,
+            versions: versions,
+        })
+    }
+
+    const fs = require('fs-extra');
+    const path = require('path');
+
+    fs.writeFileSync(path.join(__dirname, "../", "/public/js/function-editor/functions.js"), "let engineFunctions = " + JSON.stringify(core.engineFunctionDescriptions) + ";");
+}
+
 function loadStaticComponents(core) {
 
     let staticSources = [];
     staticSources.push("core/libraries/external/jquery.js");
     staticSources.push("core/libraries/external/xregexp-all.js");
+    staticSources.push("core/libraries/sweetalert2.all.js");
+    staticSources.push("core/libraries/alert-manager.js");
     staticSources.push("core/libraries/sbd.js");
+    staticSources.push("core/libraries/sentence-tokenizer.js");
     staticSources.push("core/libraries/page-utils.js");
     staticSources.push("core/libraries/iotype-utils.js");
     staticSources.push("core/IOtypes/iotypes.js");
@@ -393,6 +530,7 @@ function loadStaticComponents(core) {
     staticSources.push("core/libraries/global-event-listener.js");
     staticSources.push("core/libraries/start-up.js");
     staticSources.push("core/libraries/request-manager.js");
+    staticSources.push("core/libraries/ui-update-manager.js");
     if (core.debugMode) {
         staticSources.push("core/libraries/content-script-controller-debug.js");
     }
@@ -401,7 +539,6 @@ function loadStaticComponents(core) {
     staticSources.push("core/components/widget/base/widget-implementation.js");
     staticSources.push("core/components/busy-animation/base/busy-animation-implementation.js");
     staticSources.push("core/components/plugin/base/plugin-implementation.js");
-
 
 
     if (core.debugMode) {
@@ -473,6 +610,7 @@ function loadPresentations(core) {
     core.presentations = presentationInitializer.components;
 
 }
+
 function loadBusyAnimations(core) {
 
     let busyAnimationClass = require("./components/busy-animation/busy-animation-initializer");

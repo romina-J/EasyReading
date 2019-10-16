@@ -1,34 +1,62 @@
-class DatabaseConnectionBase{
+class DatabaseConnectionBase {
     constructor(){
 
     }
 
-    async init(callback){
+    async init(callback) {
 
 
     }
 
-    async executeSQL(sql, parameters){
+    async executeSQL(sql, parameters) {
+
+    }
+
+    async tableExists(tableName) {
+
+    }
+
+    async columnExists(tableName, columnName) {
+
+    }
+
+    getTableColumnDescriptions(tableName) {
 
     }
 
 
-    getTableDescription(tableName,fields, uniqueKeys){
+    getTableDescription(tableName,fields, uniqueKeys) {
 
     }
 
-    createInsertSQL(request){
+    getColumnDescription(tableName,columnDescription,uniqueKeys) {
 
     }
 
-    createUpdateSQL(request){
-
-    }
-    createSelectSQL(request){
+    dropColumnDescription(tableName, columnName) {
 
     }
 
-    createDeleteSQL(request){
+    getTableColumnDefaultValue(tableName, columnName) {
+
+    }
+
+    getUpdateNullValues(tableName, columnName, defaultValue, columnType) {
+
+    }
+
+    createInsertSQL(request) {
+
+    }
+
+    createUpdateSQL(request) {
+
+    }
+    createSelectSQL(request) {
+
+    }
+
+    createDeleteSQL(request) {
 
     }
 
@@ -77,6 +105,9 @@ class DatabaseConnectionBase{
         return fieldname+" BOOLEAN";
     }
 
+    async areColumnTypesCompatible(type1, type2) {
+
+    }
 
     getFormattedValue(columnValues){
 

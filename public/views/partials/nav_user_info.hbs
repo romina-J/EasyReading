@@ -1,0 +1,38 @@
+{{#if user}}
+    <hr/>
+{{/if}}
+<h2>Account:</h2>
+<ul class="no-bullet">
+    {{#if user}}
+        <li><strong>{{name_text}}: </strong> <span>{{user.email}}</span></li>
+    {{/if}}
+    <li><strong>{{role_text}}:</strong>
+        <span>
+            {{#hasRole user "anonym"}}
+                {{anonymous_user}}
+            {{else}}
+
+                {{#each roles}}
+                    {{#if @index}}
+                        ,
+                    {{/if}}
+                    {{#ifEquals this "client"}}
+                        {{../client_role_text}}
+                    {{/ifEquals}}
+                    {{#ifEquals this "caretaker"}}
+                        {{../healthcareworker_role_text}}
+                    {{/ifEquals}}
+                    {{#ifEquals this "anonymous_user"}}
+                        {{../anonymous_user}}
+                    {{/ifEquals}}
+
+
+                {{/each}}
+            {{/hasRole}}
+        </span>
+</ul>
+{{#if user}}
+    <a class="button" href="/client/logout">{{logout_text }}</a>
+{{else}}
+    <a class="button" href="/login">{{ login_text }}</a>
+{{/if}}

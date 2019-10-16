@@ -1,8 +1,16 @@
 const passport = require("passport");
 const googleStrategy = require("passport-google-oauth20");
+const AnonymIdStrategy = require('passport-anonym-uuid').Strategy;
 const profleRepo = require("../repository/profileRepo");
 const config = require("../config/config");
+let passportLogin = require("./passportLogin");
+passport.use(new AnonymIdStrategy(async (req, uuid, done) => {
 
+    let loginInfo = await passportLogin.createLoginInfoAnonym(req, uuid);
+    await passportLogin.userLogin(req, loginInfo, function (newProfile, error) {
+        return done(null, newProfile);
+    });
+}));
 passport.use(
     new googleStrategy({
         callbackURL: config.google.callbackURL,
@@ -12,97 +20,53 @@ passport.use(
         passReqToCallback: true,
     }, async (req, accessToken, refreshToken, profile, done) => {
 
+        try {
 
-        //Client side login(extension, apps)...
-        if(req.session._clientToken){
-
-            profile._clientToken = req.session._clientToken;
-
-            let network = require("../../core/network/network");
-            let webSocketConnection = network.getConnectionWithUUID(req.session._clientToken);
-            if(webSocketConnection){
-                let password = require('password-hash-and-salt');
+            let loginInfo = await passportLogin.createLoginInfoGoogle(req, profile);
+            await passportLogin.userLogin(req, loginInfo, function (newProfile, error) {
+                return done(null, newProfile);
+            });
 
 
-                password(profile.id).hash("this is my salt and not yours!!!",async function(error, hashedGoogleID) {
-                    if (error){
-                        console.log(error);
-                        return;
-                    }
+        } catch (err) {
 
-
-                    let clientProfile = require("../../core/profile/profile");
-                    let currentProfile = new clientProfile(req.session._clientToken);
-                    currentProfile.email = profile.emails[0].value;
-
-                    try {
-
-                        await currentProfile.login(hashedGoogleID, webSocketConnection);
-                        webSocketConnection.profile = currentProfile;
-                        let loginResult = {
-                            type: "userLoginResult",
-                            result : currentProfile,
-                        };
-                        webSocketConnection.sendMessage(loginResult);
-                        currentProfile.userId = currentProfile.googleID;
-
-                        const ownProfileQueryResult = await profleRepo.getOwnProfileByEmail(currentProfile.email);
-                        let ownProfile ={...ownProfileQueryResult.result[0]};
-
-                         ownProfile.account = {
-                                google:  profile
-                            };
-                            return done(null, ownProfile);
-
-                        //return done(null, currentProfile);
-
-                    }catch (error){
-
-                        console.log(error);
-
-
-                    }});
-            }
-
-
-
-
-        }else{
-
-            const healthCareWorkerProfileQueryResult = await profleRepo.getHealthCareWorkerByEmail(profile.emails[0].value);
-
-
-            if (healthCareWorkerProfileQueryResult.result.length > 0) {
-
-                let healthCareWorkerProfile ={...healthCareWorkerProfileQueryResult.result[0]};
-
-                healthCareWorkerProfile.account = {
-                    google:  profile
-                };
-
-                return done(null, healthCareWorkerProfile);
-            } else
-            {
-                const ownProfileQueryResult = await profleRepo.getOwnProfileByEmail(profile.emails[0].value);
-                if (ownProfileQueryResult.result.length > 0) {
-
-                    let ownProfile ={...ownProfileQueryResult.result[0]};
-
-                    ownProfile.account = {
-                        google:  profile
-                    };
-                    return done(null, ownProfile);
-                } else {
-                    //console.log(JSON.stringify(profile));
-                    return done(`${profile.emails[0].value} is not registered health care worker or patient.`);
-                }
-            }
+            console.log("error");
 
         }
 
-
     })
 );
+
+
+let FacebookStrategy = require('passport-facebook').Strategy;
+
+passport.use(new FacebookStrategy({
+        clientID: "681162132383572",
+        clientSecret: "49b3620d5967fe76f9a04c835f4a5591",
+        callbackURL: "/client/login/facebook/auth",
+        profileFields: ['email'],
+        passReqToCallback: true,
+        auth_type: "reauthenticate"
+    },
+    async function (req, accessToken, refreshToken, profile, done) {
+
+        try {
+
+            let loginInfo = await passportLogin.createLoginInfoFacebook(req, profile);
+            await passportLogin.userLogin(req, loginInfo, function (newProfile, error) {
+
+                return done(null, newProfile);
+            });
+
+
+        } catch (err) {
+
+            console.log("error");
+
+        }
+
+    }
+));
 
 passport.serializeUser(function (user, done) {
     done(null, user);
@@ -113,3 +77,4 @@ passport.deserializeUser(function (user, done) {
 });
 
 module.exports = passport;
+

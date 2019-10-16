@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>{{page_caretakerlist_title}}</title>
+    {{> head }}
+</head>
+
+<body>
+<div class="row wrapper">
+
+    <div class="medium-3 columns">
+        <nav>
+            {{> nav_client }}
+            {{> nav_user_info }}
+        </nav>
+    </div>
+
+    <div class="medium-9 columns">
+
+        <main>
+
+            <div class="row columns">
+
+                <h1>{{page_caretakerlist_title}}</h1>
+
+                <p>{{page_caretakerlist_select}}</p>
+                <form id="submit" method="post">
+                    <ul class="no-bullet">
+                        {{#each existingClientCarerRelations}}
+                            <li>
+                                {{ email }} <input type="submit" name="caretaker_{{id}}" value="Remove caretaker">
+                            </li>
+                        {{/each}}
+                    </ul>
+                </form>
+
+                <a class="button" href="/client/caretaker/register">{{page_registercaretaker_title}}</a>
+            </div>
+
+        </main>
+
+    </div>
+</div>
+</body>
+</html>

@@ -3,14 +3,14 @@ class Tooltip extends Presentation{
 
         super(functionInfo, userInterface,configuration);
 
-        this.requestCounter = 0;
-
     }
 
     renderResult(request,result){
+
         let ioRes = ioTypeUtils.toIOTypeInstance(result.result);
         let resultHTML = ioRes.toHtml();
-        if (ioRes instanceof Word) {
+        let requestID = this.createRequestId();
+        if (request.inputType instanceof Word) {
             for(let i=0; i < request.input.textNodes.length;i++){
                 if($(request.input.textNodes[i]).parent().hasClass("easy-reading-result")){
                     if($(request.input.textNodes[i]).next().hasClass("easy-reading-result")){
@@ -19,17 +19,29 @@ class Tooltip extends Presentation{
                     $(request.input.textNodes[i]).unwrap();
                 }
             }
-            pageUtils.wrapWordIn(request.input, "span","easy-reading-result easy-reading-tooltip easy-reading-tooltip-"+this.requestCounter);
-            $( ".easy-reading-tooltip-"+this.requestCounter ).append("<span class='easy-reading-tooltip-text easy-reading-result'>"+resultHTML+"</span>");
-            this.requestCounter++;
-        } else if (ioRes instanceof Paragraph) {
-            $( request.input.element).wrap( "<div class='easy-reading-result easy-reading-tooltip easy-reading-tooltip-"+this.requestCounter+"'></div>" );
-            $( ".easy-reading-tooltip-"+this.requestCounter ).append("<span class='easy-reading-tooltip-text easy-reading-result'>"+resultHTML+"</span>");
-            this.requestCounter++;
+
+            let span = pageUtils.wrapWordIn(request.input, "span",requestID+ " easy-reading-tooltip "+this.getResultClass(), this.getPresentationAndRequestIdentifier(requestID));
+            $( span ).append("<span class='easy-reading-tooltip-text "+this.getResultClass()+"'>"+resultHTML+"</span>");
+        } else if (request.inputType instanceof Paragraph) {
+
+
+            let div = $( request.input.element).wrap( "<div class='"+requestID +" easy-reading-tooltip "+this.getResultClass()+"' "+this.getPresentationAndRequestIdentifier(requestID)+"></div>" );
+            $(div).append("<span class='easy-reading-tooltip-text easy-reading-result'>"+resultHTML+"</span>");
         }
     }
 
     undo(){
 
+    }
+
+    removeResult(requestID){
+
+        let requestElement = $("."+requestID);
+        requestElement.find(".easy-reading-tooltip-text").remove();
+        let parent = requestElement.parent();
+        requestElement.contents().unwrap();
+        if(parent.length){
+            parent.get(0).normalize();
+        }
     }
 }

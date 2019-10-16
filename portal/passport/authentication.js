@@ -15,7 +15,10 @@ module.exports = {
 
         //res.send(`Welcome ${JSON.stringify(req.user)}`);
         req.session.user  = {...req.user};
-        res.redirect(req.session.returnTo || '/');
+        let returnURL = req.session.returnTo || '/';
         delete req.session.returnTo;
+
+        res.redirect(returnURL);
+
     }
 }

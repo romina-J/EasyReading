@@ -31,13 +31,10 @@ let engineComposer = {
                                 newEngine.version = version;
                                 newEngine.debugMode = engineComposer.debugMode;
                                 newEngine.createFunctions(versionDir);
-                                newEngine.credentialManager= require("../../util/credential-manager");
+                                newEngine.credentialManager = require("../../util/credential-manager");
+                                newEngine.authManager = require("../../authentication/authmanager");
 
                                 currentEngineContainer.addVersion(version, newEngine);
-
-
-
-
                             }
                         } else {
                             console.log("ERROR - Engine.js for engine '" + engine + "' not found.");
@@ -61,12 +58,8 @@ let engineComposer = {
     createEngineFunctions() {
         for (let i = 0; i < engineComposer.engines.length; i++) {
             for (let j = 0; j < engineComposer.engines[i].versions.length; j++) {
-
                 engineComposer.engines[i].versions[j].engine.createFunctions();
-
             }
-
-
         }
     },
 

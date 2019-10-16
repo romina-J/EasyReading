@@ -77,22 +77,42 @@ let network = {
 
     },
 
-    updateProfileForConnectedClients:function (profile) {
+    updateProfileForConnectedClients:function (profile,normalized = false) {
         console.log("Updating profile - active connections:"+this.webSocketConnections.length);
-        let profileNormalized = false;
+        let profileNormalized = normalized;
         for (let i = 0; i < this.webSocketConnections.length; i++) {
 
-            console.log("Comparing id: "+this.webSocketConnections[i].profile.id+ " with profile.id "+profile.id);
-            if (this.webSocketConnections[i].profile.id === profile.id) {
+            if(this.webSocketConnections[i].profile){
+                console.log("Comparing id: "+this.webSocketConnections[i].profile.id+ " with profile.id "+profile.id);
+                if (this.webSocketConnections[i].profile.id === profile.id) {
 
+                    console.log("Found match");
+                    this.webSocketConnections[i].updateProfile(profile,profileNormalized);
+                    profileNormalized = true;
 
-                console.log("Found match");
-                this.webSocketConnections[i].updateProfile(profile,profileNormalized);
-                profileNormalized = true;
-
+                }
             }
+
         }
 
+    },
+    getProfileWithID:function (id) {
+        for (let i = 0; i < this.webSocketConnections.length; i++) {
+
+            if (this.webSocketConnections[i].profile.id === id) {
+                return this.webSocketConnections[i].profile;
+            }
+
+        }
+    },
+    getWebSocketConnectionWithID:function(id){
+        for (let i = 0; i < this.webSocketConnections.length; i++) {
+
+            if (this.webSocketConnections[i].profile.id === id) {
+                return this.webSocketConnections[i];
+            }
+
+        }
     }
 
 

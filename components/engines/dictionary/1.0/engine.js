@@ -9,32 +9,10 @@ class Dictionary extends base.EngineBase {
         this.description = "A simple online dictionary";
         this.version = "1.0";
         this.versionDescription = "Initial Version";
-
     }
 
-
     getDataSchema() {
-        return {
-            "type": "object",
-            "properties": {
-                "language": {
-                    "type": "string",
-                    "title": "Language",
-                    "description": "Your preferred language",
-                    "default": "en",
-                    "enum": [
-                        "en",
-                        "de",
-                        "es",
-                        "fr",
-                        "se",
-                    ],
-                }
-            },
-            "required": [
-                "language"
-            ]
-        };
+        return {};
     }
 
     getFunctions() {
@@ -42,9 +20,13 @@ class Dictionary extends base.EngineBase {
             {
                 id: "simple_dict",
                 name: "Dictionary",
-                description: "A dictionary using globse.com",
+                description: "Word definitions from Wiktionary",
                 defaultIcon: "assets/dictionary.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: [],
+                visibleInConfiguration: false,
                 type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.DICTIONARY,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Word.className,
                     "name": "Input word",

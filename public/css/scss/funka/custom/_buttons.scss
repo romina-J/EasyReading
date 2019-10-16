@@ -5,9 +5,6 @@
 // We use these to control button text styles.
 
 // We use these to controls background-color. Alert and success colors is in forms.scss
-$button-bgColor-std:                    #2E7589;
-$button-bgColor-white:					$color-white;
-
 
 
 //--------------------------------------------------------------*/
@@ -22,59 +19,52 @@ $button-bgColor-white:					$color-white;
 button, .button, input[type="button"], input[type="submit"] {
     width: 100%;
     @include button;
+    text-decoration: none;
+    outline: 1px solid $color-white;
 
-    &.small {
+    &.button-settings {
+        background-image: url('../cssimg/icons-sprite.png');
+        background-repeat: no-repeat;
+        background-position: 8px 12px;
+        padding-left: 2.1rem;
     }
 
-    &.large {
+    &.tabbed {
+        box-shadow: 0 0 0px 3px $tabbed-color;
     }
 
-    &.cancel {
+    &.close-button {
+        background-color: transparent;
+        outline: none;
+        color: #333;
+        padding: 0.35em 0.6em;
     }
+}
 
-    &.delete {
+a, input[type=text], textarea, select {
+
+    &.tabbed {
+        box-shadow: 0 0 0px 3px $tabbed-color;
     }
+}
 
-    &.export {
-    }
-
-    &.add {
-    }
-
-    &.logout {
-    }
-
-    &.update {
-    }
-
-    &.back {
-    }
-
-    &.white {
+.easy-reader-controls-container,
+.tab-slide-out-grid-item {
+    button {
         background-color: $color-white;
-        color: $color-black;
     }
 
-    &.tabbed {
-        outline: 2px solid $tabbed-color;
-    }
-}
-
-
-
-a, input[type=text], input[type=number], textarea, select {
-    &.tabbed {
-        outline: 2px solid $tabbed-color;
+    .overlay-grid-item {
+        margin: 2px;
     }
 }
+
 
 //--------------------------------------------------------------*/
 // CODE ABOVE IS FOR ALL SCREENS
 // MEDIA QUERIES BELOW IS FOR MEDIUM + LARGE OR JUST LARGE
 //--------------------------------------------------------------*/
 //--------------------------------------------------------------*/
-
-
 // MEDIUM + LARGE SCREEN
 @include breakpoint(medium) {
 

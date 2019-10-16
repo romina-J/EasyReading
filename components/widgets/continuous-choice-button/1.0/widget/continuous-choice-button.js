@@ -5,7 +5,7 @@ class ContinuousChoiceButton extends WidgetBase {
 
         this.active = false;
         this.requestInProgress = false;
-        this.widgetID = 'er_continuous_choice_button_' + userInterface.id + "_" + functionInfo.source.id;
+        this.widgetID = 'er_continuous_choice_button_' + this.widgetID;
         $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-continuous-choice'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
 
         globalEventListener.addPresentationFinishListener(this);
@@ -33,6 +33,22 @@ class ContinuousChoiceButton extends WidgetBase {
     activateWidget(){
         console.log("continuous Choice Button Active");
         $("#" + this.widgetID).addClass("easy-reading-continuous-choice-active");
+
+
+        //Only consider first input type as valid one
+        if(this.functionInfo.source.inputTypes.length > 0){
+            switch (this.functionInfo.source.inputTypes[0].inputType) {
+                case Word.className:
+                    globalEventListener.addWordClickListener(this,this.getPresentation().isCompatibleWithOtherPresentations);
+                    break;
+                case Paragraph.className:
+                    globalEventListener.addParagraphClickListener(this,this.getPresentation().isCompatibleWithOtherPresentations);
+                    break;
+                default:
+                    break;
+            }
+        }
+        /*
         for (let i = 0; i < this.functionInfo.source.inputTypes.length; i++) {
             switch (this.functionInfo.source.inputTypes[i].inputType) {
                 case Word.className:
@@ -45,6 +61,7 @@ class ContinuousChoiceButton extends WidgetBase {
                     break;
             }
         }
+        */
 
         globalEventListener.widgetActivated(this);
 
@@ -52,6 +69,9 @@ class ContinuousChoiceButton extends WidgetBase {
     }
 
     deactivateWidget(){
+        super.deactivateWidget();
+
+
         console.log("continuous Choice Button Not Active");
         $("#" + this.widgetID).removeClass("easy-reading-continuous-choice-active");
 
@@ -69,18 +89,9 @@ class ContinuousChoiceButton extends WidgetBase {
         }
 
 
-        if(easyReading.userInterfaces[this.userInterface.uiId]){
-            if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId]){
-                if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId].presentation){
-                    easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolId].presentation.removeResult();
-                }
-            }
-        }
-
         if(this.htmlIterator){
             this.htmlIterator.normalizeOldTextNodes();
         }
-        requestManager.cancelRequest(this);
 
         this.active = false;
     }
@@ -157,6 +168,7 @@ class ContinuousChoiceButton extends WidgetBase {
 
 
     }
+    /*
     widgetActivated(widget){
         if(widget !== this){
 
@@ -164,6 +176,7 @@ class ContinuousChoiceButton extends WidgetBase {
         }
 
     }
+    */
     requestFinished(){
         easyReading.busyAnimation.stopAnimation();
         this.requestInProgress = false;
@@ -171,6 +184,10 @@ class ContinuousChoiceButton extends WidgetBase {
 
     remove(){
 
-        $("#" + this.widgetID).off("click", this, this.continuousChoiceButtonClicked);
+        if(this.active){
+            this.deactivateWidget();
+        }
+
+        $("#" + this.widgetID).remove();
     }
 }

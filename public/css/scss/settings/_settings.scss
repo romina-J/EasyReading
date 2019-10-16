@@ -69,20 +69,20 @@ $global-font-size: 16px;
 $global-width: rem-calc(984);
 $global-lineheight: 1.5;
 $foundation-palette: (
-  primary: #2E7589,
+  primary: #0060DF,
   secondary: #cce5ef,
   success: #3adb76,
   warning: #ffae00,
-  alert: #ffded9,
+  alert: #cc4b37,
 );
 $light-gray: #e6e6e6;
 $medium-gray: #cacaca;
 $dark-gray: #618285;
 $black: #000;
 $white: #fff;
-$body-background: #e7eff1;
-$body-font-color: #303132;
-$body-font-family: "Open Sans", Helvetica, Arial, sans-serif;
+$body-background: #F8F9FA;
+$body-font-color: #111111;
+$body-font-family: "Segoe UI", "Open Sans", Helvetica, Arial, sans-serif;
 $body-antialiased: true;
 $global-margin: 1rem;
 $global-padding: 1rem;
@@ -128,32 +128,33 @@ $grid-column-align-edge: true;
 $grid-column-alias: 'columns';
 $block-grid-max: 8;
 
+
 // 4. Base Typography
 // ------------------
 
-$header-font-family: "Open Sans", Helvetica, Arial, sans-serif;
+$header-font-family: "Segoe UI", "Open Sans", Helvetica, Arial, sans-serif;
 $header-font-weight: $global-weight-normal;
 $header-font-style: normal;
 $font-family-monospace: Consolas, 'Liberation Mono', Courier, monospace;
 $header-color: inherit;
-$header-lineheight: 1.4;
+$header-lineheight: 1.2;
 $header-margin-bottom: 0.5rem;
 $header-styles: (
   small: (
-    'h1': ('font-size': 20),
-    'h2': ('font-size': 22),
-    'h3': ('font-size': 18),
-    'h4': ('font-size': 17),
+    'h1': ('font-size': 22),
+    'h2': ('font-size': 18),
+    'h3': ('font-size': 16),
+    'h4': ('font-size': 16),
     'h5': ('font-size': 16),
     'h6': ('font-size': 16),
   ),
   medium: (
-    'h1': ('font-size': 32),
-    'h2': ('font-size': 22),
-    'h3': ('font-size': 22),
-    'h4': ('font-size': 20),
-    'h5': ('font-size': 18),
-    'h6': ('font-size': 17),
+    'h1': ('font-size': 22),
+    'h2': ('font-size': 18),
+    'h3': ('font-size': 16),
+    'h4': ('font-size': 16),
+    'h5': ('font-size': 16),
+    'h6': ('font-size': 16),
   ),
 );
 $header-text-rendering: optimizeLegibility;
@@ -280,8 +281,8 @@ $breadcrumbs-item-separator-color: $medium-gray;
 // ----------
 
 $button-font-family: "Open Sans", Helvetica, Arial, sans-serif;
-$button-padding: 0.6em 2.5em 0.6em 2.5em;
-$button-margin: 0 0 $global-margin 0;
+$button-padding: 0.6em 1.5em 0.6em 1.5em;
+$button-margin: 0;
 $button-fill: solid;
 $button-background: $primary-color;
 $button-background-hover: scale-color($button-background, $lightness: -15%);
@@ -297,7 +298,7 @@ $button-sizes: (
 );
 $button-palette: $foundation-palette;
 $button-opacity-disabled: 0.25;
-$button-background-hover-lightness: -10%;
+$button-background-hover-lightness: -27%;
 $button-hollow-hover-lightness: -50%;
 $button-transition: background-color 400ms ease-out 0s
 ;
@@ -314,7 +315,7 @@ $buttongroup-radius-on-each: true;
 // -----------
 
 $callout-background: $white;
-$callout-background-fade: 85%;
+$callout-background-fade: 50%;
 $callout-border: 1px solid rgba($black, 0.25);
 $callout-margin: 0 0 1rem 0;
 $callout-padding: 1rem;
@@ -326,14 +327,14 @@ $callout-link-tint: 30%;
 // 14. Card
 // --------
 
-$card-background: $white;
-$card-font-color: $body-font-color;
-$card-divider-background: $white;
-$card-border: 0;
-$card-shadow: 0px 0px 9px 0px rgba(0,0,0,0.09);
-$card-border-radius: 3px;
-$card-padding: 1rem 2rem;
-$card-margin-bottom: 2rem;
+$tool-card-background: $white;
+$tool-card-font-color: $body-font-color;
+$tool-card-divider-background: $white;
+$tool-card-border: 0;
+$tool-card-shadow: 0px 1px 4px 0px rgba(12,12,12,0.1);
+$tool-card-border-radius: $global-radius;
+$tool-card-padding: 1rem;
+$tool-card-margin-bottom: 1rem;
 
 // 15. Close Button
 // ----------------
@@ -426,7 +427,7 @@ $form-label-font-size: 1rem;
 $form-label-font-weight: $global-weight-normal;
 $form-label-line-height: 1.5;
 $select-background: $white;
-$select-triangle-color: $dark-gray;
+$select-triangle-color: transparent;
 $select-radius: $global-radius;
 $input-color: $black;
 $input-placeholder-color: $medium-gray;

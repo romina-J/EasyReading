@@ -3,52 +3,69 @@ const databaseManager = core.databaseManager;
 
 module.exports = {
 
-    getHealthCareWorkerByEmail: async (email) => {
 
-        const sql = `SELECT * FROM profile
-                     WHERE email = ?
-                       and role = ?;`;
+    getProfileByEmail: async (email) => {
 
-        const sqlParamters = [email, rootRequire("core/profile/profile-role").HEALTH_CARE_WORKER];
+        let loadProfileRequest = databaseManager.createRequest("profile").where("email", "=", email);
 
-        const profileResult = await databaseManager.executeSql(sql, sqlParamters);
+        let loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
 
-        return profileResult;
+        if (loadProfileRequestResult.result.length > 0) {
+
+            let profile = loadProfileRequestResult.result[0];
+
+            let loadProfileRoleRequest = databaseManager.createRequest("role").where("user_id", "=", profile.id);
+
+            let loadProfileRoleRequestResult = await databaseManager.executeRequest(loadProfileRoleRequest);
+
+            profile.roles = [];
+
+            for (let i = 0; i < loadProfileRoleRequestResult.result.length; i++) {
+                profile.roles.push(loadProfileRoleRequestResult.result[i].role);
+            }
+
+            return profile;
+        }
+
+
     },
-    getOwnProfileByEmail: async (email) => {
+    getProfileId: async (id) => {
+        let loadProfileRequest = databaseManager.createRequest("profile").where("id", "=", id);
 
-        const sql = `SELECT * FROM profile
-                     WHERE email = ?
-                       and role = ?;`;
+        let loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
 
-        const sqlParamters = [email, rootRequire("core/profile/profile-role").PATIENT];
+        if (loadProfileRequestResult.result.length > 0) {
 
-        const profileResult = await databaseManager.executeSql(sql, sqlParamters);
+            let profile = loadProfileRequestResult.result[0];
 
-        return profileResult;
-    },    
-    getPatientByHealthCareWorkerId: async (id) => {
+            let loadProfileRoleRequest = databaseManager.createRequest("role").where("user_id", "=", profile.id);
 
-        const sql = `SELECT patient.* FROM profile patient
-                     INNER JOIN (SELECT hcwp.patient_id
-                        FROM profile p
-                        INNER JOIN health_care_worker_patient hcwp ON p.id = hcwp.health_care_worker_id
-                        WHERE p.id = ?) to_get ON patient.id = to_get.patient_id;`;
+            let loadProfileRoleRequestResult = await databaseManager.executeRequest(loadProfileRoleRequest);
 
-        const sqlParamters = [id];
+            profile.roles = [];
 
-        const profileResult = await databaseManager.executeSql(sql, sqlParamters);
+            for (let i = 0; i < loadProfileRoleRequestResult.result.length; i++) {
+                profile.roles.push(loadProfileRoleRequestResult.result[i].role);
+            }
 
-        return profileResult;
-    },    
-    getOwnProfileId: async (id) => {
+            return profile;
+        }
+    },
 
-        const sql = `SELECT patient.* FROM profile patient WHERE role=0 AND id = ?`;
+    getProfileLanguage: async (id) => {
+        const sql = `SELECT locale FROM profile
+                     WHERE id = ?
+                     `;
 
-        const sqlParamters = [id];
+        const sqlParameters = [id];
 
-        const profileResult = await databaseManager.executeSql(sql, sqlParamters);
+        const profileResult = await databaseManager.executeSql(sql, sqlParameters);
 
-        return profileResult;
-    }
-}
+        if (profileResult.result.length) {
+            return profileResult.result[0]['locale'];
+        } else {
+            return "en";
+        }
+    },
+
+};

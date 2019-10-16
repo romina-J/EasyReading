@@ -3,9 +3,12 @@ class TextSelector extends WidgetBase {
     constructor(functionInfo, userInterface, targetID, configuration) {
         super(functionInfo, userInterface, targetID, configuration);
 
-        this.widgetID = 'er_button_' + userInterface.id + "_" + functionInfo.source.id;
+        this.widgetID = 'er_button_' + this.widgetID;
         $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-button'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
         globalEventListener.addPresentationFinishListener(this);
+
+        globalEventListener.addPresentationFinishListener(this);
+        globalEventListener.addWidgetActivatedListeners(this);
         this.enable();
     }
 
@@ -22,6 +25,12 @@ class TextSelector extends WidgetBase {
 
     buttonClicked(e) {
 
+        if(this.active){
+
+            e.data.deactivateWidget();
+            $("#" + e.data.widgetID).removeClass("easy-reading-text-selector-active");
+
+        }
 
 
         let selectedText = pageUtils.getSelectedText();
@@ -29,6 +38,7 @@ class TextSelector extends WidgetBase {
 
 
         if(selectedText.textNodes){
+            this.active = true;
             e.data.textSelection =  new TextSelection(selectedText.textNodes,500);
 
             if (window.getSelection) {
@@ -44,7 +54,8 @@ class TextSelector extends WidgetBase {
             console.log(nextParagraph);
 
             requestManager.createRequest(e.data, nextParagraph);
-            console.log(e.data);
+
+            $("#" + e.data.widgetID).addClass("easy-reading-text-selector-active");
         }
 
 
@@ -56,6 +67,11 @@ class TextSelector extends WidgetBase {
         if(nextParagraph){
             requestManager.createRequest(this, nextParagraph);
         }
+        $("#" + this.widgetID).removeClass("easy-reading-text-selector-active");
+        this.active = false;
 
+    }
+    remove(){
+        $("#"+this.widgetID).remove();
     }
 }

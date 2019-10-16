@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <title>{{page_domhelper_title}}</title>
+    {{> head }}
+</head>
+
+<body>
+<div class="row wrapper">
+
+    <div class="medium-3 columns">
+        <nav>
+            {{> nav_backend }}
+            {{> nav_user_info }}
+        </nav>
+    </div>
+
+    <div class="medium-9 columns">
+
+        <main>
+
+            <div class="row columns">
+
+                <h1>{{page_domhelper_title}}</h1>
+
+                <p>{{page_domhelper_list_intro_text}}</p>
+
+                <a href="/caretaker/custom-paragraph">{{page_domhelper_list_create_new}}</a>
+
+                <form method="POST" action="custom-paragraphs-action">
+
+                    <table>
+                        <tbody>
+
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">URL</th>
+                                <th scope="col">Element ID</th>
+                                <th scope="col">Edit</th>
+                                <th scope="col">Delete</th>
+                            </tr>
+
+                            {{#each domHelpers}}
+
+                                <tr>
+                                    <td>
+                                        {{#if title}}
+                                            {{capitalizeWords title }}
+                                        {{else}}
+                                            {{ ../element_fieldset_no_title }}
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        {{ description }}
+                                    </td>
+                                    <td>
+                                        {{ url_pattern }}
+                                    </td>
+                                    <td>
+                                        {{ element_id_pattern }}
+                                    </td>
+                                    <td>
+                                        <a href="/caretaker/custom-paragraph?id={{ id }}">Edit</a>
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="delete_{{ id }}" value="Delete">
+                                    </td>
+                                </tr>
+                            {{/each}}
+
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

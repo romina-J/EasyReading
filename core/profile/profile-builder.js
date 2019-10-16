@@ -1,3 +1,26 @@
+const loadDefaultEngineFunctions = (panel, panelConfig, core) => {
+        
+    const engines = core.engines;
+    for (const engine of engines) {
+        for (const version of engine.versions) {
+           for (const engineFunction of version.engine.getFunctions()) {
+
+                if (engineFunction.includeInDefaultProfile !== true)
+                    break;
+
+                const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(version.engine.id, version.engine.version, panel);
+                const defaultConfigurationForEngineFunction = defaultConfigurationForEngineFunctions.filter(function(func) {
+                    return (func.function.source.id === this.engineFunction.id)
+                },  { engineFunction });
+
+                panelConfig.tools = panelConfig.tools.concat(defaultConfigurationForEngineFunction);
+           }
+        }
+    }
+
+    return panelConfig;
+}
+
 let profileBuilder = {
 
     loadDefaultProfile(profile) {
@@ -5,26 +28,32 @@ let profileBuilder = {
 
         let core = rootRequire("core/core");
 
+        /*
         let overlay = core.getUserInterface("overlay", "1.0");
         let overlayConfig = overlay.getDefaultConfiguration();
+        overlayConfig = loadDefaultEngineFunctions(overlay, overlayConfig, core);
+
         //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("ibm-content-clarifier", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("colorize", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("dictionary", "1.0", overlay));
-        /*
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("dictionary", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("personalization", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("image_search", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("aws-polly-tts", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("texthelp", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("screen-ruler", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("font-tools", "1.0", overlay));
-        overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("text-analysis", "1.0", overlay));
-        */
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("colorize", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("dictionary", "1.0", overlay));
+        
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("dictionary", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("personalization", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("image_search", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("aws-polly-tts", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("texthelp", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("screen-ruler", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("font-tools", "1.0", overlay));
+        //overlayConfig.tools = overlayConfig.tools.concat(core.createDefaultConfigurationForEngine("text-analysis", "1.0", overlay));
+        
         profile.userInterfaces.push(overlayConfig);
+
+        */
 
         let tabSlideOut = core.getUserInterface("tab-slide-out", "1.0");
         let tabSlideOutConfig = tabSlideOut.getDefaultConfiguration();
-        tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("colorize", "1.0", tabSlideOut));
+        tabSlideOutConfig = loadDefaultEngineFunctions(tabSlideOut, tabSlideOutConfig, core);
+        //tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("colorize", "1.0", tabSlideOut));
         //    tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("dictionary", "1.0", tabSlideOut));
         //    tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("personalization", "1.0", tabSlideOut));
         //    tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("image_search", "1.0", tabSlideOut));
@@ -121,11 +150,11 @@ let profileBuilder = {
 
     },
 
-    async saveProfile(profile) {
+    async saveProfile(profile,withUIConfiguration = true) {
 
         let databaseManager = require("./../database/database-manager");
 
-        let loadProfileRequest = databaseManager.createRequest("profile").where("googleID", "=", profile.googleID);
+        let loadProfileRequest = databaseManager.createRequest("profile").where("email", "=", profile.email);
 
         let loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
 
@@ -143,13 +172,35 @@ let profileBuilder = {
             let saveProfileRequest = databaseManager.createRequest("profile").insert(profileData);
             let saveProfileRequestResult = await databaseManager.executeRequest(saveProfileRequest);
             profile.id = saveProfileRequestResult.id;
+
+
+        }
+        await this.saveRoles(profile);
+
+
+
+        if(withUIConfiguration){
+
+            await this.saveUserInterfaceConfiguration(profile, true);
+
         }
 
+    },
 
+    async saveRoles(profile){
+        let databaseManager = require("./../database/database-manager");
+        let deleteRoleRequest = databaseManager.createRequest("role").where("user_id", "=", profile.id).delete();
+        await databaseManager.executeRequest(deleteRoleRequest);
 
+        for(let i=0; i < profile.roles.length; i++){
 
-        await this.saveUserInterfaceConfiguration(profile, true);
+            let saveRoleRequest = databaseManager.createRequest("role").insert({
+                user_id: profile.id,
+                role: profile.roles[i]
+            });
+            await databaseManager.executeRequest(saveRoleRequest);
 
+        }
     },
 
     async saveUserInterfaceConfiguration(profile, active = false) {
@@ -330,6 +381,60 @@ let profileBuilder = {
 
     },
 
+    /**
+     * Load DOM helpers for the given profile from active DOMHelper collections, both enabled and disabled
+     * @param profile: a loaded user profile
+     * @returns {Promise<*>}
+     */
+    loadActiveDomHelpers: async function(profile) {
+        let databaseManager = require("./../database/database-manager");
+        try {
+            let loadActiveDOMHelperRequest = databaseManager.createRequest("dom_help_collection")
+                .where("pid", "=", profile.id)
+                .where("active", "=", 1);
+            let loadActiveDOMHelperResult = await databaseManager.executeRequest(loadActiveDOMHelperRequest);
+            if (loadActiveDOMHelperResult.result.length > 0) {
+                return this.loadDomHelpers(profile, loadActiveDOMHelperResult.result[0].id);
+            } else {
+                return new Promise(function (resolve, reject) {
+                    resolve([]);
+                });
+            }
+        } catch (error) {
+            return new Promise(function (resolve, reject) {
+                reject(error);
+            });
+        }
+    },
+
+    loadDomHelpers: async function(profile, collectionID) {
+        let core = require("./../core");
+        let databaseManager = require("./../database/database-manager");
+        let domHelpers = [];
+        let errorMsg = null;
+        try {
+            profile.domHelperCollectionID = collectionID;
+            let loadDomHelpersRequest = databaseManager.createRequest("dom_help_configuration").where(
+                "dom_help_collection",
+                "=",
+                collectionID
+            );
+            let loadDomHelpersResult = await databaseManager.executeRequest(loadDomHelpersRequest);
+            if (loadDomHelpersResult.result.length > 0) {
+                domHelpers = loadDomHelpersResult.result;
+            }
+        }  catch (error) {
+            errorMsg = error;
+        }
+        return new Promise(function (resolve, reject) {
+            if (errorMsg) {
+                reject(errorMsg);
+            } else {
+                resolve(domHelpers);
+            }
+        });
+    },
+
     loadActiveUserInterfaces: async function (profile) {
         let databaseManager = require("./../database/database-manager");
 
@@ -426,14 +531,14 @@ let profileBuilder = {
                         let functionConfiguration = await databaseManager.getObjectFromResult(functionConfigurationRequestResult.result[0], databaseManager.getConfigTableNameForEngine(engine));
 
                         currentConfiguration.function = {
-                            source: engineFunction.getFunctionInformation(),
+                            source: engineFunction.getFunctionInformation(profile.locale),
                             configuration: functionConfiguration,
                         }
 
                     } else {
 
                         currentConfiguration.function = {
-                            source: engineFunction.getFunctionInformation(),
+                            source: engineFunction.getFunctionInformation(profile.locale),
                             configuration: engine.getDefaultData(),
                         }
                     }
@@ -552,9 +657,19 @@ let profileBuilder = {
                     await this.deleteUserInterfacesForCollection(loadUserInterfaceRequestResult.result[i].id);
                 }
             }
-
-            let deleteUserInterfaceRequest = databaseManager.createRequest("ui_collection").where("id", "=", profile.id).delete();
+            let deleteUserInterfaceRequest = databaseManager.createRequest("ui_collection").where("pid", "=", profile.id).delete();
             let deleteUserInterfaceRequestResult = await databaseManager.executeRequest(deleteUserInterfaceRequest);
+
+            let deleteRolesRequest = databaseManager.createRequest("role").where("user_id", "=", profile.id).delete();
+            let deleteRolesRequestResult = await databaseManager.executeRequest(deleteRolesRequest);
+
+            let deleteClientCarerRelationRequest = databaseManager.createRequest("client_carer_relation").where("client_id", "=", profile.id).delete();
+            let deleteClientCarerRelationRequestResult = await databaseManager.executeRequest(deleteClientCarerRelationRequest);
+
+            deleteClientCarerRelationRequest = databaseManager.createRequest("client_carer_relation").where("carer_id", "=", profile.id).delete();
+            deleteClientCarerRelationRequestResult = await databaseManager.executeRequest(deleteClientCarerRelationRequest);
+
+
 
             let deleteProfileRequest = databaseManager.createRequest("profile").where("id", "=", profile.id).delete();
             let deleteProfileRequestResult = await databaseManager.executeRequest(deleteProfileRequest);
@@ -572,6 +687,22 @@ let profileBuilder = {
         });
 
 
+
+    },
+
+    deleteAnonymousAccounts: async function(){
+
+        let databaseManager = require("./../database/database-manager");
+        let anonymousAccountsRequest = databaseManager.createRequest("role").where("role","=","anonym");
+        let anonymousAccountsRequestResult = await databaseManager.executeRequest(anonymousAccountsRequest);
+
+        for(let i=0; i < anonymousAccountsRequestResult.result.length; i++){
+
+            let profileBuilder = require("../profile/profile-builder");
+            await profileBuilder.deleteProfile({
+                id: anonymousAccountsRequestResult.result[i].user_id,
+            });
+        }
 
     },
 

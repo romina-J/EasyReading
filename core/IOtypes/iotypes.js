@@ -7,6 +7,7 @@ class IOType {
     constructor(name="IOType", description="") {
         this.name = name;
         this.description = description;
+        this._isText = false;
     }
     static get className() {
         return 'IOType';
@@ -19,11 +20,19 @@ class IOType {
     toHtml() {
         return '';
     }
+
+    isText(){
+        return this._isText;
+    }
+
+    getValue(){
+
+    }
 }
 
 class VoidIOType extends IOType {
-    constructor( name = "VoidIOType", description = "") {
-        super(name, description);
+    constructor(description = "") {
+        super("VoidIOType", description);
     }
     static get className() {
         return 'VoidIOType';
@@ -31,9 +40,13 @@ class VoidIOType extends IOType {
 }
 
 class Word extends IOType {
-    constructor(word, name="Word", description="") {
-        super(name, description);
+    constructor(word,lang="en", sentenceStart = "", sentenceEnd="", description="") {
+        super("Word", description);
         this.word = word;
+        this.lang = lang;
+        this.sentenceStart = sentenceStart;
+        this.sentenceEnd = sentenceEnd;
+        this._isText = true;
     }
 
     static get className() {
@@ -42,12 +55,22 @@ class Word extends IOType {
     toHtml() {
         return this.word;
     }
+
+    getValue(){
+        return this.word;
+    }
+
+    getSentence(){
+        return this.sentenceStart+" "+this.word+" "+this.sentenceEnd;
+    }
 }
 
 class Sentence extends IOType {
-    constructor(sentence,  name="Sentence", description="") {
-        super(name, description);
+    constructor(sentence, lang="en", description="") {
+        super("Sentence", description);
         this.sentence = sentence;
+        this.lang = lang;
+        this._isText = true;
     };
     static get className() {
         return 'Sentence';
@@ -55,18 +78,91 @@ class Sentence extends IOType {
     toHtml() {
         return this.sentence;
     }
+
+    getValue(){
+       return this.sentence;
+    }
 }
 
 class Paragraph extends IOType {
-    constructor(text, name="Paragraph", description="") {
-        super(name, description);
-        this.paragraph = text;
+    constructor(paragraph, lang="en", description="") {
+        super("Paragraph", description);
+        this.paragraph = paragraph;
+        this.lang = lang;
+        this._isText = true;
     }
     static get className() {
         return 'Paragraph';
     }
     toHtml() {
         return "<p>" + this.paragraph + "</p>";
+    }
+
+    getValue(){
+        return this.paragraph;
+    }
+}
+
+class AnnotatedParagraph extends IOType{
+    constructor(paragraph,annotations = null,lang="en", description="") {
+        super("AnnotatedParagraph", description);
+        this.paragraph = paragraph;
+
+        if(annotations){
+            this.annotations = annotations;
+        }else{
+            this.annotations = [];
+        }
+
+        this.lang = lang;
+        this._isText = true;
+    }
+    static get className() {
+        return 'AnnotatedParagraph';
+    }
+
+    addTextAnnotation(position,textToAnnotate,text){
+        this.annotations.push({
+            type: "text",
+            position: position,
+            textToAnnotate: textToAnnotate,
+            text:text,
+        });
+    }
+
+    addHTMLAnnotation(position,textToAnnotate, html){
+        this.annotations.push({
+            type: "html",
+            position: position,
+            textToAnnotate: textToAnnotate,
+            html:html,
+        });
+    }
+    addImageAnnotation(position,textToAnnotate, imageURL,imageALT){
+        this.annotations.push({
+            type: "image",
+            position: position,
+            textToAnnotate: textToAnnotate,
+            image:imageURL,
+            imageALT: imageALT
+        });
+    }
+
+    addWikipediaAnnotation(position,textToAnnotate,wikiLinks){
+        this.annotations.push({
+            type:"wiki",
+            position: position,
+            textToAnnotate: textToAnnotate,
+            wikiLinks:wikiLinks,
+        });
+    }
+
+    toHtml() {
+        return "<p>" + this.paragraph + "</p>";
+    }
+
+    getValue(){
+        return this.paragraph;
     }
 }
 
@@ -83,9 +179,8 @@ class ParsedLanguageType extends IOType {
                 sentences= [],
                 pos_tags = [],
                 language = "",
-                name="ParsedLanguageType",
                 description="A paragraph made up of sentences with syntactic metadata") {
-        super(name, description);
+        super("ParsedLanguageType", description);
         this.raw_string = raw_string;
         this.sentences= sentences;
         this.pos_tags = pos_tags;
@@ -118,18 +213,23 @@ class ParsedLanguageType extends IOType {
 }
 
 class Page extends IOType {
-    constructor(page, name="Page", description="") {
-        super(name, description);
+    constructor(page, lang="en", description="") {
+        super("Page", description);
         this.page = page;
+        this.lang = lang;
     }
     static get className() {
         return 'Page';
     }
+
+    getValue(){
+        return this.page;
+    }
 }
 
 class ImageIOType extends IOType {
-    constructor(url, alt="", title="", name="ImageIOType", description="") {
-        super(name, description);
+    constructor(url, alt="", title="", description="") {
+        super("ImageIOType", description);
         this.url = url;
         this.alt = alt;
         this.title = title;
@@ -150,14 +250,20 @@ class ImageIOType extends IOType {
             return html;
         }
     }
+
+    getValue(){
+        return this.url;
+    }
+
     static get className() {
         return 'ImageIOType';
     }
+
 }
 
 class AudioType extends IOType {
-    constructor(url, speechMarkURL = "", speechMarks = [], name="AudioType", description="") {
-        super(name, description);
+    constructor(url, speechMarkURL = "", speechMarks = [], description="") {
+        super("AudioType", description);
         this.mp3URL = url;
         this.speechMarkURL = speechMarkURL; // URL to a JSON file with speech marks
         this.speechMarks = speechMarks;
@@ -171,12 +277,16 @@ class AudioType extends IOType {
         html += "Your browser does not support the audio tag. </audio>";
         return html;
     }
+
+    getValue(){
+        return this.mp3URL;
+    }
 }
 
 class JavaScriptType extends IOType {
 
-    constructor(script="", name="JavaScriptType", description="") {
-        super(name, description);
+    constructor(script="", description="") {
+        super("JavaScriptType", description);
         this.script = script;
     }
     static get className() {
@@ -189,13 +299,17 @@ class JavaScriptType extends IOType {
             return "<script>" + this.script + "</script>";
         }
     }
+
+    getValue(){
+        return this.script;
+    }
 }
 
 class URLType extends IOType {
-    constructor(url, target="", name="URLType", description="") {
-        super(name, description);
+    constructor(url, target="", description="") {
+        super("URLType", description);
         this.url = new URL(url);
-        this.target = "";
+        this.target = target;
     }
     static get className() {
         return 'URLType';
@@ -208,20 +322,101 @@ class URLType extends IOType {
         html += "/>";
         return html;
     }
+
+    getValue(){
+        return this.url;
+    }
+
+
+}
+
+
+class TaggedText extends IOType{
+    constructor(originalText,taggedText = null,lang="en", description="") {
+        super("TaggedText", description);
+        this.originalText = originalText;
+
+        if(taggedText){
+            this.taggedText = taggedText;
+        }else{
+            this.taggedText = [TaggedText.createPOSTag(this.originalText)];
+        }
+
+        this.lang = lang;
+        this._isText = true;
+    }
+    static get className() {
+        return 'TaggedText';
+    }
+
+    static createPOSTag(text,tags=null){
+
+
+        return {
+            text: text,
+            tags : tags,
+        }
+
+    }
+
+    getText(){
+        let text = "";
+        for(let i=0; i < this.taggedText.length; i++){
+
+            text+=this.taggedText[i].text;
+        }
+        return text;
+    }
+}
+
+class Error extends IOType{
+    constructor(errorMessage,errorType="Error",description=""){
+        super("Error", description);
+        this.message = errorMessage;
+        this.type = errorType;
+    }
+
+    getValue(){
+        return this.message;
+    }
+
+    toHtml() {
+        return this.message;
+    }
+}
+
+class NoResult extends IOType{
+    constructor(message,description=""){
+        super("NoResult", description);
+        this.message = message;
+    }
+
+    getValue(){
+        return this.description;
+    }
+
+    toHtml() {
+        return this.message;
+    }
 }
 
 // Script running on NodeJS
 if (typeof window === 'undefined') {
     module.exports.IOTypes = {
+        IOType: IOType,
         VoidIOType: VoidIOType,
         Word: Word,
         Sentence: Sentence,
         Paragraph: Paragraph,
+        AnnotatedParagraph:AnnotatedParagraph,
         ParsedLanguageType: ParsedLanguageType,
         Page: Page,
+        TaggedText: TaggedText,
         ImageIOType: ImageIOType,
         AudioType: AudioType,
         URLType: URLType,
         JavaScriptType: JavaScriptType,
+        Error: Error,
+        NoResult: NoResult,
     };
 }

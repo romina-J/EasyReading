@@ -21,7 +21,11 @@ class ScreenRuler extends base.EngineBase{
                 name: "Screen ruler",
                 description : "Creates a screenruler for better reading",
                 defaultIcon : "assets/screen-ruler.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: [],
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
+                category: base.EngineFunction.FunctionCategory.SPEECH_SYNTHESIS,
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],

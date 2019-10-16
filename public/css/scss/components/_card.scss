@@ -8,35 +8,35 @@
 
 /// Defualt background color.
 /// @type Color
-$card-background: $white !default;
+$tool-card-background: $white !default;
 
 /// Default font color for cards.
 /// @type Color
-$card-font-color: $body-font-color !default;
+$tool-card-font-color: $body-font-color !default;
 
 /// Default background.
 /// @type Color
-$card-divider-background: $light-gray !default;
+$tool-card-divider-background: $light-gray !default;
 
 /// Default border style.
 /// @type List
-$card-border: 1px solid $light-gray !default;
+$tool-card-border: 1px solid $light-gray !default;
 
 /// Default card shadow.
 /// @type List
-$card-shadow: none !default;
+$tool-card-shadow: none !default;
 
 /// Default border radius.
 /// @type List
-$card-border-radius: $global-radius !default;
+$tool-card-border-radius: $global-radius !default;
 
 /// Default padding.
 /// @type Number
-$card-padding: $global-padding !default;
+$tool-card-padding: $global-padding !default;
 
 /// Default bottom margin.
 /// @type number
-$card-margin-bottom: $global-margin !default;
+$tool-card-margin-bottom: $global-margin !default;
 
 /// Adds styles for a card container.
 /// @param {Color} $background - Background color of the card.
@@ -45,39 +45,32 @@ $card-margin-bottom: $global-margin !default;
 /// @param {List} $border - Border around the card.
 /// @param {List} $radius - border radius of the card.
 /// @param {List} $shadow - box shadow of the card.
-@mixin card-container(
-  $background: $card-background,
-  $color: $card-font-color,
-  $margin: $card-margin-bottom,
-  $border: $card-border,
-  $radius: $card-border-radius,
-  $shadow: $card-shadow
-) {
-  @if $global-flexbox {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-  }
+@mixin tool-card-container( $background: $tool-card-background, $color: $tool-card-font-color, $margin: $tool-card-margin-bottom, $border: $tool-card-border, $radius: $tool-card-border-radius, $shadow: $tool-card-shadow ) {
+    @if $global-flexbox {
+        //display: flex;
+        //flex-direction: column;
+        //flex-grow: 1;
+    }
 
-  margin-bottom: $margin;
+    margin-bottom: $margin;
+    border: $border;
+    border-radius: $radius;
+    background: $background;
+    box-shadow: $shadow;
+    overflow: hidden;
+    color: $color;
+    padding: $tool-card-padding;
 
-  border: $border;
-  border-radius: $radius;
 
-  background: $background;
-  box-shadow: $shadow;
 
-  overflow: hidden;
-  color: $color;
-
-  & > :last-child {
-    margin-bottom: 0;
-  }
+    & > :last-child {
+        margin-bottom: 0;
+    }
 }
 
 /// Adds styles for a card divider.
-@mixin card-divider(
-  $padding: $card-padding
+@mixin tool-card-divider(
+  $padding: $tool-card-padding
 ) {
   @if $global-flexbox {
     //flex: 0 1 auto;
@@ -92,8 +85,8 @@ $card-margin-bottom: $global-margin !default;
 }
 
 /// Adds styles for a card section.
-@mixin card-section(
-  $padding: $card-padding
+@mixin tool-card-section(
+  $padding: $tool-card-padding
 ) {
   @if $global-flexbox {
     flex: 1 0 auto;
@@ -108,36 +101,36 @@ $card-margin-bottom: $global-margin !default;
 
 @mixin foundation-card {
     .card {
-        @include card-container;
+        @include tool-card-container;
     }
 
-    .card-divider, .card-divider-no-padding {
-        @include card-divider;
+    .tool-card-divider, .tool-card-divider-no-padding {
+        @include tool-card-divider;
 
-        &.tightup-card-divider-top {
+        &.tightup-tool-card-divider-top {
             padding-top: 8px;
         }
 
-        &.tightup-card-divider-tight-top {
+        &.tightup-tool-card-divider-tight-top {
             padding-top: 5px;
         }
 
-        &.tightup-card-divider-bottom {
+        &.tightup-tool-card-divider-bottom {
             padding-bottom: 0;
             padding-top: 0;
         }
     }
 
-    .card-divider-no-padding {
+    .tool-card-divider-no-padding {
         padding: 0;
     }
 
-    .card-section {
-        @include card-section;
+    .tool-card-section {
+        @include tool-card-section;
     }
     // For IE 11 - Flexbug
     // https://github.com/philipwalton/flexbugs/issues/75
-    .card-image {
+    .tool-card-image {
         min-height: 1px;
     }
 }
@@ -145,7 +138,7 @@ $card-margin-bottom: $global-margin !default;
 @include breakpoint(medium) {
 
 
-    div .card-divider {
+    div .tool-card-divider {
         padding: 1rem 4rem;
     }
 }

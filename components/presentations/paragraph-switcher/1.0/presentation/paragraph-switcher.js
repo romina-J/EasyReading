@@ -1,73 +1,66 @@
-class ParagraphSwitcher extends Presentation{
-    constructor(functionInfo, userInterface,configuration){
-        super(functionInfo, userInterface,configuration);
+class ParagraphSwitcher extends Presentation {
+    constructor(functionInfo, userInterface, configuration) {
+        super(functionInfo, userInterface, configuration);
         this.requestCounter = 0;
     }
 
-    renderResult(request,result){
-        if(request.input.type === Paragraph.className) {
+    renderResult(request, result) {
 
-            for(let i=0; i < request.input.textNodes.length;i++){
+        let ioRes = ioTypeUtils.toIOTypeInstance(result.result);
 
-                if($(request.input.textNodes[i]).closest(".easy-reading-result").length){
+        if (ioRes.name === "Error") {
 
-                    let classList = $(request.input.textNodes[i]).closest(".easy-reading-result").attr('class').split(/\s+/);
+            alertManager.showErrorAlert(ioRes.message);
 
-                    for(let j=0; j< classList.length; j++){
-                        if(classList[j].indexOf("easy-reading-result-add-") !== -1){
+        } else if (ioRes.name === "NoResult") {
+            alertManager.showErrorAlert(ioRes.message);
+        } else if (ioRes.name === "Paragraph") {
 
-                            let oldRequestID = classList[j].substring("easy-reading-result-add-".length, classList[j].length);
+            if (request.input.type === Paragraph.className) {
 
-                            $(".easy-reading-result-orig-"+oldRequestID).contents()
-                                .filter(function() {
-                                    return this.nodeType === 3; //Node.TEXT_NODE
-                                }).unwrap();
-                            $(".easy-reading-result-add-"+oldRequestID).remove();
+                let requestID = this.createRequestId();
+                let resultClass = this.getResultClass();
+                let presentationIdentifier = this.getPresentationAndRequestIdentifier(requestID);
 
-                        }else if(classList[j].indexOf("easy-reading-result-orig-") !== -1){
-
-                            let oldRequestID = classList[j].substring("easy-reading-result-orig-".length, classList[j].length);
-                            $(".easy-reading-result-orig-"+oldRequestID).contents()
-                                .filter(function() {
-                                    return this.nodeType === 3; //Node.TEXT_NODE
-                                }).unwrap();
-                            $(".easy-reading-result-add-"+oldRequestID).remove();
-
-                        }
-
-                    }
+                for (let i = 0; i < request.input.textNodes.length; i++) {
+                    $(request.input.textNodes[i]).wrap('<span class="' + resultClass + ' ' + requestID + ' er-ps-original-text" ' + presentationIdentifier + '></span>');
                 }
+
+
+                $('<span class="' + resultClass + ' ' + requestID + ' er-ps-replace-text" ' + presentationIdentifier + '>' + result.result.paragraph + '</span>').insertAfter($("." + requestID + ".er-ps-original-text").last());
+                let button = $('<button class="' + resultClass + ' ' + requestID + '" ' + presentationIdentifier + ' style="width: 2em;height: 2em;padding: 0;border: 0;"><img src="' + this.configuration.remoteAssetDirectory + '/help-logo.png" style="width: 2em;height: 2em;"></button>');
+                button.insertAfter($("." + requestID + ".er-ps-replace-text"));
+                button.click(function () {
+                    $("." + requestID + ".er-ps-original-text").toggle();
+                    $("." + requestID + ".er-ps-replace-text").toggle();
+                });
+                $("." + requestID + ".er-ps-original-text").hide();
+
+
             }
-
-            let requestID = this.userInterface.uiId+"-"+this.functionInfo.toolId+"-"+this.requestCounter;
-            let additionalResultClass = "easy-reading-result easy-reading-result-add-"+requestID;
-            let originalClass = "easy-reading-result easy-reading-result-orig-"+requestID;
-            let className = "easy-reading-paragraph-switcher-"+this.userInterface.uiId+"-"+this.functionInfo.toolId+"-"+this.requestCounter;
-            let resultContainerID = "easy-reading-paragraph-switcher-result-"+this.userInterface.uiId+"-"+this.functionInfo.toolId+"-"+this.requestCounter;
-
-            for(let i=0; i < request.input.textNodes.length; i++){
-                $(request.input.textNodes[i]).wrap( '<span class="'+originalClass+'"></span>' );
-                console.log(request.input.textNodes[i]);
-            }
-
-
-            $( "<span id='"+resultContainerID+"' class='"+additionalResultClass+" replacingInfo'>"+result.result.paragraph +"</span>" ).insertAfter($(".easy-reading-result-orig-"+requestID).last());
-            let button = $('<button class="'+additionalResultClass+' easy-reading-interface" style="width: 2em;height: 2em;padding: 0;border: 0;"><img src="'+this.configuration.remoteAssetDirectory+'/help-logo.png" style="width: 2em;height: 2em;"></button>');
-            button.insertAfter($("#"+resultContainerID));
-            button.click(function() {
-                $(".easy-reading-result-orig-"+requestID).toggle();
-                $(".easy-reading-result-add-"+requestID+".replacingInfo").toggle();
-            });
-            $(".easy-reading-result-orig-"+requestID).hide();
-
-
-            this.requestCounter++;
-
         }
+
 
     }
 
-    undo(){
+    undo() {
+
+    }
+
+    removeResult(requestID) {
+
+        //Remove button
+        $("button." + requestID).remove();
+        //Remove replace text
+        $("." + requestID + ".er-ps-replace-text").remove();
+
+        let original = $("." + requestID + ".er-ps-original-text");
+        let parent = original.last().parent();
+        original.contents().unwrap();
+
+        if (parent.length) {
+            parent.get(0).normalize();
+        }
 
     }
 }

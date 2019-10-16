@@ -53,7 +53,7 @@ class DatabaseRequest{
 
     orderBy(columnName,direction){
 
-        if(direction !== 'ASC' && direction != 'DESC'){
+        if(direction !== 'ASC' && direction !== 'DESC'){
             throw Error("direction must be asc or desc");
         }
 

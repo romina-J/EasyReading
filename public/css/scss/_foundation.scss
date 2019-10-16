@@ -1,4 +1,4 @@
-/**
+/**22233
  * Foundation for Sites by ZURB
  * Version 6.4.3
  * foundation.zurb.com
@@ -69,22 +69,22 @@
 @import 'components/thumbnail';
 @import 'components/tooltip';
 
-@mixin foundation-everything( $flex: true) {
+@mixin foundation-everything( $flex: false) {
 
     @include foundation-global-styles;
 
 
-    @include foundation-flex-classes;
-    @include foundation-flex-grid;
+    //@include foundation-flex-classes;
+    //@include foundation-flex-grid;
 
     @include foundation-grid;
 
 
     @include foundation-typography;
     @include foundation-forms;
-    @include foundation-button;
+    //@include foundation-button;
     //@include foundation-accordion;
-    //@include foundation-accordion-menu;
+    @include foundation-accordion-menu;
     //@include foundation-badge;
     //@include foundation-breadcrumbs;
     //@include foundation-button-group;
@@ -92,12 +92,12 @@
     @include foundation-card;
     @include foundation-close-button;
     @include foundation-menu;
-    @include foundation-menu-icon;
+    //@include foundation-menu-icon;
     //@include foundation-drilldown-menu;
     //@include foundation-dropdown;
     //@include foundation-dropdown-menu;
-    @include foundation-responsive-embed;
-    @include foundation-label;
+    //@include foundation-responsive-embed;
+    //@include foundation-label;
     //@include foundation-media-object;
     //@include foundation-off-canvas;
     //@include foundation-orbit;
@@ -107,12 +107,12 @@
     //@include foundation-sticky;
     //@include foundation-reveal;
     //@include foundation-switch;
-    @include foundation-table;
+    //@include foundation-table;
     //@include foundation-tabs;
     //@include foundation-thumbnail;
-    @include foundation-title-bar;
+    //@include foundation-title-bar;
     //@include foundation-tooltip;
-    @include foundation-top-bar;
+    //@include foundation-top-bar;
     @include foundation-visibility-classes;
     @include foundation-float-classes;
 }
@@ -127,4 +127,3 @@
 
 @import "funka/funka";
 
-@import url("../fonts/fonts.css");

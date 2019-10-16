@@ -16,10 +16,16 @@ var ioTypeUtils = {
                     IOret = new VoidIOType();
                     break;
                 case 'Word':
-                    IOret = new Word(ioObject.word);
+                    IOret = new Word(ioObject.word,ioObject.lang,ioObject.sentenceStart,ioObject.sentenceEnd);
                     break;
                 case 'Sentence':
-                    IOret = new Sentence(ioObject.sentence);
+                    IOret = new Sentence(ioObject.sentence,ioObject.lang);
+                    break;
+                case 'Paragraph':
+                    IOret = new Paragraph(ioObject.paragraph,ioObject.lang);
+                    break;
+                case 'AnnotatedParagraph':
+                    IOret = new AnnotatedParagraph(ioObject.paragraph,ioObject.annotations, ioObject.lang);
                     break;
                 case 'ImageIOType':
                     IOret = new ImageIOType(ioObject.url, ioObject.alt, ioObject.title);
@@ -33,6 +39,13 @@ var ioTypeUtils = {
                 case 'URLType':
                     IOret = new URLType(ioObject.url, ioObject.target);
                     break;
+                case 'Error':
+                    IOret = new Error(ioObject.message,ioObject.type,ioObject.name,ioObject.description);
+                    break;
+                case 'NoResult':
+                    IOret = new NoResult(ioObject.message, ioObject.name,ioObject.description);
+                    break;
+
             }
         } else {
             return ioObject; // Backwards compatibility

@@ -3,7 +3,7 @@ let router = express.Router();
 
 const passport = require("passport");
 
-router.use('/', function(req,res,next){
+router.use('/', async function(req,res,next){
     req.logout();
     req.session._select_account = true;
 
@@ -11,15 +11,15 @@ router.use('/', function(req,res,next){
     let network = require("../../../core/network/network");
     let webSocketConnection = network.getConnectionWithUUID(req.session._clientToken);
     if(webSocketConnection){
-        webSocketConnection.logout();
+        await webSocketConnection.logout();
 
     }
-    res.send("Logging out ...");
 
+    if(req.session._clientToken){
+        delete req.session._clientToken;
+    }
 
-
+    res.redirect('/');
 });
-
-
 
 module.exports = router;
