@@ -5,7 +5,6 @@ class TextSelector extends WidgetBase {
 
         this.widgetID = 'er_button_' + this.widgetID;
         $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-button'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
-        globalEventListener.addPresentationFinishListener(this);
 
         globalEventListener.addPresentationFinishListener(this);
         globalEventListener.addWidgetActivatedListeners(this);
@@ -19,6 +18,9 @@ class TextSelector extends WidgetBase {
 
     disable() {
         $("#" + this.widgetID).off("click", this, this.buttonClicked);
+
+        globalEventListener.removeWidgetActivatedListeners(this);
+        globalEventListener.removePresentationFinishListener(this);
 
 
     }
@@ -73,5 +75,6 @@ class TextSelector extends WidgetBase {
     }
     remove(){
         $("#"+this.widgetID).remove();
+
     }
 }

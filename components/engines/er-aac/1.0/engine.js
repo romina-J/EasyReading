@@ -101,16 +101,18 @@ class EasyReadingAAC extends base.EngineBase {
                                         for(let i=0; i < result.taggedText.length; i++) {
                                             for (let j = 0; j < result.taggedText[i].text.length; j++) {
                                                 finalText+=result.taggedText[i].text[j];
+
+                                                //Add empty spaces again that were removed when splitting key phrases
+                                                if(j > 0){
+                                                    finalText+=" ";
+                                                }
                                             }
                                         }
                                         let theResult = new ioType.IOTypes.Paragraph(finalText);
                                         callback(theResult);
                                     }
 
-                            },
-                                new ioType.IOTypes.Word(result.taggedText[i].text[j],input.lang),config, profile, constants)
-
-                            ;
+                            }, new ioType.IOTypes.Word(result.taggedText[i].text[j],input.lang),config, profile, constants);
                         }
                     }
 

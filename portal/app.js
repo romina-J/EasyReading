@@ -24,6 +24,13 @@ hbs.registerPartials(path.join(__dirname, '..', 'public', 'views', 'partials'));
 // Ensure we automatically parse any json-bodies
 app.use(express.json());
 
+/*
+var simulateLatency = require('express-simulate-latency');
+// use as middleware for all subsequent handlers...
+var smallLag = simulateLatency({ min: 500, max: 1000 });
+app.use(smallLag);
+*/
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());

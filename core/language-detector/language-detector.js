@@ -42,15 +42,29 @@ let languageDetector = {
             return profileLanguage;
         }
 
+        //Iterate through results
+        for(let i=0; i < result.length;i++) {
+            if ((result[i][1] < 0.17)) {
+                break;
+            }
+            //If profile language within 17% - it is very possible that its the profiles language
+            let languageCode = this.languageList.getLanguageCode(result[i][0]);
+
+            if(languageCode === profileLanguage){
+                return profileLanguage;
+            }
+        }
 
         //Iterate through results - skip languages like "pidgin"
         for(let i=0; i < result.length;i++){
-            if((result[i][1] < 0.22) && lang !== "undefined"){
+            if((result[i][1] < 0.15) && lang !== "undefined"){
                 return lang;
             }
             let languageCode = this.languageList.getLanguageCode(result[i][0]);
             if(languageCode){
                 if(this.commonLanguages.includes(languageCode)){
+
+
                     return languageCode;
                 }
             }

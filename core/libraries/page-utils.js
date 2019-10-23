@@ -352,6 +352,9 @@ var pageUtils = {
             }
             if (paragraph_container.length > 0) {
                 paragraph = paragraph_container[0].innerText.trim().replace(/(\r\n\t|\n|\r\t)/gm, "");
+                paragraph = paragraph.replace(/\t/g, '');
+                //Remove &shy; etc
+                paragraph = paragraph.replace(/[\u00AD\u002D\u2011]+/g,'');
                 return {
                     type: Paragraph.className,
                     value: paragraph,
@@ -363,6 +366,8 @@ var pageUtils = {
             } else {
                 paragraph = target.text().trim().replace(/(\r\n\t|\n|\r\t)/gm, "");
                 paragraph = paragraph.replace(/\t/g, '');
+                //Remove &shy; etc
+                paragraph = paragraph.replace(/[\u00AD\u002D\u2011]+/g,'');
                 return {
                     type: Paragraph.className,
                     value: paragraph,
