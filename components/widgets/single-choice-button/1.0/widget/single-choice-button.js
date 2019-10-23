@@ -21,7 +21,7 @@ class SingleChoiceButton extends WidgetBase {
 
     disable() {
         $("#" + this.widgetID).off("click", this, this.singleChoiceButtonClicked);
-
+        globalEventListener.removeWidgetActivatedListeners(this);
 
     }
 
@@ -136,6 +136,7 @@ class SingleChoiceButton extends WidgetBase {
         if(this.active){
             this.deactivateWidget();
         }
+        this.disable();
         $("#" + this.widgetID).remove();
 
     }

@@ -26,6 +26,8 @@ class ContinuousChoiceButton extends WidgetBase {
 
     disable() {
         $("#" + this.widgetID).off("click", this, this.continuousChoiceButtonClicked);
+        globalEventListener.removeWidgetActivatedListeners(this);
+        globalEventListener.removePresentationFinishListener(this);
 
 
     }
@@ -48,20 +50,6 @@ class ContinuousChoiceButton extends WidgetBase {
                     break;
             }
         }
-        /*
-        for (let i = 0; i < this.functionInfo.source.inputTypes.length; i++) {
-            switch (this.functionInfo.source.inputTypes[i].inputType) {
-                case Word.className:
-                    globalEventListener.addWordClickListener(this);
-                    break;
-                case Paragraph.className:
-                    globalEventListener.addParagraphClickListener(this);
-                    break;
-                default:
-                    break;
-            }
-        }
-        */
 
         globalEventListener.widgetActivated(this);
 
@@ -98,6 +86,7 @@ class ContinuousChoiceButton extends WidgetBase {
 
     continuousChoiceButtonClicked(e) {
 
+        console.log("hey you clicked");
         if(e.data.active){
             e.data.deactivateWidget();
         }else{
@@ -168,15 +157,7 @@ class ContinuousChoiceButton extends WidgetBase {
 
 
     }
-    /*
-    widgetActivated(widget){
-        if(widget !== this){
 
-           this.deactivateWidget();
-        }
-
-    }
-    */
     requestFinished(){
         easyReading.busyAnimation.stopAnimation();
         this.requestInProgress = false;
@@ -184,9 +165,12 @@ class ContinuousChoiceButton extends WidgetBase {
 
     remove(){
 
+        console.log("REMOOOVVV");
+
         if(this.active){
             this.deactivateWidget();
         }
+        this.disable();
 
         $("#" + this.widgetID).remove();
     }

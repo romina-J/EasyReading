@@ -27,7 +27,8 @@ let globalEventListener = {
             if(alertManager.suppressClick()){
                 return;
             }
-            if (!$(e.target).closest('.easy-reading-interface').length) {
+            if (!globalEventListener.isIgnoredElement(e.target)) {
+
 
                 if (globalEventListener.activeClickListeners.length || globalEventListener.activeWordClickListeners.length || globalEventListener.activeParagraphClickListeners.length) {
                     globalEventListener.clickListener(e);
@@ -101,9 +102,6 @@ let globalEventListener = {
      */
     addClickListener: function (clickListener) {
 
-        console.log("adding");
-
-        //clickListener("hi");
         globalEventListener.activeClickListeners.push(clickListener);
 
     },
@@ -443,5 +441,9 @@ let globalEventListener = {
         for (let i = 0; i < globalEventListener.widgetActivatedListeners.length; i++) {
             globalEventListener.widgetActivatedListeners[i].widgetActivated(widget);
         }
+    },
+
+    isIgnoredElement(element){
+        return $(element).closest('.easy-reading-interface').length || $(element).closest('button').length ||  $(element).closest('input').length || $(element).closest('select').length;
     }
 };

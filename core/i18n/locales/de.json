@@ -363,5 +363,8 @@
 	"readability.1.0.readability.description": "readability.1.0.readability.description",
 	"readability.1.0.readability.source-title": "readability.1.0.readability.source-title",
 	"readability.1.0.readability.source-url": "readability.1.0.readability.source-url",
-	"readability.1.0.readability.howToUse": "readability.1.0.readability.howToUse"
+	"readability.1.0.readability.howToUse": "readability.1.0.readability.howToUse",
+	"readability.1.0.readability.data-option.property.contentWidth.label": "readability.1.0.readability.data-option.property.contentWidth.label",
+	"readability.1.0.readability.data-option.property.fontSize.label": "readability.1.0.readability.data-option.property.fontSize.label",
+	"readability.1.0.readability.data-option.property.lineSpacing.label": "readability.1.0.readability.data-option.property.lineSpacing.label"
 }

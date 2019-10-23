@@ -358,5 +358,8 @@
 	"top": "top",
 	"right": "right",
 	"bottom": "bottom",
-	"left": "left"
+	"left": "left",
+	"readability.1.0.readability.data-option.property.contentWidth.label": "readability.1.0.readability.data-option.property.contentWidth.label",
+	"readability.1.0.readability.data-option.property.fontSize.label": "readability.1.0.readability.data-option.property.fontSize.label",
+	"readability.1.0.readability.data-option.property.lineSpacing.label": "readability.1.0.readability.data-option.property.lineSpacing.label"
 }
