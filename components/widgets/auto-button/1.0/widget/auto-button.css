@@ -7,3 +7,7 @@
     -webkit-border-radius: 0 !important;
     padding: 0 !important;
 }
+
+.er-button-active{
+    background-color: #ffc679 !important;
+}

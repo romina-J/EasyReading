@@ -69,11 +69,11 @@ const customFunctionViewController = require("./controller/view/customFunctionVi
 const clientCaretakerOverviewController = require("./controller/view/clientCaretakerOverviewController");
 const clientCaretakerRegisterController = require("./controller/view/clientCaretakerRegisterController");
 const caretakerClientOverviewController = require("./controller/view/caretakerClientOverviewController");
-const caretakerDomHelperController = require("./controller/view/caretakerDomHelperController");
+const caretakerContentReplacementController = require("./controller/view/caretakerContentReplacementController");
 
 // Authentication routes
 //Caretaker
-app.get('/login', userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateBackEnd, localeController.translateClientWelcome, (_, res) => res.render('caretaker_login', res.locals.context));
+app.get('/login', userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateBackEnd, (_, res) => res.render('caretaker_login', res.locals.context));
 app.get('/caretaker/login/google', passport.authenticate("google"));
 app.get('/caretaker/login/facebook', passport.authenticate("facebook"));
 app.get('/auth/callback', passport.authenticate("google"), authentication.redirectToOrigin);
@@ -101,11 +101,10 @@ app.use('/client/function-overview', customFunctionViewController, (_, res) => r
 // Caretaker
 app.get('/caretaker/clients', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientList, caretakerClientOverviewController, (_, res) => res.render('caretaker_clients', res.locals.context));
 app.get('/caretaker/client-configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, patientController.getEngineConfigByuserId, (_, res) => res.render('caretaker_client_configure', res.locals.context));
-app.get('/caretaker/custom-paragraphs-overview', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateDomHelpers, caretakerDomHelperController.getDOMHelpersByuserId, (_, res) => res.render('caretaker_domhelpers', res.locals.context));
-app.get('/caretaker/custom-paragraph', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateDomHelpers, caretakerDomHelperController.getDOMHelperById, (_, res) => res.render('caretaker_domhelper_edit', res.locals.context));
-app.post('/caretaker/custom-paragraph', caretakerDomHelperController.editDomHelper);
-app.post('/caretaker/add-custom-paragraph', caretakerDomHelperController.saveDomHelper);
-app.post('/caretaker/custom-paragraphs-action', caretakerDomHelperController.quickEditDomHelper);
+app.get('/caretaker/custom-paragraphs-overview', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateContentReplacements, caretakerContentReplacementController.getContentReplacementsByUserId, (_, res) => res.render('caretaker_content_replacements', res.locals.context));
+app.get('/caretaker/custom-paragraph', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateContentReplacements, caretakerContentReplacementController.getContentReplacementsById, (_, res) => res.render('caretaker_content_replacements_edit', res.locals.context));
+app.post('/caretaker/custom-paragraph', caretakerContentReplacementController.saveOrUpdateContentReplacement);
+app.post('/caretaker/custom-paragraphs-action', caretakerContentReplacementController.quickEditContentReplacement);
 
 // Client
 app.use('/client/welcome', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
@@ -118,11 +117,6 @@ app.use('/client/caretaker/register', authentication.isAuthenticated, userContro
 const egineController = require("./controller/api/engineController");
 const profileController = require("./controller/api/profileController");
 app.post('/api/v1/configuration', egineController.updateEngineConfiguratoin);
-/*
-app.post('/api/v1/profile', profileController.createProfile);
-app.patch('/api/v1/profile', profileController.updateProfile);
-app.post('/api/v1/setType', profileController.setType);
-*/
 app.post('/api/v1/updateUserInterface', profileController.updateUserInterface);
 
 module.exports = app;

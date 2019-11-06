@@ -39,6 +39,9 @@ var ioTypeUtils = {
                 case 'URLType':
                     IOret = new URLType(ioObject.url, ioObject.target);
                     break;
+                case 'ContentReplacement':
+                    IOret = new ContentReplacement(ioObject.replacements,ioObject.lang);
+                    break;
                 case 'Error':
                     IOret = new Error(ioObject.message,ioObject.type,ioObject.name,ioObject.description);
                     break;

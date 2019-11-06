@@ -14,7 +14,6 @@ var easyReading = {
 
     startup: function (uiCollection) {
         let updated = easyReading.uiUpdated;
-        console.log("startup");
         this.init();
         easyReading.started = true;
         globalEventListener.init();
@@ -31,7 +30,7 @@ var easyReading = {
                 for (let j = 0; j < uiCollection.uiTabConfig.length; j++) {
 
                     if (uiCollection.uiTabConfig[j].id === uiCollection.userInterfaces[i].source.id) {
-                        console.log(uiCollection.uiTabConfig);
+
                         uiTabConfig = uiCollection.uiTabConfig[j].configuration;
                     }
 
@@ -94,6 +93,8 @@ var easyReading = {
                 easyReading.userInterfaces[i].uiUpdated();
             }
         }
+
+        console.log("startup - complete");
 
     },
     setToolIndexID: function (tool,toolIndex) {
@@ -160,8 +161,6 @@ var easyReading = {
 
                         if (!toolFound) {
 
-
-                            console.log("removing");
                             currentUserInterface.tools[j].widget.remove();
                             if (currentUserInterface.tools[j].presentation) {
                                 currentUserInterface.tools[j].presentation.remove();
@@ -219,7 +218,6 @@ var easyReading = {
                             };
                             currentUserInterface.tools.splice(k, 0,newTool);
                         }else{
-                            console.log(uiCollection.userInterfaces[i].tools[k].function);
                             currentUserInterface.tools[k].widget.updateConfigurationAndFunction(uiCollection.userInterfaces[i].tools[k].widget.configuration,uiCollection.userInterfaces[i].tools[k].function);
                             if(currentUserInterface.tools[k].presentation){
 
@@ -234,9 +232,6 @@ var easyReading = {
                     currentUserInterface.uiUpdated();
                 }
                 this.uiCollection = uiCollection;
-
-                console.log(this);
-                console.log("I CHANGED!!");
             }
 
 
@@ -255,9 +250,6 @@ var easyReading = {
 
     createToolSignatureID: function (userInterface,tool) {
 
-        if(!tool){
-            console.log("WTF");
-        }
 
         let id = tool.function.source.id + "-" + tool.widget.source.id;
         if (tool.presentation) {
@@ -279,7 +271,6 @@ var easyReading = {
 
         if (easyReading.started) {
             easyReading.uiUpdated = true;
-            console.log("reset");
             globalEventListener.reset();
             easyReading.widgets.forEach(function (widget) {
                 widget.remove();

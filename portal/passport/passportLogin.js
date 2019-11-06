@@ -1,4 +1,9 @@
 const profileRepo = require("../repository/profileRepo");
+const {OAuth2Client} = require('google-auth-library');
+const CHROME_CLIENT_ID = "691784987953-qc6ohlnk2n6g38ea7mugvbgcfcpar6g6.apps.googleusercontent.com";
+const FIREFOX_CLIENT_ID = "691784987953-2t52gjtb395j4ore0lel1526o5nboefd.apps.googleusercontent.com";
+const IOS_CLIENT_ID = "584464554129-3vsvg5igvdh7cfsc0prjkjpikq7nqd1s.apps.googleusercontent.com";
+const client = new OAuth2Client(CHROME_CLIENT_ID);
 
 async function userLogin(req, loginInfo, callback) {
 
@@ -136,18 +141,71 @@ function randomInt(low, high) {
 }
 
 async function createLoginInfoAnonym(req, uuid) {
-    let randomEmail = await createRandomEmail();
-
     let locale = "en";
-    if(req.query.lang){
+    if (req.query.lang) {
         locale = req.query.lang;
     }
+
+    if (req.query.googleToken) {
+
+        let googleInfo = await verifyGoogleToken(req.query.googleToken);
+
+        if (googleInfo) {
+
+            let profileInfo = {
+                id: googleInfo.googleId,
+                emails: [
+                    {value: googleInfo.email}
+                ],
+                _json: {
+                    language: locale,
+                }
+
+            };
+
+
+            return await createLoginInfoGoogle(req, profileInfo);
+
+
+        }
+
+    }
+
+    let randomEmail = await createRandomEmail();
+
+
     return {
         loginType: "Anonym",
         id: uuid,
         email: randomEmail,
         locale: locale,
     };
+}
+
+async function verifyGoogleToken(token) {
+
+    try {
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: [CHROME_CLIENT_ID, FIREFOX_CLIENT_ID, IOS_CLIENT_ID] // Specify the CLIENT_ID of the app that accesses the backend
+            // Or, if multiple clients access the backend:
+            //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+        });
+        const payload = ticket.getPayload();
+        const userId = payload['sub'];
+        console.log("verify token- user id: " + userId);
+        // If request specified a G Suite domain:
+        //const domain = payload['hd'];
+        return {
+            googleId: payload['sub'],
+            email: payload['email']
+        };
+    } catch (e) {
+
+        console.log("Error verifying Goolge Token:" + token);
+    }
+
 }
 
 async function createLoginInfoGoogle(req, profile) {

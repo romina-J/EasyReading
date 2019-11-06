@@ -33,7 +33,7 @@ class UserInterfaceBase{
     }
 
     remove(){
-        console.log("Remooving user interface:");
+        console.log("Removing user interface:");
     }
 
     uiUpdated(){

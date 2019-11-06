@@ -43,6 +43,9 @@ let nodeIoTypeUtils = {
                 case 'URLType':
                     IOret = new ioTypes.IOTypes.URLType(ioObject.url, ioObject.target);
                     break;
+
+                case 'ContentReplacement':
+                    IOret = new ioTypes.IOTypes.ContentReplacement(ioObject.replacements,ioObject.lang);
                 case 'Error':
                     IOret = new ioTypes.IOTypes.Error(ioObject.message,ioObject.type,ioObject.name,ioObject.description);
                     break;

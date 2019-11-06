@@ -31,12 +31,12 @@ class WebSocketConnection {
         let errorMsg = null;
 
         try {
-            if(msg === "[object Object]"){
+            if (msg === "[object Object]") {
                 return;
             }
 
             let req = JSON.parse(msg);
-            if(req.type !== "ping"){
+            if (req.type !== "ping") {
                 console.log("Message received:");
                 console.log(msg);
             }
@@ -109,6 +109,11 @@ class WebSocketConnection {
             } else if (req.type === "cloudRequest") {
 
                 let core = rootRequire("./core/core");
+                if (!this.profile) {
+
+                    console.log("attempted a cloud request without a profile.");
+                    return;
+                }
 
                 let config = this.profile.getConfigurationForFunction(req);
 
@@ -165,7 +170,12 @@ class WebSocketConnection {
 
     sendMessage(msg) {
 
-        this.ws.send(JSON.stringify(msg));
+
+        try {
+            this.ws.send(JSON.stringify(msg));
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     async connectionClosed() {
@@ -181,7 +191,8 @@ class WebSocketConnection {
     createUserDirectory() {
 
     }
-    async logout(){
+
+    async logout() {
         let request = {
             type: "userLogout",
             result: null,
@@ -190,12 +201,12 @@ class WebSocketConnection {
         await this.logoutUser();
     }
 
-    updateProfile(profile,normalized){
+    updateProfile(profile, normalized) {
         profile.uuid = this.profile.uuid;
         let profileBuilder = require("../profile/profile-builder");
         profileBuilder.createClassMappings(profile);
 
-        if(!normalized){
+        if (!normalized) {
 
             if (!profile.debugMode) {
                 profileBuilder.normalizeCSSPaths(profile, this.url);
@@ -235,8 +246,8 @@ class WebSocketConnection {
         };
     }
 
-    async logoutUser(){
-        if(this.profile){
+    async logoutUser() {
+        if (this.profile) {
 
             await this.profile.logout();
             this.profile = null;

@@ -308,7 +308,7 @@ class JavaScriptType extends IOType {
 class URLType extends IOType {
     constructor(url, target="", description="") {
         super("URLType", description);
-        this.url = new URL(url);
+        this.url = url;
         this.target = target;
     }
     static get className() {
@@ -329,7 +329,28 @@ class URLType extends IOType {
 
 
 }
+class ContentReplacement extends IOType{
+    constructor(replacments, lange = "en",description=""){
+        super("ContentReplacement",description);
 
+        if(replacments){
+            this.replacements = replacments;
+        }else{
+            this.replacements = [];
+        }
+
+    }
+
+    addReplacement(type, replacement){
+        this.replacements.push({
+            type: type,
+            replacement: replacement,
+        })
+    }
+    static get className() {
+        return 'ContentReplacement';
+    }
+}
 
 class TaggedText extends IOType{
     constructor(originalText,taggedText = null,lang="en", description="") {
@@ -415,6 +436,7 @@ if (typeof window === 'undefined') {
         ImageIOType: ImageIOType,
         AudioType: AudioType,
         URLType: URLType,
+        ContentReplacement: ContentReplacement,
         JavaScriptType: JavaScriptType,
         Error: Error,
         NoResult: NoResult,

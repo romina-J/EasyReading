@@ -9,6 +9,7 @@ let localeService = {
             locales: ['en', 'es', 'de', 'sv'],
             defaultLocale: 'en',
             queryParameter: 'lang',
+            syncFiles: true,
             directory: __dirname + '/locales'
         });
 

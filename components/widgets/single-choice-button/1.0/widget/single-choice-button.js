@@ -7,7 +7,7 @@ class SingleChoiceButton extends WidgetBase {
         this.outputTypeClass = null;
         this.requestInProgress = false;
         this.widgetID = 'er_single_choice_button_' + this.widgetID;
-        $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-single-choice'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
+        $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-single-choice easy-reading-button'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
 
         this.enable();
         globalEventListener.addWidgetActivatedListeners(this);

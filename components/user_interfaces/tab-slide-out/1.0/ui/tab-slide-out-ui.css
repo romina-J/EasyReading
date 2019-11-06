@@ -1,21 +1,9 @@
-.tab-slide-out-grid-horizontal {
-    display: flex !important;
-    flex-wrap: wrap;
-    min-width: 98px !important;
-    max-width: 100% !important;
-}
-
-.tab-slide-out-handle-horizontal {
-    /* Rotate handle background image */
-    -webkit-transform: rotate(-90deg);
-    -moz-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    -o-transform: rotate(-90deg);
-    transform: rotate(-90deg);
-}
-
 .swal2-container{
     z-index: 9999999999999999 !important;
+}
+
+#er-tab-slide-out-handle {
+    background: url("images/logo_w.png") no-repeat center;
 }
 
 .tab-slide-out-animated{
@@ -64,4 +52,8 @@
         transform: scale(0);
     }
 
+}
+
+.easy-reading-button{
+    background-color: white !important;
 }

@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
-<html lang="en">
+<html lang="{{lang}}">
+
 
 <head>
     <title>{{page_caretakerlist_title}}</title>
@@ -30,7 +31,7 @@
                     <ul class="no-bullet">
                         {{#each existingClientCarerRelations}}
                             <li>
-                                {{ email }} <input type="submit" name="caretaker_{{id}}" value="Remove caretaker">
+                                {{ email }} <input type="submit" name="caretaker_{{id}}" value="{{../page_remove_caretaker}}">
                             </li>
                         {{/each}}
                     </ul>

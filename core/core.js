@@ -242,13 +242,16 @@ let core = {
         let base = require("./components/engines/base/engine-base");
         let ioType = rootRequire("core/IOtypes/iotypes");
         if (func.inputTypes[0].inputType === ioType.IOTypes.VoidIOType.className ||
-            func.inputTypes[0].inputType === ioType.IOTypes.Page.className ||
-            func.inputTypes[0].inputType === ioType.IOTypes.URLType.className) {
+            func.inputTypes[0].inputType === ioType.IOTypes.Page.className) {
 
             let button = this.getWidget("button");
             return button.getDefaultConfiguration();
 
-        } else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className ||
+        }else if (func.inputTypes[0].inputType === ioType.IOTypes.URLType.className) {
+            let autoButton = this.getWidget("auto-button");
+            return autoButton.getDefaultConfiguration();
+
+        }else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Sentence.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Paragraph.className  ||
             func.inputTypes[0].inputType === ioType.IOTypes.AnnotatedParagraph.className) {
@@ -265,9 +268,11 @@ let core = {
 
 
 
-            } else {
+            } else{
+
                 let singleChoiceButton = this.getWidget("single-choice-button");
                 return singleChoiceButton.getDefaultConfiguration();
+
             }
 
 
@@ -305,6 +310,13 @@ let core = {
             let annotatedParagraphTooltipRenderer = this.getPresentation("annotated-paragraph-switcher");
 
             return annotatedParagraphTooltipRenderer.getDefaultConfiguration();
+
+        }else if (func.outputTypes[0].outputType === ioType.IOTypes.ContentReplacement.className) {
+
+
+            let contentReplacementSwitcher = this.getPresentation("content-replacement-switcher");
+
+            return contentReplacementSwitcher.getDefaultConfiguration();
 
         }
 
