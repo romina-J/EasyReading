@@ -1,5 +1,5 @@
 var core = require("./core/core");
-core.debugMode = true;
+core.debugMode = false;
 
 core.startUp().catch(function (error) {
     console.log(error);
