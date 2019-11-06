@@ -63,7 +63,7 @@ class ContentReplacementSwitcher extends Presentation {
 
     }
 
-    removeResult() {
+    removeResult(requestID) {
 
         if(this.currentRequestID){
 
