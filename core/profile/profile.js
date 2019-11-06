@@ -10,8 +10,6 @@ class Profile {
         this.userInterfaces = [];
         this.plugins = [];  // Array of {id: string, version: string} e.g. [{id: 'test_plugin', version: '1.0'}]
         this.userInterfaceCollectionID = 0;
-        this.domHelpers = [];
-        this.domHelperCollectionID = 0;
         this.uuid = uuid;
         this.webSocketConnection = null;
         this.roles = ['client'];

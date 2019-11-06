@@ -31,6 +31,13 @@ class Request {
                 }
                     break;
 
+
+                case "URL": {
+                    this.inputType = new URLType(input.url);
+                }
+                    break;
+
+
                 default: {
                     console.log("input type not supported!...")
                 }

@@ -284,7 +284,7 @@ class TextHelpTTS extends base.EngineBase {
                             }
                         }
                         const fs = require('fs-extra');
-                        let webPath = "tmp/" + webSocketConnection.profile.uuid + "/th-tts/";
+                        let webPath = "tmp/" + profile.uuid + "/th-tts/";
                         let tempDirPath = "./public/" + webPath;
                         if (!fs.existsSync(tempDirPath)) {
                             fs.mkdirSync(tempDirPath);

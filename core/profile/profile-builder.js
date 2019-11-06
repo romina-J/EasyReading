@@ -381,60 +381,6 @@ let profileBuilder = {
 
     },
 
-    /**
-     * Load DOM helpers for the given profile from active DOMHelper collections, both enabled and disabled
-     * @param profile: a loaded user profile
-     * @returns {Promise<*>}
-     */
-    loadActiveDomHelpers: async function(profile) {
-        let databaseManager = require("./../database/database-manager");
-        try {
-            let loadActiveDOMHelperRequest = databaseManager.createRequest("dom_help_collection")
-                .where("pid", "=", profile.id)
-                .where("active", "=", 1);
-            let loadActiveDOMHelperResult = await databaseManager.executeRequest(loadActiveDOMHelperRequest);
-            if (loadActiveDOMHelperResult.result.length > 0) {
-                return this.loadDomHelpers(profile, loadActiveDOMHelperResult.result[0].id);
-            } else {
-                return new Promise(function (resolve, reject) {
-                    resolve([]);
-                });
-            }
-        } catch (error) {
-            return new Promise(function (resolve, reject) {
-                reject(error);
-            });
-        }
-    },
-
-    loadDomHelpers: async function(profile, collectionID) {
-        let core = require("./../core");
-        let databaseManager = require("./../database/database-manager");
-        let domHelpers = [];
-        let errorMsg = null;
-        try {
-            profile.domHelperCollectionID = collectionID;
-            let loadDomHelpersRequest = databaseManager.createRequest("dom_help_configuration").where(
-                "dom_help_collection",
-                "=",
-                collectionID
-            );
-            let loadDomHelpersResult = await databaseManager.executeRequest(loadDomHelpersRequest);
-            if (loadDomHelpersResult.result.length > 0) {
-                domHelpers = loadDomHelpersResult.result;
-            }
-        }  catch (error) {
-            errorMsg = error;
-        }
-        return new Promise(function (resolve, reject) {
-            if (errorMsg) {
-                reject(errorMsg);
-            } else {
-                resolve(domHelpers);
-            }
-        });
-    },
-
     loadActiveUserInterfaces: async function (profile) {
         let databaseManager = require("./../database/database-manager");
 

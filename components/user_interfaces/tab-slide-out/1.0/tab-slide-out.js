@@ -8,9 +8,8 @@ class TabSlideOutUserInterface extends UserInterfaceBase{
         this.name = "TabSlideOut";
         this.description = "Simple tab slide out";
         this.versionDescription = "Initial Version";
-        this.scripts = ["ui/jquery.tabSlideOut.js", "ui/tab-slide-out-ui.js", "ui/jquery-ui.js",
-            "ui/imagesloaded.pkgd.js"];
-        this.css = ["ui/jquery.tabSlideOut.css", "ui/jquery-ui.css", "ui/tab-slide-out-ui.css"];
+        this.scripts = ["ui/jquery-ui.js", "ui/erTabSlideOut.js", "ui/tab-slide-out-ui.js", "ui/imagesloaded.pkgd.js"];
+        this.css = ["ui/jquery-ui.css", "ui/tab-slide-out-ui.css", "ui/erTabSlideOut.css"];
         this.assetDirectory = "ui/images";
         this.implementationClass = "TabSlideOutUserInterface";
 

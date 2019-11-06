@@ -12,7 +12,6 @@ class SpinnerBusyAnimation extends BusyAnimation{
                 top:   e.pageY+20
             });
         });
-        console.log(configuration);
     }
 
 

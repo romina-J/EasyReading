@@ -1,7 +1,7 @@
 let Profile = {
     "$id": "https://www.easyreading.eu/schemas/Profile.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title":"profile",
+    "title": "profile",
     "type": "object",
     "properties": {
         "googleID": {
@@ -10,17 +10,17 @@ let Profile = {
         "facebookID": {
             "type": "string"
         },
-        "email":{
-            "type" : "string",
-            "format" : "email"
+        "email": {
+            "type": "string",
+            "format": "email"
         },
-        "role":{
+        "role": {
             "type": "integer",
             "title": "Role for this profile ",
             "default": 0,
         },
-        "locale":{
-            "type" : "string",
+        "locale": {
+            "type": "string",
             "maxLength": 255,
             "title": "Language of the user",
             "default": "en",
@@ -29,7 +29,7 @@ let Profile = {
     "required": [
         "email"
     ],
-    "unique":[
+    "unique": [
         ["email"]
     ]
 };
@@ -37,7 +37,7 @@ let Profile = {
 let Role = {
     "$id": "https://www.easyreading.eu/schemas/Profile.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title":"role",
+    "title": "role",
     "type": "object",
     "properties": {
         "user_id": {
@@ -59,7 +59,7 @@ let Role = {
 let ClientCarerRelation = {
     "$id": "https://www.easyreading.eu/schemas/Profile.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title":"client_carer_relation",
+    "title": "client_carer_relation",
     "type": "object",
     "properties": {
         "client_id": {
@@ -85,11 +85,10 @@ let ClientCarerRelation = {
 };
 
 
-
 let UICollection = {
     "$id": "https://www.easyreading.eu/schemas/UICollection.json",
     "type": "object",
-    "title":"ui_collection",
+    "title": "ui_collection",
     "definitions": {},
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
@@ -113,7 +112,7 @@ let UICollection = {
 let UIConf = {
     "$id": "https://www.easyreading.eu/schemas/UIConf.json",
     "type": "object",
-    "title":"ui_conf",
+    "title": "ui_conf",
     "definitions": {},
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
@@ -149,7 +148,7 @@ let UIConf = {
 let PluginConf = {
     "$id": "https://www.easyreading.eu/schemas/PluginConf.json",
     "type": "object",
-    "title":"plugin_conf",
+    "title": "plugin_conf",
     "definitions": {},
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
@@ -177,11 +176,10 @@ let PluginConf = {
 };
 
 
-
 let BusyAnimationConf = {
     "$id": "https://www.easyreading.eu/schemas/PluginConf.json",
     "type": "object",
-    "title":"busy_animation_conf",
+    "title": "busy_animation_conf",
     "definitions": {},
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
@@ -212,7 +210,7 @@ let BusyAnimationConf = {
 let ToolConf = {
     "$id": "https://www.easyreading.eu/schemas/ToolConf.json",
     "type": "object",
-    "title":"tool_conf",
+    "title": "tool_conf",
     "definitions": {},
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
@@ -308,7 +306,7 @@ let ToolConf = {
 let HealthCareWorkerPatient = {
     "$id": "https://www.easyreading.eu/schemas/HealthCareWorkerPatient.json",
     "type": "object",
-    "title":"health_care_worker_patient",    
+    "title": "health_care_worker_patient",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
         "health_care_worker_id": {
@@ -324,76 +322,82 @@ let HealthCareWorkerPatient = {
 
         }
     },
-    "unique":[
+    "unique": [
         ["health_care_worker_id", "patient_id"]
     ]
 };
 
-let DOMHelpConf = {
-    "$id": "https://www.easyreading.eu/schemas/DOMHelpConf.json",
+let ContentReplacement = {
+    "$id": "https://www.easyreading.eu/schemas/ContentReplacement.json",
     "type": "object",
-    "title": "dom_help_configuration",
+    "title": "content_replacement",
     "definitions": {},
     "$schema": "http://json-schema.org/draft-07/schema#",
     "properties": {
         "title": {
             "$id": "/properties/title",
             "type": "string",
-            "title": "Title for the helper",
+            "title": "Title",
+            "description": "Title for the content replacement"
         },
         "description": {
             "$id": "/properties/description",
             "type": "string",
-            "title": "Short description of the helper (optional)",
+            "title": "Description",
+            "description": "Short description of the content replacement (optional)"
         },
-        "url_pattern": {
-            "$id": "/properties/url_pattern",
+        "url": {
+            "$id": "/properties/url",
             "type": "string",
-            "title": "The URL Pattern Schema",
+            "title": "Site URL",
+            "description": "URL of the page where the replacement should be applied",
         },
-        "element_id_pattern": {
-            "$id": "/properties/element_id_pattern",
+
+        "selector": {
+            "$id": "/properties/selector",
             "type": "string",
-            "title": "The Element ID Pattern Schema",
+            "title": "Selector",
+            "description": "The selector of the element within the DOM",
         },
-        "element_content": {
-            "$id": "/properties/element_contents",
+        "selector_type": {
+            "$id": "/properties/selector_type",
             "type": "string",
-            "title": "The Element Content Schema",
+            "title": "Selector Type",
+            "description": "Defines which selector to use. E.g: jQuery selector",
+        },
+
+        "scope": {
+            "$id": "/properties/scope",
+            "type": "string",
+            "enum": ["pubic", "clients"],
+            "title": "Scope",
+            "description": "Defines which this replacement is visible for everybody, or only for the clients of the person that created the replacement",
+        },
+        "replacement": {
+            "$id": "/properties/replacement",
+            "type": "string",
+            "title": "Replacement",
+            "description": "The content of the replacement",
+        },
+        "language": {
+            "$id": "/properties/language",
+            "type": "string",
+            "title": "Language",
+            "description": "Language code of the replacement language",
         },
         "active": {
             "$id": "/properties/active",
             "type": "boolean",
-            "title": "Whether this item is enabled for its user",
-            "default": true
+            "default": true,
+            "title": "Active",
+            "description": "Defines if the replacement is active or not. Only active replacements are shown to users."
         },
-        "dom_help_collection": {
-            "$id": "/properties/ui_collection",
-            "type": "integer",
-            "title": "The DOM Help Collection Schema ",
-        }
-    }
-};
-
-let DOMHelpCollection = {
-    "$id": "https://www.easyreading.eu/schemas/DOMHelpCollection.json",
-    "type": "object",
-    "title":"dom_help_collection",
-    "definitions": {},
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "properties": {
         "pid": {
             "$id": "/properties/pid",
             "type": "integer",
-            "title": "The profile id Schema",
+            "title": "Profile ID",
+            "description": "The profile ID of the user who created the replacement",
         },
-        "active": {
-            "$id": "/properties/active",
-            "type": "boolean",
-            "title": "The Active Schema",
-            "default": false,
-        },
-
     }
 };
 
@@ -532,8 +536,7 @@ let coreTableDefinitions = {
         BusyAnimationConf,
         CustomFunction,
         CustomToolConf,
-        DOMHelpConf,
-        DOMHelpCollection,
+        ContentReplacement,
         ClientCarerRelation,
     ],
 

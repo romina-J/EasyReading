@@ -21,7 +21,7 @@ class Readability extends base.EngineBase{
                 name: "Readability",
                 description : "Gets Main Content",
                 defaultIcon : "assets/colorize.png",
-                includeInDefaultProfile: false,
+                includeInDefaultProfile: true,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,

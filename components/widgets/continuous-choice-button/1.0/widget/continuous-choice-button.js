@@ -6,7 +6,7 @@ class ContinuousChoiceButton extends WidgetBase {
         this.active = false;
         this.requestInProgress = false;
         this.widgetID = 'er_continuous_choice_button_' + this.widgetID;
-        $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-continuous-choice'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
+        $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-continuous-choice easy-reading-button'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
 
         globalEventListener.addPresentationFinishListener(this);
 
@@ -86,7 +86,6 @@ class ContinuousChoiceButton extends WidgetBase {
 
     continuousChoiceButtonClicked(e) {
 
-        console.log("hey you clicked");
         if(e.data.active){
             e.data.deactivateWidget();
         }else{
@@ -165,7 +164,6 @@ class ContinuousChoiceButton extends WidgetBase {
 
     remove(){
 
-        console.log("REMOOOVVV");
 
         if(this.active){
             this.deactivateWidget();
