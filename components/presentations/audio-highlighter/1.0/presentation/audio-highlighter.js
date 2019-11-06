@@ -170,7 +170,7 @@ class AudioHighlighter extends Presentation{
 
     }
 
-    removeResult(){
+    removeResult(requestID){
 
         if(this.wordTextMarker){
             this.wordTextMarker.remove();
