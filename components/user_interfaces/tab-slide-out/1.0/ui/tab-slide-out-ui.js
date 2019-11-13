@@ -10,7 +10,7 @@ class TabSlideOutUserInterface extends UserInterfaceBase {
 
     initUI(){
         $("body").prepend(
-            '<div id="er-tab-slide-out" class="easy-reading-interface draggable ui-widget-content" style="z-index: 99999">' +
+            '<div id="er-tab-slide-out" class="easy-reading-interface draggable ui-widget-content" style="z-index: 999999999">' +
                 '<div id="er-tab-slide-out-handle" class="handle" tabindex="0"></div>' +
                 '<div id="er-tab-slide-out-grid-container"></div>' +
             '</div>');
