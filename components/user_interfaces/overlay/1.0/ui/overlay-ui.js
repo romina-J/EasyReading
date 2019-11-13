@@ -33,7 +33,7 @@ class OverlayUserInterface extends UserInterfaceBase {
             });
 
         $("#easy_reader_overlay_dialog").parent().addClass("easy-reading-interface");
-        $(".ui-dialog").css('z-index', 9999999);
+        $(".ui-dialog").css('z-index', 999999999);
 
     }
 
