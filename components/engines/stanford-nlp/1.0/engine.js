@@ -22,7 +22,7 @@ class StanfordNLP extends base.EngineBase {
                 defaultIcon: "assets/pos.png",
                 includeInDefaultProfile: false,
                 supportedLanguages: ["en"],
-                visibleInConfiguration: true,
+                visibleInConfiguration: false,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.NLP,
                 inputTypes: [{

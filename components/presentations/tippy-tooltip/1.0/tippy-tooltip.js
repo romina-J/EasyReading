@@ -18,6 +18,20 @@ class TippyTooltip extends PresentationBase{
                 "outputType": ioType.IOTypes.ImageIOType.className,
                 "name": "Output Image",
                 "description": "Image to embed in the tooltip.",
+            },
+            {
+                "outputType": ioType.IOTypes.Word.className,
+                "name": "Output Word",
+                "description": "Word to embed in the tooltip.",
+            },
+            {
+                "outputType": ioType.IOTypes.Sentence.className,
+                "name": "Output Sentence",
+                "description": "Sentence to embed in the tooltip.",
+            },{
+                "outputType": ioType.IOTypes.Paragraph.className,
+                "name": "Output Paragraph",
+                "description": "Paragraph to embed in the tooltip.",
             }];
     }
 

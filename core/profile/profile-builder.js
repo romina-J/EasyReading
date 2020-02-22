@@ -1,20 +1,20 @@
 const loadDefaultEngineFunctions = (panel, panelConfig, core) => {
-        
+
     const engines = core.engines;
     for (const engine of engines) {
         for (const version of engine.versions) {
-           for (const engineFunction of version.engine.getFunctions()) {
+            for (const engineFunction of version.engine.getFunctions()) {
 
                 if (engineFunction.includeInDefaultProfile !== true)
                     break;
 
                 const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(version.engine.id, version.engine.version, panel);
-                const defaultConfigurationForEngineFunction = defaultConfigurationForEngineFunctions.filter(function(func) {
+                const defaultConfigurationForEngineFunction = defaultConfigurationForEngineFunctions.filter(function (func) {
                     return (func.function.source.id === this.engineFunction.id)
-                },  { engineFunction });
+                }, {engineFunction});
 
                 panelConfig.tools = panelConfig.tools.concat(defaultConfigurationForEngineFunction);
-           }
+            }
         }
     }
 
@@ -70,6 +70,7 @@ let profileBuilder = {
         profile.userInterfaceCollectionID = 0;
 
         profile.static = core.static;
+        profile.staticCSS = core.staticCSS;
         profile.debugMode = core.debugMode;
         profile.userLoaded = true;
     },
@@ -150,7 +151,7 @@ let profileBuilder = {
 
     },
 
-    async saveProfile(profile,withUIConfiguration = true) {
+    async saveProfile(profile, withUIConfiguration = true) {
 
         let databaseManager = require("./../database/database-manager");
 
@@ -178,8 +179,7 @@ let profileBuilder = {
         await this.saveRoles(profile);
 
 
-
-        if(withUIConfiguration){
+        if (withUIConfiguration) {
 
             await this.saveUserInterfaceConfiguration(profile, true);
 
@@ -187,12 +187,12 @@ let profileBuilder = {
 
     },
 
-    async saveRoles(profile){
+    async saveRoles(profile) {
         let databaseManager = require("./../database/database-manager");
         let deleteRoleRequest = databaseManager.createRequest("role").where("user_id", "=", profile.id).delete();
         await databaseManager.executeRequest(deleteRoleRequest);
 
-        for(let i=0; i < profile.roles.length; i++){
+        for (let i = 0; i < profile.roles.length; i++) {
 
             let saveRoleRequest = databaseManager.createRequest("role").insert({
                 user_id: profile.id,
@@ -235,13 +235,9 @@ let profileBuilder = {
 
                 let request = databaseManager.createRequest("ui_collection").update(userInterfaceCollectionData).where("id", "=", profile.userInterfaceCollectionID);
                 let collectionInsertResult = await databaseManager.executeRequest(request);
-
             }
 
             for (let i = 0; i < profile.userInterfaces.length; i++) {
-
-
-
                 let userInterfaceConfigurationData = {
                     ui_id: profile.userInterfaces[i].source.id,
                     ui_version: profile.userInterfaces[i].source.version,
@@ -277,7 +273,6 @@ let profileBuilder = {
                     };
 
                     if (typeof currentTool.function.configuration !== 'undefined') {
-
                         let engineConfiguration = currentTool.function.configuration;
                         let engineConfigRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForEngine(currentTool.function.source.engine)).insert(engineConfiguration);
                         let engineConfigInsertResult = await databaseManager.executeRequest(engineConfigRequest);
@@ -286,27 +281,19 @@ let profileBuilder = {
                     }
 
                     if (typeof currentTool.widget.configuration !== 'undefined') {
-
                         let widgetConfiguration = currentTool.widget.configuration;
-
                         let widgetConfigRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForComponent(currentTool.widget.source)).insert(widgetConfiguration);
                         let widgetConfigInsertResult = await databaseManager.executeRequest(widgetConfigRequest);
 
                         toolConfiguration.widget_conf_id = widgetConfigInsertResult.id;
-
                     }
 
-
                     if (typeof currentTool.presentation !== 'undefined') {
-
                         toolConfiguration.presentation_id = currentTool.presentation.source.id;
                         toolConfiguration.presentation_version = currentTool.presentation.source.version;
 
-
                         if (typeof currentTool.presentation.configuration !== 'undefined') {
-
                             let presentationConfiguration = currentTool.presentation.configuration;
-
                             let presentationConfigRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForEngine(currentTool.presentation.source)).insert(presentationConfiguration);
                             let presentationConfigInsertResult = await databaseManager.executeRequest(presentationConfigRequest);
 
@@ -315,30 +302,22 @@ let profileBuilder = {
                     }
 
                     if (typeof currentTool.layout !== 'undefined') {
-
                         let layoutConfiguration = currentTool.layout;
-
                         let layoutConfigRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForLayout(profile.userInterfaces[i].source)).insert(layoutConfiguration);
                         let layoutConfigInsertResult = await databaseManager.executeRequest(layoutConfigRequest);
 
                         toolConfiguration.layout_conf_id = layoutConfigInsertResult.id;
-
-
                     }
 
                     let toolConfigRequest = databaseManager.createRequest('tool_conf').insert(toolConfiguration);
                     let toolConfigInsertResult = await databaseManager.executeRequest(toolConfigRequest);
-
-
                 }
             }
 
-            if(profile.busyAnimation){
+            if (profile.busyAnimation) {
 
                 let busyAnimationSaveRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForEngine(profile.busyAnimation.source)).insert(profile.busyAnimation.configuration);
                 let busyAnimationSaveRequestResult = await databaseManager.executeRequest(busyAnimationSaveRequest);
-
-
 
                 let busy_animation_configuration = {
                     ui_collection: profile.userInterfaceCollectionID,
@@ -378,7 +357,6 @@ let profileBuilder = {
         });
 
 
-
     },
 
     loadActiveUserInterfaces: async function (profile) {
@@ -408,7 +386,6 @@ let profileBuilder = {
             });
 
         }
-
 
 
     },
@@ -492,7 +469,6 @@ let profileBuilder = {
                     //Widget
                     let widget = core.getWidget(toolConfiguration.widget_id, toolConfiguration.widget_version);
                     if (toolConfiguration.widget_conf_id) {
-
                         let widgetConfigurationRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForComponent(widget)).where("id", "=", toolConfiguration.widget_conf_id);
                         let widgetConfigurationRequestResult = await databaseManager.executeRequest(widgetConfigurationRequest);
 
@@ -544,9 +520,7 @@ let profileBuilder = {
             //
             let loadUserBusyAnimationRequest = databaseManager.createRequest("busy_animation_conf").where("ui_collection", "=", collectionID);
             let loadUserBusyAnimationRequestResult = await databaseManager.executeRequest(loadUserBusyAnimationRequest);
-            if(loadUserBusyAnimationRequestResult.result.length !== 0){
-
-
+            if (loadUserBusyAnimationRequestResult.result.length !== 0) {
                 let busyAnimation = core.getBusyAnimation(loadUserBusyAnimationRequestResult.result[0].busy_animation_id, loadUserBusyAnimationRequestResult.result[0].busy_animation_version);
 
                 if (loadUserBusyAnimationRequestResult.result[0].busy_animation_conf_id) {
@@ -557,10 +531,10 @@ let profileBuilder = {
 
                     profile.busyAnimation = busyAnimation.getConfiguration(busyAnimationConfiguration);
                 } else {
-                    profile.busyAnimation  = busyAnimation.getDefaultConfiguration();
+                    profile.busyAnimation = busyAnimation.getDefaultConfiguration();
                 }
 
-            }else{
+            } else {
                 profile.busyAnimation = core.getDefaultBusyAnimation();
             }
 
@@ -617,8 +591,11 @@ let profileBuilder = {
 
 
 
+            await profileBuilder.deleteProfileSupportCategories(profile);
+
             let deleteProfileRequest = databaseManager.createRequest("profile").where("id", "=", profile.id).delete();
             let deleteProfileRequestResult = await databaseManager.executeRequest(deleteProfileRequest);
+
 
         } catch (error) {
             errorMsg = error;
@@ -631,18 +608,15 @@ let profileBuilder = {
                 resolve();
             }
         });
-
-
-
     },
 
-    deleteAnonymousAccounts: async function(){
+    deleteAnonymousAccounts: async function () {
 
         let databaseManager = require("./../database/database-manager");
-        let anonymousAccountsRequest = databaseManager.createRequest("role").where("role","=","anonym");
+        let anonymousAccountsRequest = databaseManager.createRequest("role").where("role", "=", "anonym");
         let anonymousAccountsRequestResult = await databaseManager.executeRequest(anonymousAccountsRequest);
 
-        for(let i=0; i < anonymousAccountsRequestResult.result.length; i++){
+        for (let i = 0; i < anonymousAccountsRequestResult.result.length; i++) {
 
             let profileBuilder = require("../profile/profile-builder");
             await profileBuilder.deleteProfile({
@@ -721,7 +695,7 @@ let profileBuilder = {
                 //Delete busy-animation conf
                 let loadUserBusyAnimationRequest = databaseManager.createRequest("busy_animation_conf").where("ui_collection", "=", collectionID);
                 let loadUserBusyAnimationRequestResult = await databaseManager.executeRequest(loadUserBusyAnimationRequest);
-                if(loadUserBusyAnimationRequestResult.result.length !== 0){
+                if (loadUserBusyAnimationRequestResult.result.length !== 0) {
 
 
                     let busyAnimation = core.getBusyAnimation(loadUserBusyAnimationRequestResult.result[0].busy_animation_id, loadUserBusyAnimationRequestResult.result[0].busy_animation_version);
@@ -832,6 +806,130 @@ let profileBuilder = {
             }
 
         }
+    },
+
+    createDefaultSupportCategories(pid) {
+
+
+        let profileSupportCategories = {};
+
+        let sc = require("./profile-support-categories");
+        let supportCategories = sc.supportCategories;
+
+        Object.keys(supportCategories).forEach(function (categoryName, index) {
+
+            let category = supportCategories[categoryName];
+
+            profileSupportCategories[categoryName] = {};
+
+            Object.keys(category).forEach(function (subcategoryName, index) {
+
+                let subCategoryTitle = sc.getNameForSubCategory(categoryName, subcategoryName);
+                let databaseDefinitions = require("../database/core-table-definitions");
+
+                databaseDefinitions.getDefinitions();
+
+                let profileUnderstandingSupportSchema = databaseDefinitions.getDefinitionByTitle(subCategoryTitle);
+                let defaults = require('json-schema-defaults');
+
+
+                profileSupportCategories[categoryName][subcategoryName] = defaults(profileUnderstandingSupportSchema);
+                profileSupportCategories[categoryName][subcategoryName].pid = pid;
+
+
+            });
+
+
+        });
+
+       return profileSupportCategories;
+
+    },
+
+    async saveSupportCategoriesForProfileWithID(pid,supportCategories){
+      await profileBuilder.saveProfileSupportCategories({
+          pid:pid,
+          supportCategories: supportCategories,
+      })
+    },
+
+    async saveProfileSupportCategories(profile) {
+
+        let sc = require("./profile-support-categories");
+        let supportCategories = sc.supportCategories;
+
+        for (let categoryName in supportCategories) {
+            for (let subcategoryName in supportCategories[categoryName]) {
+
+                let subCategoryTitle = sc.getNameForSubCategory(categoryName, subcategoryName);
+
+                let databaseManager = require("./../database/database-manager");
+
+                let objectToSave = profile.supportCategories[categoryName][subcategoryName];
+
+                let request = databaseManager.createRequest(subCategoryTitle).insertOrUpdate(objectToSave);
+                let collectionInsertResult = await databaseManager.executeRequest(request);
+
+            }
+        }
+
+    },
+
+    async loadProfileSupportCategories(profile) {
+
+        let sc = require("./profile-support-categories");
+        let databaseManager = require("./../database/database-manager");
+
+        let profileSupportCategories = profileBuilder.createDefaultSupportCategories(profile.id);
+
+        profile.supportCategories = profileSupportCategories;
+
+        let supportCategories = sc.supportCategories;
+
+        for (let categoryName in supportCategories) {
+            for (let subcategoryName in supportCategories[categoryName]) {
+
+                let subCategoryTitle = sc.getNameForSubCategory(categoryName, subcategoryName);
+
+                let loadSubCategoryRequest = databaseManager.createRequest(subCategoryTitle).where("pid", "=", profile.id);
+
+                let loadSubCategoryRequestResult = await databaseManager.executeRequest(loadSubCategoryRequest);
+                if (loadSubCategoryRequestResult.result.length > 0) {
+
+                    if(loadSubCategoryRequestResult.result[0].preference === null){
+                        loadSubCategoryRequestResult.result[0].preference = 0;
+                    }
+
+                    profile.supportCategories[categoryName][subcategoryName] = loadSubCategoryRequestResult.result[0];
+
+                }
+
+            }
+        }
+
+    },
+    async deleteProfileSupportCategories(profile) {
+
+        let sc = require("./profile-support-categories");
+        let databaseManager = require("./../database/database-manager");
+
+        let profileSupportCategories = profileBuilder.createDefaultSupportCategories(profile.id);
+
+        profile.supportCategories = profileSupportCategories;
+
+        let supportCategories = sc.supportCategories;
+
+        for (let categoryName in supportCategories) {
+            for (let subcategoryName in supportCategories[categoryName]) {
+
+                let subCategoryTitle = sc.getNameForSubCategory(categoryName, subcategoryName);
+
+                let deleteSubCategoryRequest = databaseManager.createRequest(subCategoryTitle).where("pid", "=", profile.id).delete();
+                await databaseManager.executeRequest(deleteSubCategoryRequest);
+
+            }
+        }
+
     }
 
 

@@ -41,8 +41,9 @@ async function userLogin(req, loginInfo, callback) {
 
                     } else if (loginInfo.loginType === "Anonym") {
                         await currentProfile.loginAnonym(hashedUserLoginID, currentProfile.email, webSocketConnection);
+                        webSocketConnection.sessionID = req.session.id;
                     }
-                    webSocketConnection.profile = currentProfile;
+                    webSocketConnection.setProfile(currentProfile);
                     let loginResult = {
                         type: "userLoginResult",
                         result: currentProfile,
@@ -51,6 +52,11 @@ async function userLogin(req, loginInfo, callback) {
                     currentProfile.userId = currentProfile.googleID;
 
                     const userProfile = await profileRepo.getProfileByEmail(currentProfile.email);
+
+                    if(currentProfile.isNewProfile){
+                        userProfile.isNewProfile = true;
+                    }
+                    userProfile.clientLogin = true;
 
                     callback(userProfile, error);
 
@@ -65,6 +71,8 @@ async function userLogin(req, loginInfo, callback) {
 
 
             });
+        }else{
+            callback(null,"No connected client found.");
         }
 
 

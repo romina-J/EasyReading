@@ -7,7 +7,6 @@ class AWSPollyTextToSpeech extends base.EngineBase {
         this.name = "AWS Polly TTS";
         this.description = "A text to speech engine hosted on AWS";
         this.versionDescription = "Initial Version";
-
         this.polly = null;
         this.initPolly();
 
@@ -80,7 +79,7 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                         "de",
                         "es",
                         "fr",
-                        "se",
+                        "sv",
                     ],
                 },
                 "gender": {
@@ -123,6 +122,10 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.SPEECH_SYNTHESIS,
+                supportCategories: [
+
+                    base.functionSupportCategories.reading_support.tts,
+                ],
                 inputTypes: [
                     {
                         "inputType": ioType.IOTypes.Paragraph.className,
@@ -134,7 +137,6 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                         "name": "Input word",
                         "description": "Word to convert to audio",
                     }
-
                 ],
                 outputTypes: [{
                     "outputType": ioType.IOTypes.AudioType.className,
@@ -149,18 +151,9 @@ class AWSPollyTextToSpeech extends base.EngineBase {
 
     convertTextToSpeech(callback, input, config, profile, constants) {
 
-        /*
-        let voiceID = "Hans";
-        if (input.lang === "en") {
-            voiceID = "Brian";
-        } else if (input.lang === "de") {
-            voiceID = "Hans";
-        } else if (input.lang === "sv") {
-            voiceID = "Astrid";
-        }*/
+
         let voiceID = this.getVoiceID(config,input.lang);
 
-        let test = this.getVoiceID(config, input.lang);
 
 
         let params = {
@@ -186,9 +179,14 @@ class AWSPollyTextToSpeech extends base.EngineBase {
             if (err) {
 
                 //Error:
-                callback(new ioType.IOTypes.Error("Error synthesize speech"));
 
-                console.log(err.code)
+
+                if(err.message){
+                    callback(new ioType.IOTypes.Error("Error:"+err.message));
+                }else{
+
+                    callback(new ioType.IOTypes.Error("Error synthesize speech"));
+                }
             } else if (data) {
                 if (data.AudioStream instanceof Buffer) {
 
@@ -279,6 +277,15 @@ class AWSPollyTextToSpeech extends base.EngineBase {
         switch (languageToUse) {
             case "sv":
                 return "Astrid";
+            case "es":
+
+                if (config.gender === "female") {
+                    return "Conchita";
+                } else {
+                    return "Enrique";
+                }
+
+                break;
             case "it":
 
                 if (config.gender === "female") {

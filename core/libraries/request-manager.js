@@ -1,5 +1,5 @@
 class Request {
-    constructor(id, input, uiId, toolId, functionInfo) {
+    constructor(id, input, uiId, toolId, functionInfo,automaticRequest=false) {
         this.id = id;
         this.input = input;
         this.uiId = uiId;
@@ -60,6 +60,7 @@ class Request {
             },
 
             input: this.inputType,
+            requestInfo : new RequestInfo(uiId,toolId,automaticRequest),
 
         };
 
@@ -80,6 +81,12 @@ class Request {
                     functionType: "CombinedFunction",
 
                 };
+        }else if(functionInfo.source.type === "LocalFunction"){
+            this.message.functionInfo =
+                {
+                    functionId: functionInfo.source.id,
+                    functionType: "CombinedFunction",
+                };
         }
 
     }
@@ -91,21 +98,38 @@ class Request {
 
 
 }
+class RequestInfo{
+    constructor(uiIndex, toolIndex,automaticRequest) {
+        this.uiIndex = uiIndex;
+        this.toolIndex = toolIndex;
+        this.automaticRequest = automaticRequest;
 
+        this.href = window.location.href;
+        this.hostname = window.location.hostname;
+        this.pathname = window.location.pathname;
+        this.toolUsage = requestManager.getToolUsageEntry(uiIndex,toolIndex);
+    }
+
+}
 
 let requestManager = {
     currentRequestID: 1,
     activeRequests: [],
-    createRequest: function (widget, input) {
+    toolUsageEntries:[],
+    createRequest: function (widget, input,automaticRequest=false) {
 
         if (widget.functionInfo.source.type === "LocalFunction") {
-            functionMapping[widget.functionInfo.source.entryPoint](input, widget.functionInfo.configuration);
+            functionMapping[widget.functionInfo.source.entryPoint](input, widget.functionInfo.configuration,widget);
             //   window[widget.functionInfo.source.entryPoint](input, widget.functionInfo.configuration);
+
+            //Dont push this on active requests - it is local anyway
+            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo,automaticRequest);
+            contentScriptController.sendMessageToBackgroundScript(currentRequest.message);
 
         } else if (widget.functionInfo.source.type === "RemoteFunction") {
 
 
-            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo);
+            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo,automaticRequest);
 
             this.activeRequests.push(currentRequest);
             contentScriptController.sendMessageToBackgroundScript(currentRequest.message);
@@ -113,7 +137,7 @@ let requestManager = {
         } else if (widget.functionInfo.source.type === "CombinedFunction") {
 
 
-            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo);
+            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo,automaticRequest);
 
             this.activeRequests.push(currentRequest);
             contentScriptController.sendMessageToBackgroundScript(currentRequest.message);
@@ -164,6 +188,28 @@ let requestManager = {
                 return;
             }
         }
+
+    },
+
+    getToolUsageEntry(uiIndex,toolIndex){
+
+        let toolID = uiIndex+"_"+toolIndex;
+        for(let i=0; i< requestManager.toolUsageEntries.length; i++){
+
+            if(requestManager.toolUsageEntries[i].toolID === toolID){
+
+                requestManager.toolUsageEntries[i].toolCount++;
+                return requestManager.toolUsageEntries[i];
+            }
+        }
+
+        let toolUsageEntry = {
+            toolID:toolID,
+            toolCount: 1,
+        };
+        requestManager.toolUsageEntries.push(toolUsageEntry);
+
+        return toolUsageEntry;
 
     }
 

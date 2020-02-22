@@ -47,7 +47,7 @@ class AutoButton extends WidgetBase{
         requestManager.createRequest(this,{
             type: "URL",
             url: window.location.href,
-        });
+        }, true);
     }
 
     remove(){

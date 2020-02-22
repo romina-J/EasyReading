@@ -40,6 +40,7 @@ class Tooltip extends PresentationBase{
                     "type": "string",
                     "format": "color",
                     "default": "#ffffff",
+                    "title": "Tooltip color"
                 }
             },
             "required": [

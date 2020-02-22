@@ -52,6 +52,9 @@ class Personalization extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.symbol_support.aac,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],

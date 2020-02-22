@@ -58,6 +58,7 @@ module.exports = {
             'menu_config_your_content_replacments': req.__('menu_config_your_content_replacments'),
             'menu_configure_toolbar_for_clients_text': req.__("menu_configure_toolbar_for_clients_text"),
             'menu_caretaker_list_text': req.__("menu_caretaker_list_text"),
+            'menu_basic_setting_text':req.__("menu_basic_setting_text"),
             'menu_configure_clients_text': req.__("menu_configure_clients_text"),
 
             'Save': req.__("Save"),
@@ -182,6 +183,27 @@ module.exports = {
             'page_client_welcome_to_configuration_description': req.__("page_client_welcome_to_configuration_description")
         };
 
+        res.locals.context = {
+            ...res.locals.context,
+            ...loc
+        };
+
+        return next();
+    },
+
+    translateBasicSetting: async (req, res, next) => {
+
+        let loc = {
+            'page_basic_setting_tittle': req.__("page_basic_setting_tittle"),
+            'page_basic_setting_description': req.__("page_basic_setting_description"),
+            'page_basic_setting_language_title': req.__("page_basic_setting_language_title"),
+            'page_basic_setting_language_description': req.__("page_basic_setting_language_description"),
+            'page_basic_setting_language_label': req.__("page_basic_setting_language_label"),
+            'page_basic_setting_adaptable_title': req.__("page_basic_setting_adaptable_title"),
+            'page_basic_setting_adaptable_description': req.__("page_basic_setting_adaptable_description"),
+            'page_basic_setting_adaptable_label': req.__("page_basic_setting_adaptable_label"),
+            'page_basic_setting_adaptive_label': req.__("page_basic_setting_adaptive_label"),
+        };
         res.locals.context = {
             ...res.locals.context,
             ...loc

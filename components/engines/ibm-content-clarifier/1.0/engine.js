@@ -47,6 +47,9 @@ class ContentClarifier extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.text_support.simplified_language,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
 
@@ -69,6 +72,9 @@ class ContentClarifier extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.symbol_support.aac,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
                 }],

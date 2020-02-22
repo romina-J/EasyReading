@@ -21,11 +21,15 @@ class Readability extends base.EngineBase{
                 name: "Readability",
                 description : "Gets Main Content",
                 defaultIcon : "assets/colorize.png",
+                states: 2,
                 includeInDefaultProfile: true,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.layout_support.layout_support,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],

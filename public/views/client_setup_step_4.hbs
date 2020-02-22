@@ -1,0 +1,106 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{profile_wizard_step_4_heading}}</title>
+    {{> head }}
+    <link href="/css/client-profile-setup.css" rel="stylesheet"/>
+    <script src="/js/client-profile-setup.js"></script>
+
+</head>
+
+<body>
+
+<div class="row wrapper main-content">
+
+    <main>
+        <form method="POST" action="/client/setup">
+            <div class="medium-12 columns">
+
+                <div class="setup">
+
+                    <div role="group" aria-labelledby="desc2" class="checkbox-container">
+                        <h1 id="desc2">
+                           {{layout_title}}
+                        </h1>
+
+                        <div class="container">
+                            <div class="checkbox  {{#ifEquals setupInformation.[2].fonts "true"}} checked {{/ifEquals}}"
+                                 data-name="fonts">
+                                <img src="/images/setup/step4/magnify.png" alt=""><span class="container-info">{{bigger_font_label}}</span>
+                            </div>
+                            <div class="checkbox  {{#ifEquals setupInformation.[2].colorize
+                                                              "true"}} checked {{/ifEquals}}" data-name="colorize">
+                                <img src="/images/setup/step4/colorize.png" alt=""><span class="container-info">{{inverted_color_label}}</span>
+                            </div>
+                            <div class="checkbox  {{#ifEquals setupInformation.[2].reading
+                                                              "true"}} checked {{/ifEquals}}" data-name="reading">
+                               <img src="/images/setup/step4/reading_mode.png" alt=""><span class="container-info"> {{simplified_layout_label}}</span>
+                            </div>
+
+                            <div class="checkbox  {{#ifEquals setupInformation.[2].noads "true"}} checked {{/ifEquals}}"
+                                 data-name="noads">
+                                <img src="/images/setup/step4/no_ads.png" alt=""><span class="container-info">{{advertisment_label}}</span>
+                            </div>
+                            <div class="checkbox  {{#ifEquals setupInformation.[2].links "true"}} checked {{/ifEquals}}"
+                                 data-name="links">
+                                <img src="/images/setup/step4/link.png" alt=""><span class="container-info">{{easier_to_see_links_label}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <span class="clearfix"></span>
+            </div>
+
+
+            <div class="row">
+
+                <div class="columns small-6 small-centered">
+                    <div>
+                        {{#if previousStep}}
+                            <input type="image" src="/images/back.png" alt="Back" name="back"
+                                   class="button step-button">
+                            <!--  <a href="#" class="button step-button"><img src="/images/back.png" alt="Back"/></a>-->
+                        {{/if}}
+
+
+
+
+                        <div class="progress-indicator-container">
+                            <ol class="progress-indicator">
+
+                                {{#each stepInformation}}
+                                    {{#ifEquals step "completedStep"}}
+                                        <li class="is-complete" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "currentStep"}}
+                                        <li class="is-current" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "upcomingStep"}}
+                                        <li class="" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                {{/each}}
+                            </ol>
+                        </div>
+
+                        <input type="image" src="/images/next.png" alt="Next" name="next" class="button step-button"
+                               id="">
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </main>
+
+
+</div>
+
+
+</body>
+</html>

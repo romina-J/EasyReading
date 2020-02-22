@@ -64,7 +64,9 @@ class TextSelector extends WidgetBase {
     }
 
     presentationFinished(presentation){
-
+        if(!this.active){
+            return;
+        }
         let nextParagraph = this.textSelection.getNextParagraph();
         if(nextParagraph){
             requestManager.createRequest(this, nextParagraph);

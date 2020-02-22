@@ -8,11 +8,11 @@ class OverlayUserInterface extends UserInterfaceBase{
         this.name = "Overlay";
         this.description = "Simple overlay user interface base on jQuery ui";
         this.versionDescription = "Initial Version";
-        this.scripts = ["ui/jquery-ui.js", "ui/overlay-ui.js"];
+        this.scripts = ["ui/jquery-ui.js", "ui/overlay-ui.js", "ui/imagesloaded.pkgd.js"];
         this.css = ["ui/jquery-ui.css","ui/overlay-ui.css"];
         this.assetDirectory = "ui/images";
         this.implementationClass = "OverlayUserInterface";
-        this.debugMode = true;
+        this.supportCategories = ["overlay"];
     }
 
     getConfigurationSchema() {
@@ -25,7 +25,7 @@ class OverlayUserInterface extends UserInterfaceBase{
                     "title" : "X Start Position",
                     "description": "Dialog start position x in percent",
                     "default": 20,
-                    "minimum": 0,
+                    "minimum": 1,
                     "maximum": 100,
 
                 },
@@ -34,10 +34,17 @@ class OverlayUserInterface extends UserInterfaceBase{
                     "title" : "Y Start Position",
                     "description": "Dialog start position Y in percent",
                     "default": 20,
-                    "minimum": 0,
+                    "minimum": 1,
                     "maximum": 100,
                 },
-
+                "buttonSize": {
+                    "type": "integer",
+                    "title" : "Button Size",
+                    "description": "Size of buttons in pixels",
+                    "default": 80,
+                    "minimum": 50,
+                    "maximum": 150,
+                }
             }
         }
     }

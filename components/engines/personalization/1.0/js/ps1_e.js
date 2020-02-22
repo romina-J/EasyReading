@@ -16,7 +16,7 @@ var gCtr  =0;
 
 // var profileJson = "https://rawgit.com/orish88/AUI_Personalization/master/profiles/test_profile9(in_page).json";
 
-function personalizeCurrentPage(req,conf){
+function personalizeCurrentPage(req,conf,widget){
     /**
      * profileJson is defined in script execution on run_popup.js
      * */

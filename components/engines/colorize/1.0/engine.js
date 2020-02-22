@@ -86,10 +86,14 @@ class Colorize extends base.EngineBase{
                 description : "Colors a page according to your favorite color",
                 defaultIcon : "assets/colorize.png",
                 includeInDefaultProfile: true,
+                states: 2,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.layout_support.color_support,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],

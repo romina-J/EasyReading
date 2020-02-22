@@ -25,6 +25,9 @@ class WordDefinition extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.DICTIONARY,
+                supportCategories: [
+                    base.functionSupportCategories.text_support.simplified_language,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Word.className,
                     "name": "Input word",

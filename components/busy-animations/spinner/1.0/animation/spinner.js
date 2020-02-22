@@ -17,15 +17,13 @@ class SpinnerBusyAnimation extends BusyAnimation{
 
     startAnimation(textnodes){
         this.numberOfBusyRequests++;
-        if(this.numberOfBusyRequests === 1){
-            $('#er-busy-animation').show();
-        }
+        $('#er-busy-animation').show();
+
     }
 
     stopAnimation(){
         this.numberOfBusyRequests--;
-        if(this.numberOfBusyRequests === 0){
-            $('#er-busy-animation').hide();
-        }
+        $('#er-busy-animation').hide();
+
     }
 }

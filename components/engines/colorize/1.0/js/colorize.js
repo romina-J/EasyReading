@@ -1,6 +1,6 @@
 
 let easyReadingColorizeEnabled = false;
-function colorize(req, config) {
+function colorize(req, config,widget) {
 
     $("#easy-reading-colorize-style").remove();
     $("<style id='easy-reading-colorize-style' type='text/css'> .easyReaderColorize{ color:"+config.fontColor+" !important; background-color:"+config.backgroundColor+" !important;} </style>").appendTo("head");

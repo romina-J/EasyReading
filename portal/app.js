@@ -7,6 +7,13 @@ const passport = require("./passport/passportSetup");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
+const MySQLStore = require('express-mysql-session')(session);
+let databaseManager = require("../core/database/database-manager");
+
+let activeConnection = databaseManager.getConnection();
+
+let sessionStore = new MySQLStore({}/* session store options */, activeConnection.connection);
+
 const localeService = require("./../core/i18n/locale-service");
 
 // create a new express server
@@ -39,6 +46,7 @@ app.use(session({
     proxy: true,
     resave: false,
     saveUninitialized: true,
+    store: sessionStore,
     expires: new Date(Date.now() + (30 * 1000 * 60))
 }));
 
@@ -50,13 +58,17 @@ app.use(function (req, res, next) {
     next();
 });
 
+
+
+
 // Serve the files out of ./public as our main files
 app.use(express.static(baseDirPath('public')))
 
 // Controllers
 const patientController = require("./controller/view/patientController");
 const authentication = require("./passport/authentication");
-const clientLoginController = require("./controller/api/clientLoginController");
+const clientLoginValidator = require("./controller/api/clientLoginValidator");
+const clientGoogleLoginController = require("./controller/api/clientGoogleLoginController");
 const clientFacebookLoginController = require("./controller/api/clientFacebookLoginController");
 const clientAnonymLoginController = require("./controller/api/clientAnonymousLoginController");
 const clientLogoutController = require("./controller/api/clientLogoutController");
@@ -68,22 +80,25 @@ const customFunctionController = require("./controller/api/customFunctionControl
 const customFunctionViewController = require("./controller/view/customFunctionView");
 const clientCaretakerOverviewController = require("./controller/view/clientCaretakerOverviewController");
 const clientCaretakerRegisterController = require("./controller/view/clientCaretakerRegisterController");
+const clientBasicSettingsController = require("./controller/view/clientBasicSettingsController");
 const caretakerClientOverviewController = require("./controller/view/caretakerClientOverviewController");
 const caretakerContentReplacementController = require("./controller/view/caretakerContentReplacementController");
+const clientSetupController = require("./controller/view/clientSetupController");
+const localeProfileWizardController = require("./controller/view/localeProfileWizardController");
+
 
 // Authentication routes
 //Caretaker
-app.get('/login', userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateBackEnd, (_, res) => res.render('caretaker_login', res.locals.context));
-app.get('/caretaker/login/google', passport.authenticate("google"));
-app.get('/caretaker/login/facebook', passport.authenticate("facebook"));
+app.get('/login',clientLoginValidator, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateBackEnd, (_, res) => res.render('caretaker_login', res.locals.context));
+app.get('/caretaker/login/google',clientLoginValidator, passport.authenticate("google"));
+app.get('/caretaker/login/facebook',clientLoginValidator, passport.authenticate("facebook"));
 app.get('/auth/callback', passport.authenticate("google"), authentication.redirectToOrigin);
 
 //Client
-app.use('/client/login/anonym',clientAnonymLoginController ,authentication.redirectToOrigin);
-app.use('/client/login', clientLoginController);
-app.use('/client/login/facebook', clientFacebookLoginController);
+app.use('/client/login/anonym',clientLoginValidator,clientAnonymLoginController ,authentication.redirectToOrigin);
+app.use('/client/login',clientLoginValidator, clientGoogleLoginController);
+app.use('/client/login/facebook', clientLoginValidator,clientFacebookLoginController);
 app.get('/client/login/facebook/auth', passport.authenticate('facebook'), authentication.redirectToOrigin);
-
 //Logout
 app.get('/client/logout', clientLogoutController);
 
@@ -108,15 +123,32 @@ app.post('/caretaker/custom-paragraphs-action', caretakerContentReplacementContr
 
 // Client
 app.use('/client/welcome', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
+app.use('/client/setup', authentication.isAuthenticated, userController.setUser,localeProfileWizardController.translateProfileWizard, clientSetupController.setupController);
 app.get('/client/configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, patientController.getEngineConfigByuserId, (_, res) => res.render('client_configure', res.locals.context));
+app.use('/client/basic-settings', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateBasicSetting, clientBasicSettingsController, (_, res) => res.render('client_basic_settings', res.locals.context));
 //Client Caretaker Management
 app.use('/client/caretakers', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateCaretakerList, clientCaretakerOverviewController, (_, res) => res.render('client_caretaker_overview', res.locals.context));
 app.use('/client/caretaker/register', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateClientCaretakerRegister, clientCaretakerRegisterController, (_, res) => res.render('client_caretaker_register', res.locals.context));
+app.use('/logout-success', (_, res) => res.render('client_caretaker_register', res.locals.context));
+
 
 // API routes
 const egineController = require("./controller/api/engineController");
 const profileController = require("./controller/api/profileController");
 app.post('/api/v1/configuration', egineController.updateEngineConfiguratoin);
 app.post('/api/v1/updateUserInterface', profileController.updateUserInterface);
+
+
+app.all('*', function(req, res) {
+    if(req.isAuthenticated()) {
+
+        if (req.session._clientToken) {
+            //Client logged in with extension
+            res.redirect('/client/welcome');
+            return;
+        }
+    }
+    res.redirect('/');
+});
 
 module.exports = app;

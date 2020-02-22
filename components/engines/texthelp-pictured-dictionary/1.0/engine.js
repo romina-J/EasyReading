@@ -22,6 +22,9 @@ class TextHelpPicturedDictionary extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.text_support.multimedia_annotation,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Word.className,
                     "name": "Input word",
@@ -64,7 +67,13 @@ class TextHelpPicturedDictionary extends base.EngineBase {
                     translate.translateWord(
                         function (result) {
 
-                            pictureDictionary.createPictureRequest(token,callback, result, {lang :"en"}, profile, constants);
+                            if(result.name === "Error"){
+                                callback(result);
+                            }else{
+
+                                pictureDictionary.createPictureRequest(token,callback, result, {lang :"en"}, profile, constants);
+                            }
+
 
 
                         }, input, config, profile, constants
@@ -91,7 +100,9 @@ class TextHelpPicturedDictionary extends base.EngineBase {
         let request = require('request');
         request(options, function (err, res, body) {
             try {
-                if (body.symbols.length === 0) {
+                if(!body.symbols){
+                    callback(new ioType.IOTypes.Error("Error processing request"));
+                }else if (body.symbols.length === 0) {
 
                     callback(new ioType.IOTypes.NoResult("No images found"));
 

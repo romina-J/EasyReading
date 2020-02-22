@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{profile_wizard_step_1_heading}}</title>
+    {{> head }}
+    <link href="/css/client-profile-setup.css" rel="stylesheet"/>
+    <script src="/js/client-profile-setup.js"></script>
+
+</head>
+
+<body>
+
+<div class="row wrapper main-content">
+
+
+    <main>
+        <form method="POST" action="/client/setup">
+            <div class="medium-12 columns">
+
+
+                <div class="center">
+
+                    <div>
+                        <img src="/images/setup/step1/logo.png" alt="EasyReading Logo" class="logo">
+                        <div style="margin-left: 100px;">
+                            <h1>{{welcome_to_easy_reading}}</h1>
+
+
+                            <div class="container-info">{{welcome_to_easy_reading_text}}
+
+                                <ul>
+                                    <li>{{standard_profile_bullet}}</li>
+                                    <li>{{personalized_profile_bullet}}</li>
+                                </ul>
+
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <span class="clearfix"></span>
+
+                    <div class="choice-container">
+
+
+                        <img src="/images/setup/step1/avatar1.png" alt="" class="avatar-image">
+
+                        <h2>{{default_profile}}</h2>
+                        <p class="container-info">{{default_profile_text}}</p>
+
+                        <input type="submit" value="{{default_profile_button_label}}" name="defaultProfile">
+
+                    </div>
+
+
+                    <div class="choice-container">
+
+
+                        <img src="/images/setup/step1/avatar2.png" alt="" class="avatar-image">
+                        <h2>{{personalized__profile}}</h2>
+                        <p class="container-info">{{personalized__profile_text}}</p>
+
+                        <input type="submit" value="{{personalized__profile_button_label}}" name="personalizedProfile">
+
+                    </div>
+
+                </div>
+
+
+        </form>
+    </main>
+
+
+</div>
+
+
+</body>
+</html>

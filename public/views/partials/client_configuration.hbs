@@ -27,11 +27,12 @@
             <!-- FORM !-->
             <div class="jsToggleCardTarget small-12 columns">
                 <div class="row tool-card-config">
+                    <br>
                     <h4 class="tool-card-config-howto-heading">{{page_configure_tool_how_to_use}}</h4>
                     <p>
-                                                <span class="tool-card-config-howto-text">
-                                                    {{page_configure_settings_type_how_to_use}}
-                                                </span>
+                        <span class="tool-card-config-howto-text">
+                            {{page_configure_settings_type_how_to_use}}
+                        </span>
                     </p>
                 </div>
 
@@ -50,9 +51,6 @@
                                        value="{{this.id}}">
                             {{/if}}
                             <label for="radio_ {{this.id}}">{{this.name}}</label><br>
-
-
-
                         {{/each}}
 
                     </fieldset>
@@ -84,9 +82,11 @@
 
         <ul class="no-bullet" id="jsEngineList">
             {{#each engineFunctions}}
+
                 <li class="jsToggleCardContainer jsToolCard">
 
                     <form class="card">
+
                         <input data-control-type="sort-data" type="hidden"
                                value="{{engineId}}{{engineVersion}}{{sortOrder}}{{title}}"/>
                         <h3 class="show-for-sr">{{title}}</h3>
@@ -140,6 +140,14 @@
                                     {{addInputField this @index}}
                                 </div>
 
+                                {{#if viewInputTypeSelector}}
+                                    {{createConfigFormForComponentList inputTypes id "input" widget "Select inputtype / widget"}}
+                                {{/if}}
+
+                                {{#if viewOutputTypeSelector}}
+                                    {{createConfigFormForComponentList outputTypes id "output" presentation "Select outputtype / presentation"}}
+                                {{/if}}
+
                                 <div class="text-right">
                                     <input class="tool-card-config-save-bth btn btn-primary" type="button"
                                            data-SaveText="{{../Save}}" data-EnableSave="{{../EnableSave}}"
@@ -159,19 +167,27 @@
     $(document).ready(function () {
 
         $('.userInterfaceRadio').click(function () {
-
-
             let configDialogID = $(this).data("config");
 
             $(".uiConfigDialog").hide();
             $("#" + configDialogID).show();
-
         });
+
+        $(".inputField").find("input[type='radio']").click(function () {
+            $(".inputField").find("input[type='radio']").parent().find("div").hide();
+            $(".inputField").find("input[type='radio']:checked").parent().find("div").show();
+        });
+
+        $(".inputField").find("input[type='radio']").parent().find("div").hide();
+        $(".inputField").find("input[type='radio']:checked").parent().find("div").show();
     });
 
     async function saveUserInterfaceConfig() {
 
         let formData = $('#userInterfaceForm').serializeArray();
+
+        let event = new CustomEvent('easyReadingUpdate');
+        document.dispatchEvent(event);
 
         await fetch('/api/v1/updateUserInterface', {
             method: 'POST',
@@ -184,7 +200,6 @@
             })
         }).then(function (response) {
             if (response.status === 200) {
-                console.log("OHOO");
                 setConfiguration();
                 ViewFeedback("{{Saved}}", "success")
             } else if (response.status === 404) {
@@ -219,6 +234,8 @@
         for (let i = 0; i < tools.length; i++) {
             data = updateSessionStorage(i, data)
         }
+
+        console.log(data);
 
         setConfiguration()
     }
@@ -255,8 +272,6 @@
     }
 
     function updateSessionStorage(index, data) {
-        console.log(data)
-        let config = {}
 
         if (data[index].configurationDataOptions && data[index].configurationDataOptions.length > 0) {
             data[index].configurationDataOptions.forEach(dataOptions => {
@@ -274,6 +289,8 @@
             });
         } else if (data[index].dataSchema.properties) {
             let fields = Object.keys(data[index].dataSchema.properties)
+            let config = {}
+
             for (let i = 0; i < fields.length; i++) {
                 config[fields[i]] = document.getElementById(fields[i] + '-' + index).value
             }
@@ -282,7 +299,73 @@
         }
 
         data[index].enable = document.getElementById('enable-' + index).checked ? true : false
+        
+        data[index].widget = null;
+
+        if ($("#widget_input_"+data[index].id).length==1){
+            var selectedWidget = $("#widget_input_"+data[index].id).find("input[type='radio']:checked").val();
+            var widget = data[index].inputTypes.filter(func => func.id === selectedWidget);
+
+
+            try {
+                if (widget.length==1) {
+                    data[index].widget = {};
+                    data[index].widget.source = widget[0];
+
+                    if(data[index].widget.dataSchema){
+                        let fields = Object.keys(data[index].widget.dataSchema.properties)
+                        let config = {}
+
+
+                        for (let i = 0; i < fields.length; i++) {
+                            config[fields[i]] = $("#"+data[index].id+"_widget_"+data[index].widget.id+"_"+ fields[i]).val()
+                        }
+
+
+                        data[index].widget.config = config;
+                    }
+
+                }
+            } catch(error) {
+
+                console.log(error);
+            }
+        }
+
+        data[index].presentation = null;
+
+        if ($("#widget_output_"+data[index].id).length==1){
+            var selectedPresentation = $("#widget_output_"+data[index].id).find("input[type='radio']:checked").val();
+            var presentation = data[index].outputTypes.filter(func => func.id === selectedPresentation);
+
+            try {
+                if (presentation.length==1) {
+                    data[index].presentation = {};
+                    data[index].presentation.source = presentation[0];
+
+
+                    if(data[index].presentation.dataSchema){
+                        let fields = Object.keys(data[index].presentation.dataSchema.properties)
+                        let config = {}
+
+                        for (let i = 0; i < fields.length; i++) {
+                            config[fields[i]] = $("#"+data[index].id+"_presentation_"+data[index].presentation.id+"_"+ fields[i]).val()
+                        }
+
+                        data[index].presentation.config = config;
+                    }
+
+
+
+                }
+            } catch(error) {
+                console.log(error);
+            }
+        }        
+
         document.getElementById('data').value = JSON.stringify(data);
+
+        console.log(data[index])
 
         return data
     }
@@ -312,6 +395,11 @@
     }
 
     async function setConfiguration() {
+
+        let event = new CustomEvent('easyReadingUpdate');
+        document.dispatchEvent(event);
+        {{!-- console.log(document.getElementById('data').value) --}}
+
         await fetch('/api/v1/configuration', {
             method: 'POST',
             headers: {

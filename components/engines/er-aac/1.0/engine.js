@@ -14,8 +14,6 @@ class EasyReadingAAC extends base.EngineBase {
     }
 
 
-
-
     getFunctions() {
         return [
             {
@@ -24,10 +22,13 @@ class EasyReadingAAC extends base.EngineBase {
                 description: "Creates an AAC version",
                 defaultIcon: "assets/er-aac-symbol.png",
                 includeInDefaultProfile: false,
-                supportedLanguages: ["en","de","sv"],
+                supportedLanguages: ["en", "de", "sv"],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.DICTIONARY,
+                supportCategories: [
+                    base.functionSupportCategories.symbol_support.aac,
+                ],
                 inputTypes: [
                     {
                         "inputType": ioType.IOTypes.Paragraph.className,
@@ -48,7 +49,7 @@ class EasyReadingAAC extends base.EngineBase {
         ];
     }
 
-    createAAC(callback, input, config,profile,constants) {
+    createAAC(callback, input, config, profile, constants) {
 
         let core = require("../../../../core/core");
 
@@ -59,7 +60,7 @@ class EasyReadingAAC extends base.EngineBase {
             function (result) {
 
                 let runningRequests = 0;
-                for(let i=0; i < result.taggedText.length; i++) {
+                for (let i = 0; i < result.taggedText.length; i++) {
 
                     if (result.taggedText[i].tags) {
 
@@ -67,21 +68,30 @@ class EasyReadingAAC extends base.EngineBase {
                         for (let j = 0; j < result.taggedText[i].text.length; j++) {
                             runningRequests++;
                         }
-                    }else{
+                    } else {
                         result.taggedText[i].text = [result.taggedText[i].text];
                     }
                 }
-                for(let i=0; i < result.taggedText.length; i++){
 
-                    if(result.taggedText[i].tags){
-                        for(let j=0; j< result.taggedText[i].text.length; j++){
+                if (!result.taggedText.length) {
+                    let noResults = new ioType.IOTypes.NoResult("No result found!");
+                    callback(noResults);
+
+                    return;
+
+                }
+
+                for (let i = 0; i < result.taggedText.length; i++) {
+
+                    if (result.taggedText[i].tags) {
+                        for (let j = 0; j < result.taggedText[i].text.length; j++) {
 
                             thPicturedDictionary.picturedDictionary(function (pictureResult) {
-                                    runningRequests--;
+                                runningRequests--;
 
-                                if(pictureResult.name === "ImageIOType"){
+                                if (pictureResult.name === "ImageIOType") {
                                     let spacing = "";
-                                    if(j >0){
+                                    if (j > 0) {
                                         spacing = " ";
                                     }
 
@@ -89,30 +99,34 @@ class EasyReadingAAC extends base.EngineBase {
                                         '    <span style="display:block;">\n' +
                                         '        <img src="' + pictureResult.url + '" style="width: 50px; height: 50px;">\n' +
                                         '    </span>\n' +
-                                        '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text[j] +spacing+ '&nbsp;</span>\n' +
+                                        '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text[j] + spacing + '&nbsp;</span>\n' +
                                         '</span>';
 
                                     result.taggedText[i].text[j] = replacement;
+                                }else if(pictureResult.name === "Error"){
+
+                                    callback(pictureResult);
+                                    return;
                                 }
 
 
-                                    if(runningRequests === 0){
-                                        let finalText = "";
-                                        for(let i=0; i < result.taggedText.length; i++) {
-                                            for (let j = 0; j < result.taggedText[i].text.length; j++) {
-                                                finalText+=result.taggedText[i].text[j];
+                                if (runningRequests === 0) {
+                                    let finalText = "";
+                                    for (let i = 0; i < result.taggedText.length; i++) {
+                                        for (let j = 0; j < result.taggedText[i].text.length; j++) {
+                                            finalText += result.taggedText[i].text[j];
 
-                                                //Add empty spaces again that were removed when splitting key phrases
-                                                if(j > 0){
-                                                    finalText+=" ";
-                                                }
+                                            //Add empty spaces again that were removed when splitting key phrases
+                                            if (j > 0) {
+                                                finalText += " ";
                                             }
                                         }
-                                        let theResult = new ioType.IOTypes.Paragraph(finalText);
-                                        callback(theResult);
                                     }
+                                    let theResult = new ioType.IOTypes.Paragraph(finalText);
+                                    callback(theResult);
+                                }
 
-                            }, new ioType.IOTypes.Word(result.taggedText[i].text[j],input.lang),config, profile, constants);
+                            }, new ioType.IOTypes.Word(result.taggedText[i].text[j], input.lang), config, profile, constants);
                         }
                     }
 

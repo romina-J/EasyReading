@@ -1,7 +1,6 @@
 let erReadabilityActive = false;
 
-function readability(req, config) {
-
+function readability(req, config,widget) {
 
     if(erReadabilityActive){
 
@@ -87,6 +86,8 @@ function readability(req, config) {
 
         }else{
             alertManager.showErrorAlert("Sorry I could not detect the content of the page.");
+
+            widget.requestFailed(req,config);
         }
 
 

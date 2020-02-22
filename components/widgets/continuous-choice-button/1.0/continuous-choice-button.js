@@ -36,6 +36,7 @@ class ContinuousChoiceButton extends WidgetBase{
                     "type": "string",
                     "format": "color",
                     "default": "#ffffff",
+                    "title": "Active button background color"
                 }
             },
             "required": [
