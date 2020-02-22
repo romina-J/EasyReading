@@ -25,6 +25,12 @@ class DatabaseRequest{
         return this;
     }
 
+    insertOrUpdate(object){
+        this.op = operation.INSERT_OR_UPDATE;
+        this.object = object;
+        return this;
+    }
+
     update(object){
         this.op = operation.UPDATE;
         this.object = object;
@@ -73,6 +79,7 @@ module.exports  = DatabaseRequest;
 
 let operation  ={
     INSERT:"INSERT",
+    INSERT_OR_UPDATE: "INSERT_OR_UPDATE",
     UPDATE:"UPDATE",
     DELETE:"DELETE",
     SELECT:"SELECT",

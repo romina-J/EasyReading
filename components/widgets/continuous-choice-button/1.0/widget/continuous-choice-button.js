@@ -2,7 +2,7 @@ class ContinuousChoiceButton extends WidgetBase {
 
     constructor(functionInfo, userInterface, targetID, configuration) {
         super(functionInfo, userInterface, targetID, configuration);
-
+        this.continuesToCreateRequests = true;
         this.active = false;
         this.requestInProgress = false;
         this.widgetID = 'er_continuous_choice_button_' + this.widgetID;
@@ -138,6 +138,10 @@ class ContinuousChoiceButton extends WidgetBase {
     }
 
     presentationFinished(presentation){
+
+        if(!this.active || !this.textSelection){
+            return;
+        }
 
         let nextParagraph = this.textSelection.getNextParagraph();
         if(nextParagraph){

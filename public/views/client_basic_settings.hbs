@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{page_configure_title}}</title>
+    {{> head }}
+</head>
+
+<body>
+<input id="data" type="hidden" value="{{convertToString engineFunctions}}">
+<div class="row wrapper">
+
+    <div class="medium-3 columns">
+        <nav>
+            {{> nav_client }}
+            {{> nav_user_info }}
+        </nav>
+    </div>
+
+    <div class="medium-9 columns">
+        <main>
+            <h1>{{page_basic_setting_tittle}}</h1>
+            <p>{{page_basic_setting_description}}</p>
+
+            <form id="submit" method="post">
+                <fieldset>
+                    <legend>
+                    <strong>{{page_basic_setting_language_title}}</strong><br>
+                        {{page_basic_setting_language_description}}
+                    </legend>
+
+                    <label for="user_language">{{page_basic_setting_language_label}}</label>
+                    <select id="user_language" name="user_language">
+                        {{#each supportedLanguages}}
+                            {{#ifEquals userLanguage true}}
+                                <option value="{{id}}" selected>{{label}}</option>
+                            {{else}}
+                                <option value="{{id}}">{{label}}</option>
+                            {{/ifEquals}}
+                        {{/each}}
+                    </select>
+                </fieldset>
+
+
+
+                    <fieldset>
+                        <legend>
+                            <strong>{{page_basic_setting_adaptable_title}}</strong><br>
+                            {{page_basic_setting_adaptable_description}}
+                        </legend>
+                        <input type="radio" id="adaptable" name="ui_mode" value="adaptable" {{#ifEquals ui_mode "adaptable"}} checked  {{/ifEquals}}>
+                        <label for="adaptable"> {{page_basic_setting_adaptable_label}}</label><br>
+                        <input type="radio" id="adaptive" name="ui_mode" value="adaptive" {{#ifEquals ui_mode "adaptive"}} checked  {{/ifEquals}}>
+                        <label for="adaptive"> {{page_basic_setting_adaptive_label}}</label>
+                    </fieldset>
+
+
+                <input type="submit" value="{{Save}}"/>
+
+            </form>
+        </main>
+    </div>
+</div>
+
+
+
+</body>
+
+</html>

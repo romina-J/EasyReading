@@ -9,6 +9,7 @@ class SingleChoiceButton extends WidgetBase {
         this.widgetID = 'er_single_choice_button_' + this.widgetID;
         $("#" + targetID).append("<button id='" + this.widgetID + "' class='easy-reading-single-choice easy-reading-button'><img src='" + functionInfo.source.defaultIconURL + "' title='" + functionInfo.source.name + ": " + functionInfo.source.description + "'> </button>");
 
+     //   $("#" + this.widgetID).css('cssText', 'background-color: '+configuration.backgroundColorButtonActive+' !important');
         this.enable();
         globalEventListener.addWidgetActivatedListeners(this);
     }
@@ -28,21 +29,24 @@ class SingleChoiceButton extends WidgetBase {
     activateWidget(){
         console.log("Single Choice Button Active");
         $("#" + this.widgetID).addClass("easy-reading-single-choice-active");
-        for (let i = 0; i < this.functionInfo.source.inputTypes.length; i++) {
-            switch (this.functionInfo.source.inputTypes[i].inputType) {
-                case Word.className:
-                    globalEventListener.addWordClickListener(this);
-                    break;
+        if(this.functionInfo.source.inputTypes.length > 0){
+            switch (this.functionInfo.source.inputTypes[0].inputType) {
+
                 case Paragraph.className:
                     globalEventListener.addParagraphClickListener(this);
                     break;
+
+                case Word.className:
+                    globalEventListener.addWordClickListener(this);
+                    break;
+
                 case AnnotatedParagraph.className:
                     globalEventListener.addParagraphClickListener(this);
                     break;
                 default:
                     break;
             }
-            this.outputTypeClass = this.functionInfo.source.inputTypes[i].inputType;
+            this.outputTypeClass = this.functionInfo.source.inputTypes[0].inputType;
         }
 
         globalEventListener.widgetActivated(this);

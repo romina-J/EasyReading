@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{profile_wizard_step_5_heading}}</title>
+    {{> head }}
+    <link href="/css/client-profile-setup.css" rel="stylesheet"/>
+    <script src="/js/client-profile-setup.js"></script>
+
+</head>
+
+<body>
+
+<div class="row wrapper main-content">
+
+    <main>
+        <form method="POST" action="/client/setup">
+            <div class="medium-12 columns">
+
+                <div class="setup">
+                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container" data-name="tts">
+                        <h1 id="desc1">
+                           {{reading_title}}
+                        </h1>
+                        <div class="container">
+                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
+                                                                 "slow"}} checked {{/ifEquals}}" data-value="slow">
+                                <img src="/images/setup/step5/speed-slow.png" alt=""> <span class="container-info"> {{slow_label}}</span>
+                            </div>
+                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
+                                                                 "normal"}} checked {{/ifEquals}}" data-value="normal">
+                                <img src="/images/setup/step5/speed-normal.png" alt=""><span class="container-info"> {{normal_label}}</span>
+                            </div>
+                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
+                                                                 "fast"}} checked {{/ifEquals}}" data-value="fast">
+                                <img src="/images/setup/step5/speed-fast.png" alt=""><span class="container-info"> {{fast_label}}</span>
+                            </div>
+
+                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
+                                                                 "none"}} checked {{/ifEquals}}" data-value="none">
+                                <img src="/images/setup/step5/stop.png" alt=""><span class="container-info big"> {{no_tts_label}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <span class="clearfix"></span>
+
+
+                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container"
+                         data-name="highlightning">
+                        <h1 id="desc1">
+                           {{highlightning_title}}
+                        </h1>
+                        <div class="container">
+
+
+                            <div class="radio-button large {{#ifEquals setupInformation.[3].highlightning
+                                                                       "true"}} checked {{/ifEquals}}"
+                                 data-value="true"><img src="/images/setup/step5/text-highlightning.png" alt="">
+                                <span class="container-info">{{highlightning_yes_label}}</span>
+                            </div>
+                            <div class="radio-button {{#ifEquals setupInformation.[3].highlightning
+                                                                 "false"}} checked {{/ifEquals}}" data-value="false">
+                                <img src="/images/setup/step5/stop.png" alt=""><span class="container-info big"> {{highlightning_no_label}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="row">
+
+                <div class="columns small-6 small-centered">
+                    <div>
+                        {{#if previousStep}}
+
+                            <input type="image" src="/images/back.png" alt="Back" name="back"
+                                   class="button step-button">
+                            <!--  <a href="#" class="button step-button"><img src="/images/back.png" alt="Back"/></a>-->
+                        {{/if}}
+
+
+
+
+                        <div class="progress-indicator-container">
+                            <ol class="progress-indicator">
+
+                                {{#each stepInformation}}
+                                    {{#ifEquals step "completedStep"}}
+                                        <li class="is-complete" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "currentStep"}}
+                                        <li class="is-current" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "upcomingStep"}}
+                                        <li class="" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                {{/each}}
+                            </ol>
+                        </div>
+
+
+                        <input type="image" src="/images/next.png" alt="Next" name="next" class="button step-button"
+                               id="">
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </main>
+
+
+</div>
+
+
+</body>
+</html>

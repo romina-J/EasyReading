@@ -6,7 +6,8 @@ class WidgetBase{
         this.targetID = targetID;
         this.configuration = configuration;
         this.toolId = this.functionInfo.toolId;
-        this.widgetID = +userInterface.id+"_"+functionInfo.source.id+"_"+functionInfo.toolId;
+        this.widgetID = userInterface.id+"_"+functionInfo.source.id+"_"+functionInfo.toolId;
+
     }
 
     disable(){
@@ -21,6 +22,11 @@ class WidgetBase{
     presentationFinished(presentation){
 
     }
+
+    requestFailed(req,config){
+
+    }
+
     activateWidget(){
 
 

@@ -7,7 +7,12 @@ class TextHelpTTS extends base.EngineBase {
         this.name = "Texthelp";
         this.description = "Texthelp Services";
         this.versionDescription = "Initial Version";
-
+        this.supportCategories.push(
+            {
+                type: "reading_support",
+                value: 10,
+            }
+        );
         this.ttsVoices = {
             en: "Tom",
             de: "Petra",
@@ -166,6 +171,9 @@ class TextHelpTTS extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.SPEECH_SYNTHESIS,
+                supportCategories: [
+                    base.functionSupportCategories.reading_support.tts,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
                     "name": "Input word",

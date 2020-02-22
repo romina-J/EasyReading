@@ -57,39 +57,85 @@ hbs.registerHelper('addEnableCheckBoxLabel', function (title, icon, index) {
     return new hbs.SafeString(form)
  });
 
- hbs.registerHelper('createConfigFormForComponent',function(component){
+ hbs.registerHelper('createConfigFormForComponentList',function(componentList, id, type, widget, title){
+    var currentWidget = componentList[0];
+    if (widget.source!=null) {
+        currentWidget = widget.source;
+    }
+    
+    let propertyInfo = {
+        propertyName: type,
+        componentID: id,
+        currentValue : currentWidget.id,
+        schema : {
+            type: "string",
+            title: title,
+            default: componentList[0].id,
+            enum: [],
+            translatedEnum:  [],
+            enumSubComponent: [],
+        },
+        fieldId : "widget_" + type + "_" + id
+    };
 
-     let componentID = component.componentID+"_"+component.id;
+    for (let index = 0; index < componentList.length; index++) {
+        const component = componentList[index];
 
-     let html = "";
+        var currentConfiguration = component.getDefaultConfiguration().configuration;
+        if (widget.configuration!=null && widget.source!=null && component.id === widget.source.id)  {
+            currentConfiguration = widget.configuration;
+        }
 
-     if(component.dataSchema){
+        const componentItem = {
+            id: component.id,
+            componentID: propertyInfo.componentID + "_" + component.componentID,
+            name: component.name,
+            dataSchema: component.getConfigurationSchema(),
+            configuration: currentConfiguration,
+            active: false,
+        };
+        
+        propertyInfo.schema.enum.push(component.id);
+        propertyInfo.schema.translatedEnum.push(component.name);
+        propertyInfo.schema.enumSubComponent.push(componentItem);
+    }
 
-         Object.keys(component.dataSchema.properties).forEach(function(key,index) {
-
-             let schema= component.dataSchema.properties[key];
-             let currentValue = null;
-             if(component.configuration.hasOwnProperty(key)){
-                 currentValue = component.configuration[key];
-             }
-
-             let propertyInfo = {
-                 propertyName: key,
-                 schema : schema,
-                 componentID: componentID,
-                 currentValue : currentValue,
-
-             };
-
-             html = html + createInputFieldForSchemaProperty(propertyInfo);
-
-         });
-
-     }
-
-
-     return new hbs.SafeString(html);
+    return new hbs.SafeString(createInputFieldForSchemaProperty(propertyInfo));
 });
+
+ hbs.registerHelper('createConfigFormForComponent',function(component){
+    return createConfigFormForComponent(component);
+});
+
+function createConfigFormForComponent(component) {
+    let componentID = component.componentID+"_"+component.id;
+
+    let html = "";
+
+    if(component.dataSchema && component.dataSchema.properties!==undefined){
+
+        Object.keys(component.dataSchema.properties).forEach(function(key,index) {
+
+            let schema= component.dataSchema.properties[key];
+            let currentValue = null;
+            if(component.configuration.hasOwnProperty(key)){
+                currentValue = component.configuration[key];
+            }
+
+            let propertyInfo = {
+                propertyName: key,
+                schema : schema,
+                componentID: componentID,
+                currentValue : currentValue,
+                fieldId : key
+            };
+
+            html = html + createInputFieldForSchemaProperty(propertyInfo);
+        });
+    }
+
+    return new hbs.SafeString(html);
+}
 
  function createInputFieldForSchemaProperty(propertyInfo){
 
@@ -110,25 +156,27 @@ hbs.registerHelper('addEnableCheckBoxLabel', function (title, icon, index) {
      let currentValue = "";
      if(propertyInfo.currentValue){
 
-         currentValue = 'value:"'+currentValue+'"';
+         currentValue = 'value="'+propertyInfo.currentValue+'"';
 
      }
 
      let describedByAttribute = "";
      let describedByAttributeSpan = "";
+     let html = '<div class="inputField">'
+     
      if(propertyInfo.schema.description){
-
          let describedBySpanID = inputID+"_description";
          describedByAttribute = ' aria-describedby="'+describedBySpanID+'"';
          describedByAttributeSpan = '<br><span id="'+describedBySpanID+'">'+propertyInfo.schema.description+'</span>';
      }
+
      if(typeof propertyInfo.schema.maximum !== "undefined" && typeof propertyInfo.schema.minimum !== "undefined"){
-
-         return '<label for="'+inputID+'">'+propertyInfo.schema.title+'</label><input type="range" name="'+inputID+'" id="'+inputID+'" '+currentValue+' min="'+propertyInfo.schema.minimum+'" max="100"'+describedByAttribute+'>'+describedByAttributeSpan;
-
+         html += '<label for="' + inputID + '">' + propertyInfo.schema.title + '</label><input type="range" name="' + inputID + '" id="' + inputID + '" ' + currentValue + ' min="' + propertyInfo.schema.minimum + '" max="100"' + describedByAttribute + '>';
      }else{
-         return '<label for="'+inputID+'">'+propertyInfo.schema.title+'</label><input type="number" name="'+inputID+'" id="'+inputID+'" '+currentValue+describedByAttribute+'>'+describedByAttributeSpan;
+        html += '<label for="' + inputID + '">' + propertyInfo.schema.title + '</label><input type="number" name="' + inputID + '" id="' + inputID + '" ' + currentValue + describedByAttribute + '>';
      }
+
+     return html + describedByAttributeSpan+  '</div>'
 }
 function createInputFieldForStringProperty(propertyInfo) {
     let inputID = createInputID(propertyInfo.componentID,propertyInfo.propertyName);
@@ -148,7 +196,7 @@ function createInputFieldForStringProperty(propertyInfo) {
         //Return combo if more then 4 options
         if(propertyInfo.schema.enum.length > 4){
 
-            let html = '<label>'+propertyInfo.schema.title+'<select name="'+inputID+'" id="'+inputID+'"'+describedByAttribute+'>';
+            let html = '<div class="inputField"><label>'+propertyInfo.schema.title+'<select name="'+inputID+'" id="'+inputID+'"'+describedByAttribute+'>';
             for(let i=0; i < propertyInfo.schema.enum.length; i++){
 
                 if(propertyInfo.currentValue === propertyInfo.schema.enum[i]){
@@ -159,37 +207,49 @@ function createInputFieldForStringProperty(propertyInfo) {
 
             }
 
-            return  html+"</select></label>"+describedByAttributeSpan;
+            return html+"</select></label></div>"+describedByAttributeSpan;
             //Return radio if less then 4 options
         }else{
-            let html = '<fieldset><legend '+describedByAttributeSpan+'>'+propertyInfo.schema.title+'</legend>';
+            let html = '<fieldset id="'+propertyInfo.fieldId+'"><legend '+describedByAttributeSpan+'>'+propertyInfo.schema.title+'</legend>';
 
             for(let i=0; i < propertyInfo.schema.enum.length; i++){
+
+                html += '<div class="inputField">'
+
                 let inputIDRadio = inputID+'-'+i;
+
                 if(propertyInfo.currentValue === propertyInfo.schema.enum[i]) {
-                    html += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '" checked><label for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + '</label> ';
-
-                }else{
-                    html += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '"><label for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + '</label> ';
-
+                    html += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '" checked> <label for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + '</label> ';
+                } else {
+                    html += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '"> <label for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + '</label> ';
                 }
-                if(i < propertyInfo.schema.enum.length-1){
-                    html+="<br>";
+
+                if (propertyInfo.schema.enumSubComponent !== undefined) {
+                    if (propertyInfo.schema.enumSubComponent[i] !== undefined) {
+                        html += createConfigFormForComponent(propertyInfo.schema.enumSubComponent[i])
+                    }
                 }
+
+                html += '</div>'
             }
 
             return html+"</fieldset>"+describedByAttributeSpan;
         }
     }else{
+        let html = '<div class="inputField">'
+        let type = "text";
+
+        if (propertyInfo.schema.format=="color") {
+            type = "color";
+        }
 
         if(propertyInfo.currentValue){
-
-            return '<label for="'+inputID+'">'+propertyInfo.schema.title+'</label><input type="text" name="'+inputID+'" id="'+inputID+'" value="'+propertyInfo.currentValue+'" required>'+describedByAttributeSpan;
-
-        }else{
-
-            return '<label for="'+inputID+'">'+propertyInfo.schema.title+'</label><input type="text" name="'+inputID+'" id="'+inputID+'" required>'+describedByAttributeSpan;
+            html += '<label for="'+inputID+'">'+propertyInfo.schema.title+'</label><input type="'+type+'" name="'+inputID+'" id="'+inputID+'" value="'+propertyInfo.currentValue+'" required>';
+        } else {
+            html += '<label for="'+inputID+'">'+propertyInfo.schema.title+'</label><input type="'+type+'" name="'+inputID+'" id="'+inputID+'" required>';
         }
+
+        return html + describedByAttributeSpan + '</div>'
     }
 }
 function createInputID(component,propertyName) {

@@ -7,8 +7,19 @@ let passportLogin = require("./passportLogin");
 passport.use(new AnonymIdStrategy(async (req, uuid, done) => {
 
     let loginInfo = await passportLogin.createLoginInfoAnonym(req, uuid);
-    await passportLogin.userLogin(req, loginInfo, function (newProfile, error) {
-        return done(null, newProfile);
+    await passportLogin.userLogin(req, loginInfo, function (profile, error) {
+
+        if(!profile){
+            return done(null, false, { message: error });
+        }
+
+        if(profile.isNewProfile){
+            //Delete old setup sessions which could be there due to a websocket disconnect ...
+            delete req.session.setupInformation;
+            delete req.session.step;
+            req.session.returnTo = "/client/setup";
+        }
+        return done(null, profile);
     });
 }));
 passport.use(
@@ -23,8 +34,15 @@ passport.use(
         try {
 
             let loginInfo = await passportLogin.createLoginInfoGoogle(req, profile);
-            await passportLogin.userLogin(req, loginInfo, function (newProfile, error) {
-                return done(null, newProfile);
+            await passportLogin.userLogin(req, loginInfo, function (profile, error) {
+
+                if(profile.isNewProfile){
+                    //Delete old setup sessions which could be there due to a websocket disconnect ...
+                    delete req.session.setupInformation;
+                    delete req.session.step;
+                    req.session.returnTo = "/client/setup";
+                }
+                return done(null, profile);
             });
 
 
@@ -39,11 +57,14 @@ passport.use(
 
 
 let FacebookStrategy = require('passport-facebook').Strategy;
-
+let serverURL = "";
+if(process.env.SERVER_URL){
+    serverURL = process.env.SERVER_URL;
+}
 passport.use(new FacebookStrategy({
         clientID: "681162132383572",
         clientSecret: "49b3620d5967fe76f9a04c835f4a5591",
-        callbackURL: "/client/login/facebook/auth",
+        callbackURL: serverURL+"/client/login/facebook/auth",
         profileFields: ['email'],
         passReqToCallback: true,
         auth_type: "reauthenticate"
@@ -53,9 +74,15 @@ passport.use(new FacebookStrategy({
         try {
 
             let loginInfo = await passportLogin.createLoginInfoFacebook(req, profile);
-            await passportLogin.userLogin(req, loginInfo, function (newProfile, error) {
+            await passportLogin.userLogin(req, loginInfo, function (profile, error) {
 
-                return done(null, newProfile);
+                if(profile.isNewProfile){
+                    //Delete old setup sessions which could be there due to a websocket disconnect ...
+                    delete req.session.setupInformation;
+                    delete req.session.step;
+                    req.session.returnTo = "/client/setup";
+                }
+                return done(null, profile);
             });
 
 

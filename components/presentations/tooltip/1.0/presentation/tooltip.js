@@ -3,6 +3,15 @@ class Tooltip extends Presentation{
 
         super(functionInfo, userInterface,configuration);
 
+        this.backgroundColor = "#ffffff";
+
+        if(configuration){
+            if(configuration.backgroundColor){
+
+                this.backgroundColor = configuration.backgroundColor;
+            }
+        }
+
     }
 
     renderResult(request,result){
@@ -10,6 +19,15 @@ class Tooltip extends Presentation{
         let ioRes = ioTypeUtils.toIOTypeInstance(result.result);
         let resultHTML = ioRes.toHtml();
         let requestID = this.createRequestId();
+        /*
+        if (ioRes.name === "Error" ||ioRes.name === "NoResult" ) {
+
+            let div = $( request.input.element).wrap( "<div class='"+requestID +" easy-reading-tooltip "+this.getResultClass()+"' "+this.getPresentationAndRequestIdentifier(requestID)+"></div>" );
+            $(div).append("<span class='easy-reading-tooltip-text easy-reading-result'>"+ioRes.message+"</span>");
+
+
+        }else
+            */
         if (request.inputType instanceof Word) {
             for(let i=0; i < request.input.textNodes.length;i++){
                 if($(request.input.textNodes[i]).parent().hasClass("easy-reading-result")){
@@ -21,13 +39,16 @@ class Tooltip extends Presentation{
             }
 
             let span = pageUtils.wrapWordIn(request.input, "span",requestID+ " easy-reading-tooltip "+this.getResultClass(), this.getPresentationAndRequestIdentifier(requestID));
-            $( span ).append("<span class='easy-reading-tooltip-text "+this.getResultClass()+"'>"+resultHTML+"</span>");
+            $( span ).append("<span class='easy-reading-tooltip-text "+this.getResultClass()+"' style='background-color: "+this.backgroundColor+"'>"+resultHTML+"</span>");
         } else if (request.inputType instanceof Paragraph) {
 
 
-            let div = $( request.input.element).wrap( "<div class='"+requestID +" easy-reading-tooltip "+this.getResultClass()+"' "+this.getPresentationAndRequestIdentifier(requestID)+"></div>" );
-            $(div).append("<span class='easy-reading-tooltip-text easy-reading-result'>"+resultHTML+"</span>");
+            $( request.input.element).wrap( "<div class='"+requestID +" easy-reading-tooltip "+this.getResultClass()+"' "+this.getPresentationAndRequestIdentifier(requestID)+"></div>" );
+            $("."+requestID).append("<span class='easy-reading-tooltip-text easy-reading-result' style='background-color: "+this.backgroundColor+"'>"+resultHTML+"</span>");
         }
+
+        globalEventListener.presentationFinished(this);
+
     }
 
     undo(){

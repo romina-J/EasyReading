@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{profile_wizard_step_7_heading}}</title>
+    {{> head }}
+    <link href="/css/client-profile-setup.css" rel="stylesheet"/>
+    <script src="/js/client-profile-setup.js"></script>
+
+</head>
+
+<body>
+
+<div class="row wrapper main-content">
+
+    <main>
+        <form method="POST" action="/client/setup">
+            <div class="medium-12 columns">
+
+
+                <div class="setup">
+
+                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container"
+                         data-name="presentation">
+                        <h1 id="desc1">
+                            {{presentation_title}}
+                        </h1>
+                        <div class="container">
+                            <div class="radio-button large {{#ifEquals setupInformation.[5].presentation
+                                                                       "tooltip"}} checked {{/ifEquals}}"
+                                 data-value="tooltip">
+                                <img src="/images/setup/step7/symbol-presentation-tooltip.png" alt=""><span class="container-info"> {{tooltip_label}}</span>
+                            </div>
+                            <div class="radio-button  large {{#ifEquals setupInformation.[5].presentation
+                                                                        "top"}} checked {{/ifEquals}}" data-value="top">
+                                <img src="/images/setup/step7/symbol-presentation-top.png" alt=""><span class="container-info">{{top_of_word_label}}</span>
+                            </div>
+                            <div class="radio-button large {{#ifEquals setupInformation.[5].presentation
+                                                                       "next"}} checked {{/ifEquals}}"
+                                 data-value="next">
+                                <img src="/images/setup/step7/symbol-presentation-next.png" alt=""><span class="container-info"> {{next_to_word_label}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <span class="clearfix"></span>
+
+
+                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container"
+                         data-name="user_interface">
+                        <h1 id="desc1">
+                            {{ui_title}}
+                        </h1>
+                        <div class="container">
+                            <div class="radio-button large {{#ifEquals setupInformation.[5].user_interface
+                                                                       "tab-slide-out"}} checked {{/ifEquals}}"
+                                 data-value="tab-slide-out">
+                                <img src="/images/setup/step7/slide-in.png" alt=""><span class="container-info"> {{slide_in_label}}</span>
+                            </div>
+
+                            <div class="radio-button large {{#ifEquals setupInformation.[5].user_interface
+                                                                       "overlay"}} checked {{/ifEquals}}"
+                                 data-value="overlay">
+                                <img src="/images/setup/step7/overlay.png" alt=""><span class="container-info">{{overlay_label}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="columns small-6 small-centered">
+                    <div>
+                        {{#if previousStep}}
+
+                            <input type="image" src="/images/back.png" alt="Back" name="back"
+                                   class="button step-button">
+                            <!--  <a href="#" class="button step-button"><img src="/images/back.png" alt="Back"/></a>-->
+                        {{/if}}
+
+
+
+
+                        <div class="progress-indicator-container">
+                            <ol class="progress-indicator">
+
+                                {{#each stepInformation}}
+                                    {{#ifEquals step "completedStep"}}
+                                        <li class="is-complete" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "currentStep"}}
+                                        <li class="is-current" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "upcomingStep"}}
+                                        <li class="" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                {{/each}}
+                            </ol>
+                        </div>
+                        <input type="image" src="/images/next.png" alt="Next" name="next" class="button step-button"
+                               id="">
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </main>
+
+
+</div>
+
+
+</body>
+</html>

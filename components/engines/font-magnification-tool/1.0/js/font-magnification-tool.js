@@ -15,7 +15,7 @@ function initFontMagnification() {
 
 }
 
-function magnifyFont(req, config) {
+function magnifyFont(req, config,widget) {
     initFontMagnification();
     zoom++;
     $('*').each(function () {

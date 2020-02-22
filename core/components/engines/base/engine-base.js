@@ -12,6 +12,7 @@ class EngineBase {
         this.versionDescription = "Initial Version";
         this.debugMode = false;
         this.functions = [];
+        this.supportCategories = [];
     }
 
     getDataSchema(){
@@ -135,7 +136,8 @@ class EngineBase {
 }
 
 class FunctionBundle {
-    constructor(title, description) {
+    constructor(bundleId, title, description) {
+        this.bundleId = bundleId;
         this.title = title;
         this.description = description;
     }
@@ -143,5 +145,6 @@ class FunctionBundle {
 
 module.exports.FunctionBundle = FunctionBundle;
 module.exports.EngineBase = EngineBase;
+module.exports.functionSupportCategories = require("../../../profile/profile-support-categories").engineSupportCategories;
 module.exports.EngineFunction = engineFunction;
 module.exports.EngineContaner = engineContainer;

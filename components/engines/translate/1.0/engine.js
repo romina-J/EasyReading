@@ -80,6 +80,10 @@ class Translate extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.DICTIONARY,
+                supportCategories: [
+
+                    base.functionSupportCategories.text_support.translation,
+                ],
                 inputTypes: [
                     {
                         "inputType": ioType.IOTypes.Paragraph.className,
@@ -184,24 +188,19 @@ class Translate extends base.EngineBase {
             };
 
             this.translate.translateText(params, function (err, data) {
-                let error = false;
                 if (err) {
-                    error = true;
-                    console.log(err.code)
+                    if(err.message){
+                        callback(new ioType.IOTypes.Error("Error:"+err.message));
+                    }else{
+
+                        callback(new ioType.IOTypes.Error("Error processing request"));
+                    }
                 } else if (data && data.TranslatedText) {
-                    error = false;
-                    let result = new ioType.IOTypes.Word(data.TranslatedText);
+                     let result = new ioType.IOTypes.Word(data.TranslatedText);
                    callback(result);
                 } else {
-                    error = true;
-                    console.log('Translate: no error but not data in response.')
-                }
-                if (error) {
-                   // const localeService = rootRequire("core/i18n/locale-service");
-                    //Error:
-                    console.log(err);
+                    console.log('Translate: no error but not data in response.');
                     callback(new ioType.IOTypes.Error("Error processing request"));
-
                 }
             });
         } else {

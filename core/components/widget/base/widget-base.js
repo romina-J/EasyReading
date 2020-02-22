@@ -8,6 +8,7 @@ class WidgetBase extends  ComponentBase {
         this.description = "BaseWidget description";
         this.implementationClass = "WidgetImplementation";
         this.componentCategory = "widget";
+        this.continuesToCreateRequests = false;
     }
 }
 

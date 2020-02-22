@@ -1,0 +1,224 @@
+html, body {
+    margin: 0;
+    height: 100%;
+}
+.main-content{
+    height:80%;
+}
+
+
+.step-button{
+    max-width: 50px;
+    padding: 3px;
+    float: left;
+}
+
+.category-container{
+
+}
+.container-info{
+    display: block;
+    margin-top: 10px;
+    font-size: 20px;
+
+}
+.container-info.margin-top{
+    margin-top: -20px;
+}
+.center {
+    margin: auto;
+}
+
+.choice-container{
+    width: 40%;
+    text-align: center;
+    border-radius: 10px;
+    border: 4px solid black;
+    padding: 20px;
+    margin: 20px;
+    float: left;
+
+}
+.logo{
+    float: left;
+    max-width: 100px;
+}
+
+.avatar-image{
+    display: block;
+    margin: auto;
+}
+
+.setup{
+    min-height: 570px;
+}
+
+.radio-button,.checkbox{
+    text-align: center;
+    border-radius: 10px;
+    border: 4px solid black;
+    padding: 10px;
+    margin: 20px;
+    width: 195px;
+    height: 195px;
+    float: left;
+    position: relative;
+
+}
+.radio-button:focus,.checkbox:focus{
+    outline: 5px solid #6eaae6;
+}
+
+.radio-button>img,.checkbox>img {
+    display: block;
+    max-width: 80px;
+    margin: auto;
+}
+
+.radio-button.large>img,.checkbox>img {
+    display: block;
+    max-width: 110px;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+.radio-button.wide,.checkbox.wide{
+    width: 320px;
+}
+
+img.check-mark{
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 40px;
+    display: none;
+}
+.checkbox.checked .check-mark{
+    display: block;
+}
+
+
+
+.radio-button.checked,.checkbox.checked{
+    background-color: #74b3f2;
+}
+
+
+.sr-only{
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+/*
+.setupCheckbox{
+    visibility:hidden;
+    width: 0;
+    height: 0;
+    position: absolute;
+
+}
+
+*/
+
+
+
+
+/* Progress */
+
+.progress-indicator-container{
+    float: left;
+}
+
+.progress-indicator {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+    display: table;
+    table-layout: fixed;
+}
+
+.progress-indicator > li {
+    position: relative;
+    display: table-cell;
+    text-align: center;
+    font-size: 1.5em;
+    padding: 10px;
+}
+
+.progress-indicator > li span {
+    position: absolute;
+    color: #e6e6e6;
+    -webkit-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    transform: translateX(-50%);
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.05px;
+    text-transform: uppercase;
+}
+
+.progress-indicator > li::before {
+    content: attr(data-step);
+    display: block;
+    margin: 0 auto;
+    background: #e6e6e6;
+    width: 1.5em;
+    height: 1.5em;
+    text-align: center;
+    margin-bottom: 0.25em;
+    line-height: 1.5em;
+    border-radius: 100%;
+    position: relative;
+    z-index: 1000;
+}
+
+.progress-indicator > li::after {
+    content: '';
+    position: absolute;
+    display: block;
+    background: #e6e6e6;
+    width: 100%;
+    height: 0.15em;
+    top: 50%;
+    -webkit-transform: translateY(-100%);
+    -ms-transform: translateY(-100%);
+    transform: translateY(-100%);
+    left: 50%;
+    margin-left: 1.5em \9;
+    z-index: 0;
+}
+
+.progress-indicator > li:last-child:after {
+    display: none;
+}
+
+.progress-indicator > li.is-complete {
+    color: #1779ba;
+}
+
+.progress-indicator > li.is-complete::before, .progress-indicator > li.is-complete::after {
+    color: #fefefe;
+    background: #1779ba;
+}
+
+.progress-indicator > li.is-complete span {
+    color: #1779ba;
+}
+
+.progress-indicator > li.is-current {
+    color: #4eabe9;
+}
+
+.progress-indicator > li.is-current::before {
+    color: #fefefe;
+    background: #4eabe9;
+}
+
+.progress-indicator > li.is-current span {
+    color: #4eabe9;
+}

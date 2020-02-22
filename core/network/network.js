@@ -53,6 +53,19 @@ let network = {
         });
 
 
+      // network.kickConnections();
+    },
+    kickConnections: function (){
+        //Used to test if clients would reconnect
+
+        return;
+        setTimeout(function () {
+            network.kickConnections();
+            for(const client of network.webSocketServer.clients)
+            {
+                client.close();
+            }
+        },30000);
     },
     addWebSocketConnection: function (webSocketConnection) {
         this.webSocketConnections.push(webSocketConnection);
@@ -98,18 +111,20 @@ let network = {
     },
     getProfileWithID:function (id) {
         for (let i = 0; i < this.webSocketConnections.length; i++) {
-
-            if (this.webSocketConnections[i].profile.id === id) {
-                return this.webSocketConnections[i].profile;
+            if(this.webSocketConnections[i].profile){
+                if (this.webSocketConnections[i].profile.id === id) {
+                    return this.webSocketConnections[i].profile;
+                }
             }
-
         }
     },
     getWebSocketConnectionWithID:function(id){
         for (let i = 0; i < this.webSocketConnections.length; i++) {
 
-            if (this.webSocketConnections[i].profile.id === id) {
-                return this.webSocketConnections[i];
+            if(this.webSocketConnections[i].profile) {
+                if (this.webSocketConnections[i].profile.id === id) {
+                    return this.webSocketConnections[i];
+                }
             }
 
         }

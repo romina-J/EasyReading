@@ -3,15 +3,17 @@ let DatabaseConnectionBase =  require("./database-connection-base");
 class MysqlConnection extends DatabaseConnectionBase{
     constructor(){
         super();
+        this.connection = null;
     }
 
 
     async init(configuration){
+        let MySQLConnection  = this;
         return new Promise(function (resolve,reject) {
 
 
             let mysql = require('mysql');
-            connection = mysql.createConnection({
+            MySQLConnection.connection = mysql.createConnection({
                 host: configuration.host,
                 port: configuration.port,
                 user: configuration.user,
@@ -19,7 +21,7 @@ class MysqlConnection extends DatabaseConnectionBase{
                 database: configuration.database
             });
 
-            connection.connect(function (err) {
+            MySQLConnection.connection.connect(function (err) {
                 if (err){
                     reject(err);
                 }else{
@@ -31,7 +33,7 @@ class MysqlConnection extends DatabaseConnectionBase{
             });
 
             setInterval(function () {
-                connection.query('SELECT 1',function (error, results, fields) {
+                MySQLConnection.connection.query('SELECT 1',function (error, results, fields) {
                     if (error) throw error;
 
                 });
@@ -66,6 +68,45 @@ class MysqlConnection extends DatabaseConnectionBase{
 
         return sql;
 
+    }
+
+    createInsertOrUpdateSQL(request){
+        let sql = "INSERT INTO "+request.tableName+" (";
+
+        for(let i=0; i < request.columnValues.length; i++){
+            sql+=request.columnValues[i].column;
+            if(i < request.columnValues.length-1){
+                sql+=",";
+            }
+
+        }
+
+        sql+=")VALUES(";
+
+        for(let i=0; i < request.columnValues.length; i++){
+            sql+=this.getFormattedValue(request.columnValues[i]);
+            if(i < request.columnValues.length-1){
+                sql+=",";
+            }
+        }
+
+        sql+=") ON DUPLICATE KEY UPDATE " ;
+
+        for(let i=0; i < request.columnValues.length; i++){
+
+            if(request.columnValues[i].column !== "id"){
+
+                sql+=request.columnValues[i].column+"="+this.getFormattedValue(request.columnValues[i]);
+                if(i < request.columnValues.length-1){
+                    sql+=", ";
+                }
+            }
+
+
+        }
+        sql+=";";
+
+        return sql;
     }
 
     createUpdateSQL(request){
@@ -211,11 +252,12 @@ class MysqlConnection extends DatabaseConnectionBase{
 
 
     async executeSQL(sql, parameters){
-        //console.log("Executing:"+sql);
+        //conso le.log("Executing:"+sql);
         //console.log("parameters:"+JSON.stringify(parameters));
 
+        let MySQLConnection = this;
         return new Promise(function (resolve,reject) {
-            connection.query(sql, parameters, function (err, result) {
+            MySQLConnection.connection.query(sql, parameters, function (err, result) {
                 if (err) {
                     console.log("Error: " + err);
                     reject(err);

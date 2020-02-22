@@ -15,6 +15,8 @@ class WebSocketConnection {
         console.log("Base URL:", url);
         const webSocketConnection = this;
         this.customFunctions = [];
+        this.recomendationTimeout = null;
+        this.sessionID = null;
 
         ws.on('message', function incoming(msg) {
             webSocketConnection.messageReceived(msg);
@@ -23,6 +25,38 @@ class WebSocketConnection {
             webSocketConnection.connectionClosed();
         });
 
+
+
+    }
+
+    setProfile(profile){
+
+        this.profile = profile;
+
+        try{
+            if(this.profile.ui_mode === "adaptive"){
+                this.startAdaptivity();
+            }
+        }catch (e) {
+            console.log(e);
+        }
+
+    }
+
+    startAdaptivity(){
+        const webSocketConnection = this;
+        this.recomendationTimeout = setTimeout(async function () {
+            await webSocketConnection.createRecommendation();
+        }, 60000);
+        console.log("Adaptivity started");
+    }
+    stopAdaptivity(){
+        if(this.recomendationTimeout){
+            clearTimeout(this.recomendationTimeout);
+            this.recomendationTimeout = null;
+        }
+
+        console.log("Adaptivity stopped");
 
     }
 
@@ -112,6 +146,14 @@ class WebSocketConnection {
                 if (!this.profile) {
 
                     console.log("attempted a cloud request without a profile.");
+                    try{
+
+                        if(this.ws){
+                            this.ws.close();
+                        }
+                    }catch (e) {
+                        console.log(e);
+                    }
                     return;
                 }
 
@@ -119,7 +161,7 @@ class WebSocketConnection {
 
                 //TODO Check if profile has this function....
 
-                core.executeRequest(this, req, config);
+                await core.executeRequest(this, req, config);
 
 
             } else if (req.type === "getUUID") {
@@ -148,6 +190,12 @@ class WebSocketConnection {
                 profileBuilder.normalizeRemoteAssetDirectoryPaths(this, websocketConnection.url);
                 this.sendMessage(currentProfile);
 
+
+            }else if(req.type === "recommendationResult"){
+
+
+                let profileRecommendation = require("./../profile/profile-recommendation");
+                await profileRecommendation.createConfigurationForRecommendation(req.data,this.profile.id);
 
             }
         } catch (error) {
@@ -180,7 +228,21 @@ class WebSocketConnection {
 
     async connectionClosed() {
 
+
+        const session = require("express-session");
+        const passport = require("passport");
+
+        const app = require("../../portal/app");
         await this.logoutUser();
+
+        if(this.sessionID){
+            let databaseManager = require("../database/database-manager");
+            let deleteRoleRequest = databaseManager.createRequest("sessions").where("session_id", "=", this.sessionID).delete();
+            await databaseManager.executeRequest(deleteRoleRequest);
+        }
+
+
+        this.stopAdaptivity();
 
         let network = require("./network");
         network.removeWebSocketConnection(this);
@@ -252,6 +314,27 @@ class WebSocketConnection {
             await this.profile.logout();
             this.profile = null;
         }
+    }
+
+    async createRecommendation () {
+        const webSocketConnection = this;
+        if(this.profile){
+            let profileRecommendation = require("../profile/profile-recommendation");
+            let recommendation = await profileRecommendation.createRecommendation(this.profile);
+            if(recommendation){
+                recommendation.normalizeIconPaths(this.url);
+                this.sendMessage({type: "recommendation", data :recommendation});
+            }
+
+        }
+
+        this.recomendationTimeout = setTimeout(function () {
+
+
+            webSocketConnection.createRecommendation();
+        }, 60*60*1000);
+
+
     }
 }
 

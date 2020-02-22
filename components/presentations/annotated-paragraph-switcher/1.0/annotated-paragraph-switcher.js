@@ -15,11 +15,6 @@ class AnnotatedParagraphSwitcher extends PresentationBase{
         this.implementationClass = "AnnotatedParagraphSwitcher";
         this.outputTypes = [
             {
-            "outputType": ioType.IOTypes.Paragraph.className,
-            "name": "Output Paragraph",
-            "description": "Switched paragraph",
-            },
-            {
                 "outputType": ioType.IOTypes.ParsedLanguageType.className,
                 "name": "Output Paragraph",
                 "description": "Output Paragraph with syntactic metadata",

@@ -6,7 +6,7 @@ class SingleChoiceButton extends WidgetBase{
 
         super(baseDir);
 
-        this.name = "Simple Button";
+        this.name = "Single Choice Button";
         this.description = "A simple button.";
         this.versionDescription = "Initial Version";
         this.scripts = ["widget/single-choice-button.js"];
@@ -37,6 +37,7 @@ class SingleChoiceButton extends WidgetBase{
                     "type": "string",
                     "format": "color",
                     "default": "#ffffff",
+                    "title": "Active button background color"
                 }
             },
             "required": [

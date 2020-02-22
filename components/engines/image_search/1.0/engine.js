@@ -25,6 +25,9 @@ class ImageSearch extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.text_support.multimedia_annotation,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Word.className,
                     "name": "Input word",
@@ -46,12 +49,32 @@ class ImageSearch extends base.EngineBase {
         return {};
     }
 
+    getCredentials() {
+
+        if (process.env.GOOGLE_IMAGE_SEARCH) {
+
+            return process.env.GOOGLE_IMAGE_SEARCH;
+        }
+
+        if (this.credentialManager.hasKey("GOOGLE_IMAGE_SEARCH")){
+            return this.credentialManager.getValueForKey("GOOGLE_IMAGE_SEARCH");
+        }
+    }
+
     getImage(callback, input, config,profile,constants) {
+
+        let credentials = this.getCredentials();
+
+        if(!credentials){
+            callback(new ioType.IOTypes.Error("No credentials found for Google image search"));
+            return;
+        }
+
 
         let https = require('follow-redirects').https;
         let optionsget = {
             host : 'www.googleapis.com',
-            path : '/customsearch/v1?key=AIzaSyB20eOh1pzH6686EvT4FvXkFzyXVLbA5tE&cx=006907531626359346862:z3verovlhta&q='+encodeURIComponent(input.word)+'&searchType=image&alt=json&num=10&start=1&imgType=clipart',
+            path : '/customsearch/v1?key='+credentials+'&q='+encodeURIComponent(input.word)+'&searchType=image&alt=json&num=10&start=1&imgType=clipart',
             method : 'GET',
 
         };

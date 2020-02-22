@@ -9,6 +9,7 @@ class TippyTooltip extends Presentation {
         let ioRes = ioTypeUtils.toIOTypeInstance(result.result);
         let resultHTML = ioRes.toHtml();
         let requestID = this.createRequestId();
+
         if (request.inputType instanceof Word) {
 
 
@@ -17,7 +18,6 @@ class TippyTooltip extends Presentation {
             //pageUtils.wrapWordIn(request.input, "span",this.createRequestId(),"easy-reading-result easy-reading-tippy-tooltip "+className);
 
             let span = pageUtils.wrapWordIn(request.input, "span", requestID+" easy-reading-tippy-tooltip " + this.getResultClass(), this.getPresentationAndRequestIdentifier(requestID));
-
 
             if (ioRes instanceof ImageIOType) {
                 const INITIAL_CONTENT = 'Loading...';
@@ -70,11 +70,14 @@ class TippyTooltip extends Presentation {
 
             let div = $( request.input.element).wrap( "<div class='"+ requestID+" easy-reading-tippy-tooltip "+this.getResultClass()+"' "+this.getPresentationAndRequestIdentifier(requestID)+"></div>" );
 
-            tippy("#" + tooltipID, {
+            tippy("." + requestID, {
                 content: resultHTML,
                 theme: 'light-border',
             });
+
         }
+
+        globalEventListener.presentationFinished(this);
 
     }
 

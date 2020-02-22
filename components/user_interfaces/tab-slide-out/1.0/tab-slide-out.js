@@ -12,6 +12,8 @@ class TabSlideOutUserInterface extends UserInterfaceBase{
         this.css = ["ui/jquery-ui.css", "ui/tab-slide-out-ui.css", "ui/erTabSlideOut.css"];
         this.assetDirectory = "ui/images";
         this.implementationClass = "TabSlideOutUserInterface";
+        this.supportCategories = ["slide_in"];
+
 
     }
 
@@ -26,6 +28,14 @@ class TabSlideOutUserInterface extends UserInterfaceBase{
                     "default": 'right',
                     "enum": ["top", "right", "bottom","left"],
                 },
+                "buttonSize": {
+                    "type": "integer",
+                    "title" : "Button Size",
+                    "description": "Size of buttons in pixels",
+                    "default": 80,
+                    "minimum": 50,
+                    "maximum": 150,
+                }
             }
         }
     }

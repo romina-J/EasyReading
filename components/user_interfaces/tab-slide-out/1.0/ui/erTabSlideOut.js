@@ -12,6 +12,7 @@ tabPositioning: top, bottom, left, right (default)
 panelVisible: true, false (default)
 
 methods
+updatePanel: needs to be called every time the contents of the panel have changed
 refresh: refresh view status of panel
 */
 
@@ -20,18 +21,29 @@ $.widget("ui.erTabSlideOut", {
     // default options
     options: {
         tabPositioning: "right",
-        panelVisible: false
+        panelVisible: false,
+        panelPos: {top: 200, left: 200},
+        handlePos: {top: 0, left: 0}, // position of handle relative to the panel
+        saveConfig: function(oldConf) {}
     },
 
     _create: function() {
         this.ignoreNextClick = false;
         this.panel = $("#er-tab-slide-out");
         this.handle = $("#er-tab-slide-out-handle");
+        this.gridContainer = $('#er-tab-slide-out-grid-container');
         this.dragAxis = 'y';
         if (this.options.tabPositioning === "top" || this.options.tabPositioning === "bottom") {
-            $('#er-tab-slide-out-grid-container').addClass('er-tab-slide-out-grid-horizontal');
+            this.gridContainer.addClass('er-tab-slide-out-grid-horizontal');
             this.dragAxis = 'x';
+            this.panel.css({'left' : this.options.panelPos.left + 'px'});
+            this.handle.css({'left' : this.options.handlePos.left + 'px'});
+        } else {
+            this.panel.css({'top' : this.options.panelPos.top + 'px'});
+            this.handle.css({'top' : this.options.handlePos.top + 'px'});
         }
+        this.panelHeight = 1; // the true height and width of the panel will be set, when panel images are loaded
+        this.panelWidth = 1;
 
         // enable 2-level dragging of the panel
         let prevMouseX = 0;
@@ -74,11 +86,11 @@ $.widget("ui.erTabSlideOut", {
                             erTSO.handle.css('left', handleLeft);
                         }
                     } else {
-                        let leftMax = document.documentElement.clientWidth - erTSO.panel.outerWidth();
+                        let leftMax = document.documentElement.clientWidth - erTSO.panelWidth;
                         if (ui.position.left > leftMax) {
                             ui.position.left = leftMax;
                             haveBeenDraggingHandle = true;
-                            let handleLeftMax = erTSO.panel.outerWidth() - erTSO.handle.outerWidth();
+                            let handleLeftMax = erTSO.panelWidth - erTSO.handle.outerWidth();
                             if (handleLeft > handleLeftMax) {
                                 handleLeft = handleLeftMax;
                             }
@@ -115,11 +127,11 @@ $.widget("ui.erTabSlideOut", {
                             erTSO.handle.css('top', handleTop);
                         }
                     } else {
-                        let topMax = window.innerHeight - erTSO.panel.outerHeight();
+                        let topMax = window.innerHeight - erTSO.panelHeight;
                         if (ui.position.top > topMax) {
                             ui.position.top = topMax;
                             haveBeenDraggingHandle = true;
-                            let handleTopMax = erTSO.panel.outerHeight() - erTSO.handle.outerHeight();
+                            let handleTopMax = erTSO.panelHeight - erTSO.handle.outerHeight();
                             if (handleTop > handleTopMax) {
                                 handleTop = handleTopMax;
                             }
@@ -141,40 +153,35 @@ $.widget("ui.erTabSlideOut", {
                     }
                     prevMouseY = evt.clientY; 
                 }
+            },
+            stop: function(event, ui) {
+                erTSO.saveConfiguration();
             }
         });
 
-        // add callbacks for panel/handle positioning
-        // (otherwise it might be positioned incorrectly if images in panel are not fully loaded yet)
-        if (this.options.tabPositioning === 'top') {
-            this.panel.imagesLoaded(function() {
-                erTSO.panel.css({'top' : '-' + erTSO.panel.outerHeight() + 'px'});
-                erTSO.handle.css({'top' : (erTSO.panel.outerHeight() - 1) + 'px'});
-                erTSO._adaptToWindowSize();
-                erTSO.refresh();
-                erTSO._setTransitions();
-            });
-        } else if (this.options.tabPositioning === 'left') {
-            this.panel.imagesLoaded(function() {
-                erTSO.panel.css({'left' : '-' + erTSO.panel.outerWidth() + 'px'});
-                erTSO.handle.css({'left' : (erTSO.panel.outerWidth() - 1) + 'px'});
-                erTSO._adaptToWindowSize();
-                erTSO.refresh();
-                erTSO._setTransitions();
-            });
-        } else {
-            this.panel.imagesLoaded(function() {
-                erTSO._adaptToWindowSize();
-                erTSO.refresh();
-                erTSO._setTransitions();
-            });
-        }
+        // add callback for panel/handle positioning
+        // (otherwise they might be positioned incorrectly if images in panel are not fully loaded yet)
+        this.panel.imagesLoaded(function() {
+            erTSO.panelHeight = erTSO.panel.outerHeight();
+            erTSO.panelWidth = erTSO.panel.outerWidth();
+            if (erTSO.options.tabPositioning === 'top') {
+                erTSO.panel.css({'top' : '-' + erTSO.panelHeight + 'px'});
+                erTSO.handle.css({'top' : (erTSO.panelHeight - 1) + 'px'});
+            } else if (this.options.tabPositioning === 'left') {
+                erTSO.panel.css({'left' : '-' + erTSO.panelWidth + 'px'});
+                erTSO.handle.css({'left' : (erTSO.panelWidth - 1) + 'px'});
+            }
+            erTSO._adaptToWindowSize();
+            erTSO.refresh();
+            erTSO._setTransitions();            
+        });
 
         // change panel visibility on handle-click
         this.handle.click(function(evt) {
             if (!erTSO.ignoreNextClick) {
                 erTSO.options.panelVisible = !erTSO.options.panelVisible;
                 erTSO.refresh();
+                erTSO.saveConfiguration();
             }
         });
 
@@ -193,6 +200,7 @@ $.widget("ui.erTabSlideOut", {
                 if (evt.which === 13) {
                     erTSO.options.panelVisible = !erTSO.options.panelVisible;
                     erTSO.refresh();
+                    erTSO.saveConfiguration();
                 }
 
                 // drag with shift-arrowKey
@@ -210,6 +218,7 @@ $.widget("ui.erTabSlideOut", {
                                 } else {
                                     erTSO.handle.css('left', (nextPosXHandle) + 'px');
                                 }
+                                erTSO.saveConfiguration();
                             }
                             break;
                         }
@@ -225,16 +234,17 @@ $.widget("ui.erTabSlideOut", {
                                 } else {
                                     erTSO.handle.css('top', (nextPosYHandle) + 'px');
                                 }
+                                erTSO.saveConfiguration();
                             }
                             break;
                         }
                         case 39: { // arrow right
                             if (erTSO.dragAxis === 'x') {
                                 evt.preventDefault();
-                                let handleLeftMax = erTSO.panel.outerWidth() - erTSO.handle.outerWidth();
+                                let handleLeftMax = erTSO.panelWidth - erTSO.handle.outerWidth();
                                 let nextPosXHandle = parseFloat(erTSO.handle.css('left')) + 2;
                                 if (nextPosXHandle > handleLeftMax) {
-                                    let panelLeftMax = document.documentElement.clientWidth - erTSO.panel.outerWidth();
+                                    let panelLeftMax = document.documentElement.clientWidth - erTSO.panelWidth;
                                     let nextPosXPanel = parseFloat(erTSO.panel.css('left')) + 2;
                                     if (nextPosXPanel <= panelLeftMax) {
                                         erTSO.panel.css('left', (nextPosXPanel) + 'px');
@@ -242,16 +252,17 @@ $.widget("ui.erTabSlideOut", {
                                 } else {
                                     erTSO.handle.css('left', (nextPosXHandle) + 'px');
                                 }
+                                erTSO.saveConfiguration();
                             }
                             break;
                         }
                         case 40: { // arrow down
                             if (erTSO.dragAxis === 'y') {
                                 evt.preventDefault();
-                                let handleTopMax = erTSO.panel.outerHeight() - erTSO.handle.outerHeight();
+                                let handleTopMax = erTSO.panelHeight - erTSO.handle.outerHeight();
                                 let nextPosYHandle = parseFloat(erTSO.handle.css('top')) + 2;
                                 if (nextPosYHandle > handleTopMax) {
-                                    let panelTopMax = window.innerHeight - erTSO.panel.outerHeight();
+                                    let panelTopMax = window.innerHeight - erTSO.panelHeight;
                                     let nextPosYPanel = parseFloat(erTSO.panel.css('top')) + 2;
                                     if (nextPosYPanel < panelTopMax) {
                                         erTSO.panel.css('top', (nextPosYPanel) + 'px');
@@ -259,6 +270,7 @@ $.widget("ui.erTabSlideOut", {
                                 } else {
                                     erTSO.handle.css('top', (nextPosYHandle) + 'px');
                                 }
+                                erTSO.saveConfiguration();
                             }
                             break;
                         }
@@ -280,8 +292,8 @@ $.widget("ui.erTabSlideOut", {
 
     _adaptToWindowSize: function() {
         if (this.dragAxis === 'x') {
-            if (this.panel.position().left + this.panel.outerWidth() > document.documentElement.clientWidth) {
-                let newPosLeft = document.documentElement.clientWidth - this.panel.outerWidth();
+            if (this.panel.position().left + this.panelWidth > document.documentElement.clientWidth) {
+                let newPosLeft = document.documentElement.clientWidth - this.panelWidth;
                 if (newPosLeft >= 0) {
                     this.panel.css({'left' : newPosLeft + 'px'});
                 } else {
@@ -292,8 +304,8 @@ $.widget("ui.erTabSlideOut", {
                 this.handle.css({'left' : (document.documentElement.clientWidth - this.handle.outerWidth()) + 'px'});
             }
         } else {
-            if (this.panel.position().top + this.panel.outerHeight() > window.innerHeight) {
-                let newPosTop = window.innerHeight - this.panel.outerHeight();
+            if (this.panel.position().top + this.panelHeight > window.innerHeight) {
+                let newPosTop = window.innerHeight - this.panelHeight;
                 if (newPosTop >= 0) {
                     this.panel.css({'top' : newPosTop + 'px'});
                 } else {
@@ -309,6 +321,7 @@ $.widget("ui.erTabSlideOut", {
             }            
         }
         $('.er-tab-slide-out-grid-horizontal').css({'flex-wrap' : 'wrap'});
+        this.saveConfiguration();
     },
 
     _setOption: function(key, value) {
@@ -327,34 +340,91 @@ $.widget("ui.erTabSlideOut", {
         }
     },
 
+    saveConfiguration: function() {
+        this.options.saveConfig({tabPos: this.options.tabPositioning, // needed to recognize a change and then set options to default again
+                                 panVis: this.options.panelVisible,
+                                 panPos: {top: parseInt(this.panel.css('top'), 10), left: parseInt(this.panel.css('left'), 10)},
+                                 hanPos: {top: parseInt(this.handle.css('top'), 10), left: parseInt(this.handle.css('left'), 10)}});
+    },
+
+    updatePanel: function() {
+        // make sure panel is in display=grid to be able to set the correct dimensions of the panel
+        let prevDisplaySetting = this.gridContainer.css('display');
+        let hadClassHorizontal = this.gridContainer.hasClass('er-tab-slide-out-grid-horizontal');
+        if (this.dragAxis === 'y') {
+            this.gridContainer.css({'display' : 'grid'});
+        } else {
+            if (!hadClassHorizontal) {
+                this.gridContainer.addClass('er-tab-slide-out-grid-horizontal');
+            }
+            this.gridContainer.css({'display' : 'flex'});
+        }
+        this.panelHeight = this.panel.outerHeight();
+        this.panelWidth = this.panel.outerWidth();
+        if ((this.dragAxis === 'x') && !hadClassHorizontal) {
+            this.gridContainer.removeClass('er-tab-slide-out-grid-horizontal');
+        }
+        this.gridContainer.css('display', prevDisplaySetting);
+    },
+
     refresh: function() {
+        // adjust visibility depending on currently set options
+        let erTSO = this;
         if (this.options.tabPositioning === 'right') {
             this.handle.css({'left' : '-' + (this.handle.outerWidth() + 1) + 'px'});
             if (this.options.panelVisible) {
-                this.panel.css({'left' : document.documentElement.clientWidth - this.panel.outerWidth() + 'px'});
+                this.gridContainer.css({'display' : 'grid'});
+                this.panel.css({'left' : document.documentElement.clientWidth - this.panelWidth + 'px'});
             } else {
                 this.panel.css({'left' : document.documentElement.clientWidth + 'px'});
+                setTimeout(function() {
+                    if (!erTSO.options.panelVisible) { // it might have been set to true again during timeout duration
+                        erTSO.gridContainer.css('display', 'none');
+                    }
+                }, 500);
             }
         } else if (this.options.tabPositioning === 'top') {
-            this.handle.css({'top' : (this.panel.outerHeight() - 1) + 'px'});
+            this.handle.css({'top' : (this.panelHeight - 1) + 'px'});
             if (this.options.panelVisible) {
+                this.gridContainer.addClass('er-tab-slide-out-grid-horizontal');
+                this.gridContainer.css({'display' : 'flex'});
                 this.panel.css({'top' : '0px'});
             } else {
-                this.panel.css({'top' : '-' + this.panel.outerHeight() + 'px'});
+                this.panel.css({'top' : '-' + this.panelHeight + 'px'});
+                setTimeout(function() {
+                    if (!erTSO.options.panelVisible) { // it might have been set to true again during timeout duration
+                        erTSO.gridContainer.removeClass('er-tab-slide-out-grid-horizontal');
+                        erTSO.gridContainer.css({'display' : 'none'});
+                    }
+                }, 500);
             }
         } else if (this.options.tabPositioning === 'bottom') {
             this.handle.css({'top' : '-' + (this.handle.outerHeight() + 1) + 'px'});
             if (this.options.panelVisible) {
-                this.panel.css({'top' : window.innerHeight-this.panel.outerHeight() + 'px'});
+                this.gridContainer.addClass('er-tab-slide-out-grid-horizontal');
+                this.gridContainer.css({'display' : 'flex'});
+                this.panel.css({'top' : window.innerHeight-this.panelHeight + 'px'});
              } else {
                 this.panel.css({'top' : window.innerHeight + 'px'});
+                setTimeout(function() {
+                    if (!erTSO.options.panelVisible) { // it might have been set to true again during timeout duration
+                        erTSO.gridContainer.removeClass('er-tab-slide-out-grid-horizontal');
+                        erTSO.gridContainer.css({'display' : 'none'});
+                    }
+                }, 500);
             }
         } else if (this.options.tabPositioning === 'left') {
-            this.handle.css({'left' : (this.panel.outerWidth() - 1) + 'px'});
+            this.handle.css({'left' : (this.panelWidth - 1) + 'px'});
             if (this.options.panelVisible) {
+                this.gridContainer.css({'display' : 'grid'});
                 this.panel.css({'left' : '0px'});
             } else {
-                this.panel.css({'left' : '-' + this.panel.outerWidth() + 'px'});
+                this.panel.css({'left' : '-' + this.panelWidth + 'px'});
+                setTimeout(function() {
+                    if (!erTSO.options.panelVisible) { // it might have been set to true again during timeout duration
+                        erTSO.gridContainer.css({'display' : 'none'});
+                    }
+                }, 500);
             }
         }
     }

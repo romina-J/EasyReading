@@ -49,6 +49,11 @@ class Presentation{
         this.toolIndex = toolIndex;
     }
 
+    getWidget(){
+
+        return this.userInterface.tools[this.toolIndex].widget;
+    }
+
     updateConfigurationAndFunction(configuration,functionInfo){
         this.functionInfo = functionInfo;
         this.configuration = configuration;

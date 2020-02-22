@@ -1,7 +1,7 @@
 let easyReadingScreenRulerVisible = false;
 let easyReadingScreenRulerCurrentClientY = 0;
 
-function easyReadingScreenRuler(req, config) {
+function easyReadingScreenRuler(req, config,widget) {
 
     if(easyReadingScreenRulerVisible){
         hideEasyReadingScreenRuler();

@@ -3,12 +3,14 @@ let core = {
     debugMode: false,
     engines: [],
     engineFunctionDescriptions: [],
+    allFunctions: [],
     userInterfaces: [],
     widgets: [],
     presentations: [],
     busyAnimations: [],
     plugins: [],
     static: [],
+    staticCSS:[],
     databaseManager: null,
 
     startUp: async function () {
@@ -69,7 +71,6 @@ let core = {
 
             initServer(core);
             console.log("Init server complete");
-
 
 
         } catch (error) {
@@ -158,6 +159,26 @@ let core = {
                 }
             }
         }
+    },
+    getFunction(engineId,version,functionId){
+        let engine = core.getEngine(engineId,version);
+
+        for(let i=0; i < engine.functions.length; i++){
+            if(engine.functions[i].id === functionId){
+                return engine.functions[i];
+            }
+        }
+
+    },
+
+    getFunctionDescription(engineId,version,functionId){
+        let engine = core.getEngine(engineId,version);
+        let functionDescriptions = engine.getFunctions();
+        for(let i=0; i < functionDescriptions.length; i++){
+            if(functionDescriptions[i].id === functionId){
+                return functionDescriptions[i];
+            }
+        }
     }
     ,
     getWidget(widgetID, version) {
@@ -197,7 +218,7 @@ let core = {
         }
     }
     ,
-    createDefaultConfigurationForEngine(engineID, version, userInterface) {
+    createDefaultConfigurationForEngine(engineID, version, userInterface, supportConfiguration) {
         let engine = this.getEngine(engineID, version);
         //   let functions = engine.getFunctions();
         let functionConfiguration = [];
@@ -209,8 +230,8 @@ let core = {
                     configuration: engine.getDefaultData(),
                 },
                 layout: userInterface.getDefaultToolLayoutConfiguration(),
-                widget: this.getDefaultWidgetForFunction(engine.functions[i]),
-                presentation: this.getDefaultDisplayForFunction(engine.functions[i]),
+                widget: this.getDefaultWidgetForFunction(engine.functions[i], supportConfiguration),
+                presentation: this.getDefaultDisplayForFunction(engine.functions[i], supportConfiguration),
 
             };
             functionConfiguration.push(currentConfiguration);
@@ -221,8 +242,31 @@ let core = {
         return functionConfiguration;
 
     },
+    createDefaultConfigurationFoFunctionWithID(engineID, versionID, functionID, userInterface, supportCategories) {
+        let engine = this.getEngine(engineID, versionID);
+        for (let i = 0; i < engine.functions.length; i++) {
 
-    getDefaultConfigurationForFunction(func,userInterface){
+
+            if (functionID === engine.functions[i].id) {
+                let functionDescription = engine.getFunctions()[i];
+                let currentConfiguration = {
+                    function: {
+                        source: engine.functions[i].getFunctionInformation(),
+                        configuration: engine.getDefaultData(),
+                    },
+                    layout: userInterface.getDefaultToolLayoutConfiguration(),
+                    widget: this.getDefaultWidgetForFunction(functionDescription, supportCategories),
+                    presentation: this.getDefaultDisplayForFunction(functionDescription, supportCategories),
+
+                };
+
+                return currentConfiguration;
+            }
+        }
+
+    },
+
+    getDefaultConfigurationForFunction(func, userInterface) {
         let currentConfiguration = {
             function: {
                 source: func.getFunctionInformation(),
@@ -237,39 +281,69 @@ let core = {
         return currentConfiguration;
     }
     ,
-    getDefaultWidgetForFunction(func) {
+    getDefaultWidgetForFunction(func, supportCategories) {
 
         let base = require("./components/engines/base/engine-base");
         let ioType = rootRequire("core/IOtypes/iotypes");
         if (func.inputTypes[0].inputType === ioType.IOTypes.VoidIOType.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Page.className) {
 
+            if(func.states){
+                if(func.states === 2){
+                    let twoStateButton = this.getWidget("two-state-button");
+                    return twoStateButton.getDefaultConfiguration();
+                }
+            }
+
             let button = this.getWidget("button");
             return button.getDefaultConfiguration();
 
-        }else if (func.inputTypes[0].inputType === ioType.IOTypes.URLType.className) {
+
+        } else if (func.inputTypes[0].inputType === ioType.IOTypes.URLType.className) {
             let autoButton = this.getWidget("auto-button");
             return autoButton.getDefaultConfiguration();
 
-        }else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className ||
+        } else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Sentence.className ||
-            func.inputTypes[0].inputType === ioType.IOTypes.Paragraph.className  ||
+            func.inputTypes[0].inputType === ioType.IOTypes.Paragraph.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.AnnotatedParagraph.className) {
+
             if (func.outputTypes[0].outputType === ioType.IOTypes.AudioType.className) {
 
 
+                if (supportCategories) {
 
-/*
-                let continuousChoiceButton = this.getWidget("text-selector");
-                return continuousChoiceButton.getDefaultConfiguration();
-                */
+                    try{
+                        if (supportCategories.input.text_selection_mark.preference >= 50) {
+
+                            let textSelector = this.getWidget("text-selector");
+                            return textSelector.getDefaultConfiguration();
+                        }
+                    }catch (e) {
+                        console.log(e)
+                    }
+
+                }
+
                 let continuousChoiceButton = this.getWidget("continuous-choice-button");
                 return continuousChoiceButton.getDefaultConfiguration();
 
 
+            } else {
 
-            } else{
+                if (supportCategories) {
 
+                    try{
+                        if (supportCategories.input.text_selection_mark.preference >= 50) {
+
+                            let textSelector = this.getWidget("text-selector");
+                            return textSelector.getDefaultConfiguration();
+                        }
+                    }catch (e) {
+                        console.log(e)
+                    }
+
+                }
                 let singleChoiceButton = this.getWidget("single-choice-button");
                 return singleChoiceButton.getDefaultConfiguration();
 
@@ -280,7 +354,7 @@ let core = {
 
     }
     ,
-    getDefaultDisplayForFunction(func) {
+    getDefaultDisplayForFunction(func, supportConfiguration) {
         let base = require("./components/engines/base/engine-base");
         let ioType = rootRequire("core/IOtypes/iotypes");
         if (func.outputTypes[0].outputType === ioType.IOTypes.Paragraph.className ||
@@ -304,14 +378,14 @@ let core = {
 
             return audioHighlighter.getDefaultConfiguration();
 
-        }else if (func.outputTypes[0].outputType === ioType.IOTypes.AnnotatedParagraph.className) {
+        } else if (func.outputTypes[0].outputType === ioType.IOTypes.AnnotatedParagraph.className) {
 
 
             let annotatedParagraphTooltipRenderer = this.getPresentation("annotated-paragraph-switcher");
 
             return annotatedParagraphTooltipRenderer.getDefaultConfiguration();
 
-        }else if (func.outputTypes[0].outputType === ioType.IOTypes.ContentReplacement.className) {
+        } else if (func.outputTypes[0].outputType === ioType.IOTypes.ContentReplacement.className) {
 
 
             let contentReplacementSwitcher = this.getPresentation("content-replacement-switcher");
@@ -328,54 +402,54 @@ let core = {
         return core.getBusyAnimation("spinner").getDefaultConfiguration();
     },
 
-    getTokenForKey(key,callback){
-      this.authManager.getToken(key,callback);
+    getTokenForKey(key, callback) {
+        this.authManager.getToken(key, callback);
     },
 
-    executeRequest(webSocketConnection, req, config) {
+    async executeRequest(webSocketConnection, req, config) {
 
 
 
         //Convert input
-        req.input  = core.ioUtils.toIOTypeInstance(req.input);
+        req.input = core.ioUtils.toIOTypeInstance(req.input);
 
         //Auto correct language if text
-        if(req.input.isText()){
+        if (req.input.isText()) {
 
-            if(req.input.name === "Word"){
-                req.input.lang = core.languageDetector.detectLanguage(req.input.getSentence(),webSocketConnection.profile.locale,req.input.lang);
-            }else{
-                req.input.lang = core.languageDetector.detectLanguage(req.input.getValue(),webSocketConnection.profile.locale,req.input.lang);
+            if (req.input.name === "Word") {
+                req.input.lang = core.languageDetector.detectLanguage(req.input.getSentence(), webSocketConnection.profile.locale, req.input.lang);
+            } else {
+                req.input.lang = core.languageDetector.detectLanguage(req.input.getValue(), webSocketConnection.profile.locale, req.input.lang);
             }
 
 
         }
 
 
-        if(req.functionInfo.functionType === "CombinedFunction"){
+        if (req.functionInfo.functionType === "CombinedFunction") {
 
-            for(let i=0; i < webSocketConnection.customFunctions.length; i++){
+            for (let i = 0; i < webSocketConnection.customFunctions.length; i++) {
 
-                  if(req.functionInfo.functionId === webSocketConnection.customFunctions[i].id){
+                if (req.functionInfo.functionId === webSocketConnection.customFunctions[i].id) {
 
-                      webSocketConnection.customFunctions[i].executeFunction(function (result) {
+                    webSocketConnection.customFunctions[i].executeFunction(function (result) {
 
-                              req.type = "cloudRequestResult";
-                              req.result = result;
-                              webSocketConnection.sendMessage(req);
-                        //      console.log(result);
+                            req.type = "cloudRequestResult";
+                            req.result = result;
+                            webSocketConnection.sendMessage(req);
+                            //      console.log(result);
 
-                          },
-                          req.input, webSocketConnection.profile,
-                          {
-                              url: webSocketConnection.url,
-                          });
+                        },
+                        req.input, webSocketConnection.profile,
+                        {
+                            url: webSocketConnection.url,
+                        });
 
                 }
 
             }
 
-        }else if(req.functionInfo.functionType ==="RemoteFunction"){
+        } else if (req.functionInfo.functionType === "RemoteFunction") {
             let engine = this.getEngine(req.functionInfo.engineId, req.functionInfo.engineVersison);
 
             let curFunction = engine.getFunction(req.functionInfo.functionId);
@@ -383,7 +457,7 @@ let core = {
 
 //        engine[curFunction.entryPoint](webSocketConnection, req, config);
 
-            try{
+            try {
                 engine[curFunction.entryPoint](
                     function (result) {
 
@@ -398,7 +472,7 @@ let core = {
                         url: webSocketConnection.url,
                     }
                 );
-            }catch (e){
+            } catch (e) {
                 let ioType = require("../core/IOtypes/iotypes");
 
                 req.type = "cloudRequestResult";
@@ -409,9 +483,17 @@ let core = {
 
         }
 
+        if(req.functionInfo.functionType !== "CombinedFunction"){
+            let profileStatistics = require("./profile/profile-staticis");
+
+            await profileStatistics.updateFunctionUsageStatistics(webSocketConnection.profile,req);
+        }
 
 
     }
+
+
+
 
 };
 
@@ -461,7 +543,7 @@ function loadi18n(core) {
     localeService.init();
 }
 
-function loadAuthentications(core){
+function loadAuthentications(core) {
     let authenticationManager = require("./authentication/authmanager");
     authenticationManager.startUp();
     core.authManager = authenticationManager;
@@ -511,12 +593,29 @@ function createEngineFunctionDescriptions(core) {
                 version: core.engines[i].versions[j].version,
                 functions: core.engines[i].versions[j].engine.getFunctions(),
             });
+
+            if(j ===core.engines[i].versions.length-1){
+                let functions = core.engines[i].versions[j].engine.getFunctions();
+
+                for(let k=0; k< functions.length; k++){
+
+
+                    core.allFunctions.push({
+                        engineId: core.engines[i].engine,
+                        engineVersion: core.engines[i].versions[j].version,
+                        functionId: functions[k].id,
+                        func: functions[k],
+
+                    })
+
+                }
+            }
         }
 
         core.engineFunctionDescriptions.push({
             engine: core.engines[i].engine,
             versions: versions,
-        })
+        });
     }
 
     const fs = require('fs-extra');
@@ -530,7 +629,9 @@ function loadStaticComponents(core) {
     let staticSources = [];
     staticSources.push("core/libraries/external/jquery.js");
     staticSources.push("core/libraries/external/xregexp-all.js");
+    staticSources.push("core/libraries/external/micromodal/micromodal.min.js");
     staticSources.push("core/libraries/sweetalert2.all.js");
+    staticSources.push("core/libraries/recommendationDialog.js");
     staticSources.push("core/libraries/alert-manager.js");
     staticSources.push("core/libraries/sbd.js");
     staticSources.push("core/libraries/sentence-tokenizer.js");
@@ -566,9 +667,34 @@ function loadStaticComponents(core) {
 
             let pathToJavaScriptFile = baseDirPath(staticSources[i]);
             if (!fs.existsSync(pathToJavaScriptFile)) {
-                console.log("File not found:" + this.scripts[i]);
+                console.log("File not found:" + staticSources[i]);
             } else {
                 core.static.push(btoa(fs.readFileSync(pathToJavaScriptFile, "utf8")));
+
+            }
+        }
+
+    }
+
+    let staticCSS = [];
+    staticCSS.push("core/libraries/external/micromodal/micromodal.css");
+
+    if (core.debugMode) {
+
+        for (let i = 0; i < staticCSS.length; i++) {
+            core.staticCSS.push(copyToStaticWeb(staticCSS[i]));
+        }
+
+    } else {
+        let fs = require('fs');
+
+        for (let i = 0; i < staticCSS.length; i++) {
+
+            let pathToCSSFile = baseDirPath(staticCSS[i]);
+            if (!fs.existsSync(pathToCSSFile)) {
+                console.log("File not found:" + staticCSS[i]);
+            } else {
+                core.staticCSS.push(btoa(fs.readFileSync(pathToCSSFile, "utf8")));
 
             }
         }

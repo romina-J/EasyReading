@@ -8,7 +8,7 @@ class LineSpacingTool extends base.EngineBase{
         this.description = "Tools that change font size, line spacing and so on...";
         this.version = "1.0";
         this.versionDescription = "Initial version";
-        this.bundles = [new base.FunctionBundle('Line Spacing', 'Alter the spacing between lines in the current page.')]
+        this.bundles = [new base.FunctionBundle('lineSpacing','Line Spacing', 'Alter the spacing between lines in the current page.')]
     }
 
     getFunctions(){
@@ -23,7 +23,10 @@ class LineSpacingTool extends base.EngineBase{
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
-                category: base.EngineFunction.FunctionCategory.SPEECH_SYNTHESIS,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.layout_support.font_support,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],
@@ -45,7 +48,10 @@ class LineSpacingTool extends base.EngineBase{
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,
-                category: base.EngineFunction.FunctionCategory.SPEECH_SYNTHESIS,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.layout_support.font_support,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.VoidIOType.className,
                 }],

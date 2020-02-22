@@ -38,6 +38,37 @@ const FunctionCategory = {
 
 };
 
+const SupportCategories = {
+    LAYOUT_SUPPORT: {
+        ALL: "LAYOUT_SUPPORT_ALL",
+        FONT_SUPPORT: "LAYOUT_SUPPORT_FONT_SUPPORT",
+        COLOR_SUPPORT: "LAYOUT_SUPPORT_COLOR_SUPPORT",
+        AD_SUPPORT: "LAYOUT_SUPPORT_AD_SUPPORT",
+        LAYOUT_SUPPORT: "LAYOUT_SUPPORT_LAYOUT_SUPPORT",
+        LINK_SUPPORT: "LAYOUT_SUPPORT_LINK_SUPPORT"
+    },
+    READING_SUPPORT : {
+        ALL: "READING_SUPPORT_ALL",
+        TTS_SUPPORT: "READING_SUPPORT_TTS_SUPPORT",
+        TTS_SYNTAX_HIGHLIGHTNING :"READING_SUPPORT_TTS_SYNTAX_HIGHLIGHTNING",
+        TTS_SPEED: "READING_SUPPORT_TTS_SPEED"
+    },
+    SYMBOL_SUPPORT: {
+        ALL: "SYMBOL_SUPPORT_ALL",
+        BLISS: "SYMBOL_SUPPORT_BLISS",
+        ARASAAC: "SYMBOL_SUPPORT_ARASAC",
+        WIDGIT: "SYMBOL_SUPPORT_WIDGIT",
+
+    },
+    UNDERSTANDING_SUPPORT:{
+        ALL: "UNDERSTANDING_SUPPORT_ALL",
+        SIMPLIFIED_LANGUAGE : "UNDERSTANDING_SUPPORT_SIMPLIFIED_LANGUAGE",
+        TRANSLATION: "UNDERSTANDING_SUPPORT_TRANSLATION",
+        MULTIMEDIA_ANNOTATION: "UNDERSTANDING_SUPPORT_MULTIMEDIA_ANNOTATION"
+    }
+};
+
+
 
 class Function {
     constructor(engine, id ,name, description, inputTypes, outputTypes, defaultIcon, bundle=null) {
@@ -379,3 +410,4 @@ module.exports.InputType = InputType;
 module.exports.OutputType = OutputType;
 module.exports.FuntionType = FunctionType;
 module.exports.FunctionCategory = FunctionCategory;
+module.exports.SupportCategories = SupportCategories;

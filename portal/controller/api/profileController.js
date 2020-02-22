@@ -58,12 +58,7 @@ module.exports = {
 
                             let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).where("id", "=", uiInfo.ui_conf_id).delete();
                             let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
-
-
-
                         }
-
-
 
                         //Insert new configuration
                         let newUserInterface = core.getUserInterface(userInterfaceType);
@@ -72,17 +67,13 @@ module.exports = {
                             let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).insert(uiConfig);
                             let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
                             uiInfo.ui_conf_id = userInterfaceConfigurationRequestResult.id;
-
                         }
-
-
 
                         //Update uiConf
                         uiInfo.ui_id = newUserInterface.id;
                         uiInfo.ui_version = newUserInterface.versionID;
                         let updateUiConfRequest = databaseManager.createRequest("ui_conf").update(uiInfo).where("id", "=", uiInfo.id);
                         let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(updateUiConfRequest);
-
 
                         let toolConfigurationRequest = databaseManager.createRequest("tool_conf").where("ui_conf_id", "=", uiInfo.id).orderBy("order_in_ui", "ASC");
                         let toolConfigurationRequestResult = await databaseManager.executeRequest(toolConfigurationRequest);
@@ -93,24 +84,15 @@ module.exports = {
                             if(toolConfiguration.layout_conf_id){
                                 let layoutConfigurationDeleteRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForLayout(oldUserInterface)).where("id", "=", toolConfiguration.layout_conf_id).delete();
                                 let layoutConfigurationDeleteRequestResult = await databaseManager.executeRequest(layoutConfigurationDeleteRequest);
-
-
                             }
 
                             toolConfiguration.layout_conf_id = null;
                             let updateToolConfigurationRequest = databaseManager.createRequest("tool_conf").update(toolConfiguration).where("id", "=", toolConfiguration.id);
                             let updateToolConfigurationRequestResult = await databaseManager.executeRequest(updateToolConfigurationRequest);
-
                         }
-
-
                     }
-
                 }
-
-
             }
-
 
             return res.status(200).json({action: "updated"});
         } catch (e) {

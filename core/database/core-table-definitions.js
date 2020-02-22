@@ -25,6 +25,15 @@ let Profile = {
             "title": "Language of the user",
             "default": "en",
         },
+        "ui_mode": {
+            "type": "string",
+            "title": "User Interface Mode",
+            "enum": ["adaptive", "adaptable"],
+            "default": "adaptable",
+
+        },
+
+
     },
     "required": [
         "email"
@@ -523,6 +532,478 @@ let CustomToolConf = {
 };
 
 
+let understandingSupport = {
+    "$id": "https://www.easyreading.eu/schemas/profile_understanding_support.json",
+    "type": "object",
+    "title": "profile_understanding_support",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "enabled": {
+            "$id": "/properties/enabled",
+            "type": "boolean",
+            "title": "Symbol support enabled",
+            "description": "The user wants symbol support",
+            "default": true,
+
+        },
+        "simplified_language": {
+            "$id": "/properties/active",
+            "type": "boolean",
+            "title": "Simplified Language",
+            "description": "Simplified language is preferred",
+            "default": true,
+
+        },
+        "translation": {
+            "$id": "/properties/active",
+            "type": "boolean",
+            "title": "Translation",
+            "description": "Translations from a foreign language to the users language",
+            "default": false,
+
+        },
+        "multimedia_annotation": {
+            "$id": "/properties/active",
+            "type": "boolean",
+            "title": "Multimedia Annotation",
+            "description": "Video & Audio annotations are preferred",
+            "default": true,
+
+        },
+
+    }
+};
+
+
+let symbolSupport = {
+    "$id": "https://www.easyreading.eu/schemas/profile_symbol_support.json",
+    "type": "object",
+    "title": "profile_symbol_support",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "enabled": {
+            "$id": "/properties/enabled",
+            "type": "boolean",
+            "title": "Symbol support enabled",
+            "description": "The user wants symbol support",
+            "default": false,
+
+        },
+        "preferred_library": {
+            "$id": "/properties/preferred_library",
+            "type": "string",
+            "enum": ["arasaac", "bliss","widgit","none"],
+            "title": "Symbol Library",
+            "description": "The preferred library of the user",
+            "default":"none",
+        },
+
+
+    }
+};
+
+
+let layoutSupport = {
+    "$id": "https://www.easyreading.eu/schemas/profile_layout_support.json",
+    "type": "object",
+    "title": "profile_layout_support",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "enabled": {
+            "$id": "/properties/enabled",
+            "type": "boolean",
+            "title": "Layout support enabled",
+            "description": "The user wants layout support",
+            "default": true,
+
+        },
+        "font_support": {
+            "$id": "/properties/font_support",
+            "type": "boolean",
+            "title": "Font support",
+            "description": "Support for fonts(size, font type...) enabled",
+            "default": true,
+
+        },
+        "color_support": {
+            "$id": "/properties/color_support",
+            "type": "boolean",
+            "title": "Color support enabled",
+            "description": "Support for colors enabled",
+            "default": true,
+
+        },
+        "layout_support": {
+            "$id": "/properties/layout_support",
+            "type": "boolean",
+            "title": "Layout support enabled",
+            "description": "Support for layout enabled",
+            "default": true,
+
+        },
+        "link_support": {
+            "$id": "/properties/link_support",
+            "type": "boolean",
+            "title": "Link support enabled",
+            "description": "Support for links enabled",
+            "default": true,
+
+        },
+        "ad_support": {
+            "$id": "/properties/ad_support",
+            "type": "boolean",
+            "title": "Advertisement support enabled",
+            "description": "Support for annoying advertisements enabled",
+            "default": true,
+
+        },
+
+    }
+};
+
+
+let readingSupport = {
+    "$id": "https://www.easyreading.eu/schemas/profile_reading_support.json",
+    "type": "object",
+    "title": "profile_reading_support",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "enabled": {
+            "$id": "/properties/enabled",
+            "type": "boolean",
+            "title": "Reading support enabled",
+            "description": "The user wants reading support",
+            "default": true,
+
+        },
+        "tts_support": {
+            "$id": "/properties/tts_support",
+            "type": "boolean",
+            "title": "Text to speech support",
+            "description": "Text to speech support is enabled",
+            "default": true,
+
+        },
+        "tts_syntax_highlightning": {
+            "$id": "/properties/tts_syntax_highlightning",
+            "type": "boolean",
+            "title": "Syntax highlightning enabled",
+            "description": "Syntax highlightning for text to speech enabled",
+            "default": true,
+
+        },
+        "tts_speed": {
+            "$id": "/properties/tts_speed",
+            "type": "string",
+            "enum": ["slow", "normal","fast"],
+            "title": "Text to speech speed",
+            "description": "The speed of the text to speech voice",
+            "default" : "normal",
+        },
+
+    }
+};
+
+let inputSupport = {
+    "$id": "https://www.easyreading.eu/schemas/profile_input_support.json",
+    "type": "object",
+    "title": "profile_input_support",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "text_selection": {
+            "$id": "/properties/text_selection",
+            "type": "string",
+            "enum": ["click", "mark"],
+            "title": "Text selection",
+            "description": "The preferred way of selecting text",
+            "default":"click"
+        },
+
+    }
+};
+
+
+let presentationSupport = {
+    "$id": "https://www.easyreading.eu/schemas/profile_presentation_support.json",
+    "type": "object",
+    "title": "profile_presentation_support",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "annotation_display": {
+            "$id": "/properties/annotation_display",
+            "type": "string",
+            "enum": ["tooltip", "top","next"],
+            "title": "Annotation display",
+            "description": "How annotations should be displayed",
+            "default":"tooltip"
+        },
+        "user_interface": {
+            "$id": "/properties/tool_user_interface",
+            "type": "string",
+            "enum": ["overlay", "tab-slide-out",],
+            "title": "Userinterface",
+            "description": "The preferred user interface",
+            "default":"tab-slide-out"
+        },
+
+    }
+};
+
+
+let functionUsageEntry = {
+    "$id": "https://www.easyreading.eu/schemas/functionUsageEntry.json",
+    "type": "object",
+    "title": "function_usage_entry",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "engine_id": {
+            "$id": "/properties/function_id",
+            "type": "string",
+            "title": "The Function_id Schema ",
+
+
+        },
+        "function_id": {
+            "$id": "/properties/function_id",
+            "type": "string",
+            "title": "The Function_id Schema ",
+
+
+        },
+        "total_usage": {
+            "type": "integer",
+            "title": "Total usage",
+            "default": 1,
+        },
+
+    }
+};
+
+
+/*
+
+let supportCategories = {
+    text_support: [
+        {
+            sub_category:"simplified_language"
+        },
+        {
+            sub_category: "translation"
+        },
+        {
+            sub_category: "multimedia_annotation"
+        }
+
+    ],
+
+    symbol_support :[
+        {
+            sub_category: "aac",
+            additional_fields:  {
+                "preferred_library": {
+                    "$id": "/properties/preferred_library",
+                    "type": "string",
+                    "enum": ["arasaac", "bliss","widgit","none"],
+                    "title": "Symbol Library",
+                    "description": "The preferred library of the user",
+                    "default":"none",
+                },
+            }
+        }
+
+    ],
+
+    layout_support :[
+
+        {
+            sub_category:"font_support"
+        },
+        {
+            sub_category: "color_support"
+        },
+        {
+            sub_category: "layout_support"
+        },
+        {
+            sub_category: "link_support"
+        },
+        {
+            sub_category: "ad_support"
+        }
+
+    ],
+
+    reading_support : [
+        {
+            sub_category: "tts",
+            additional_fields:  {
+                "syntax_highlightning": {
+                    "$id": "/properties/tts_syntax_highlightning",
+                    "type": "boolean",
+                    "title": "Syntax highlightning enabled",
+                    "description": "Syntax highlightning for text to speech enabled",
+                    "default": true,
+
+                },
+                "speed": {
+                    "$id": "/properties/tts_speed",
+                    "type": "string",
+                    "enum": ["slow", "normal","fast"],
+                    "title": "Text to speech speed",
+                    "description": "The speed of the text to speech voice",
+                    "default" : "normal",
+                }
+            }
+        }
+
+    ],
+
+    //Widgets
+    input: [
+        {
+            sub_category: "text_selection_click"
+        },
+        {
+            sub_category: "text_selection_mark"
+        }
+    ],
+
+    //Presentations
+    output: [
+        {
+            sub_category: "tooltip"
+        },
+        {
+            sub_category: "above_word"
+        },
+        {
+            sub_category: "next_to_word"
+        }
+    ],
+
+    //User Interfaces
+    user_interface: [
+        {
+            sub_category: "slide_in"
+        },
+        {
+            sub_category: "overlay"
+        }
+    ]
+
+};
+*/
+
+
+function createSchemasForSupportCategories(){
+    let sc = require("../profile/profile-support-categories");
+    let supportCategories = sc.supportCategories;
+    Object.keys(supportCategories).forEach(function(categoryName,index) {
+
+        let category = supportCategories[categoryName];
+
+        Object.keys(category).forEach(function(subcategoryName,index) {
+
+            let subcategory = category[subcategoryName];
+            let subCategorySchema = createSchemaForSubCategory(categoryName,subcategoryName,subcategory);
+            coreTableDefinitions.baseTableDefinitions.push(subCategorySchema);
+        });
+
+
+
+
+    });
+
+}
+
+
+function createSchemaForSubCategory(categoryName, subcategoryName,subcategory){
+    let schema = {
+        "$id": "https://www.easyreading.eu/schemas/profile_presentation_support.json",
+        "type": "object",
+        "title": "sc_"+categoryName+"__"+subcategoryName,
+        "definitions": {},
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "properties": {
+            "pid": {
+                "$id": "/properties/pid",
+                "type": "integer",
+                "title": "Profile ID",
+                "description": "The profile ID of the referenced user",
+            },
+            "preference": {
+                "$id": "/properties/pid",
+                "type": "integer",
+                "title": "Preference",
+                "description": "Preference of the sub support category. Values 0(Disabled) to 100(Really need it)",
+                "default": subcategory.default_value,
+                "minimum": 0,
+                "maximum": 100,
+
+            },
+
+        }
+    };
+
+    if(subcategory.additional_fields){
+        schema.properties = {...schema.properties, ...subcategory.additional_fields}
+    }
+
+    return schema;
+
+}
+
+let supportCategoriesInitialized = false;
+
 let coreTableDefinitions = {
 
     baseTableDefinitions: [
@@ -538,14 +1019,37 @@ let coreTableDefinitions = {
         CustomToolConf,
         ContentReplacement,
         ClientCarerRelation,
+        understandingSupport,
+        symbolSupport,
+        layoutSupport,
+        readingSupport,
+        inputSupport,
+        presentationSupport,
+        functionUsageEntry,
     ],
 
 
     getDefinitions: function () {
+        if(!supportCategoriesInitialized){
+            createSchemasForSupportCategories();
+            supportCategoriesInitialized = true;
+        }
 
 
         return this.baseTableDefinitions;
 
+    },
+
+    getSupportCategories: function(){
+      return supportCategories;
+    },
+    getDefinitionByTitle:function (title) {
+
+        for(let i=0; i < coreTableDefinitions.baseTableDefinitions.length; i++){
+            if(coreTableDefinitions.baseTableDefinitions[i].title === title){
+                return coreTableDefinitions.baseTableDefinitions[i];
+            }
+        }
     }
 
 

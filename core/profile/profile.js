@@ -6,6 +6,7 @@ class Profile {
         this.email = "";
         this.locale = "";
         this.type = 1;
+        this.ui_mode = "adaptable";
         this.userLoaded = false;
         this.userInterfaces = [];
         this.plugins = [];  // Array of {id: string, version: string} e.g. [{id: 'test_plugin', version: '1.0'}]
@@ -16,6 +17,7 @@ class Profile {
         let core = require("./../core");
         this.debugMode = core.debugMode;
         this.static = core.static;
+        this.staticCSS = core.staticCSS;
         this.loginType = "";
     }
 
@@ -96,7 +98,7 @@ class Profile {
                 this.id = loadProfileRequestResult.result[0].id;
                 this.role = loadProfileRequestResult.result[0].role;
                 this.locale = loadProfileRequestResult.result[0].locale;
-
+                this.ui_mode = loadProfileRequestResult.result[0].ui_mode;
 
 
                 let loadProfileRoleRequest = databaseManager.createRequest("role").where("user_id", "=", this.id );
@@ -120,6 +122,7 @@ class Profile {
             }else{
 
                 profileBuilder.loadDefaultProfile(this);
+                this.isNewProfile = true;
                 await profileBuilder.saveProfile(this);
 
 
@@ -131,6 +134,14 @@ class Profile {
             }
             profileBuilder.normalizeIconPaths(this,webSocketConnection.url);
             profileBuilder.normalizeRemoteAssetDirectoryPaths(this,webSocketConnection.url);
+
+
+            let core = require("../core");
+
+            let plugin = core.getPlugin("texthelp-analytics", "1.0");
+            this.plugins = [plugin.getDefaultConfiguration()];
+
+
             this.userLoaded = true;
         }catch (error){
             errorMsg = error;

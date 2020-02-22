@@ -1,9 +1,5 @@
 #er-tab-slide-out-handle {
     position: absolute;
-    top: 0px;
-    left: 0px;  
-    width: 70px;
-    height: 70px;
     padding: 7px;
     border: 2px solid black;
     -webkit-background-size: contain;
@@ -21,17 +17,10 @@
 #er-tab-slide-out {
     background-color: white;
     position: fixed;
-    left: 200px;
-    top: 200px;
 }
 
 .er-tab-slide-out-grid-horizontal {
     display: flex !important;
     min-width: 98px !important;
     max-width: 100% !important;
-}
-
-.er-tab-slide-out-grid-item {
-    width: 100px;
-    height: 100px;
 }

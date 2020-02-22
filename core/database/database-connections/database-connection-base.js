@@ -49,6 +49,11 @@ class DatabaseConnectionBase {
 
     }
 
+    createInsertOrUpdateSQL(request){
+
+    }
+
+
     createUpdateSQL(request) {
 
     }

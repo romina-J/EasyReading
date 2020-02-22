@@ -8,12 +8,13 @@ class ParagraphSwitcher extends Presentation {
 
         let ioRes = ioTypeUtils.toIOTypeInstance(result.result);
 
-        if (ioRes.name === "Error") {
+        if (ioRes.name === "Error" ||ioRes.name === "NoResult" ) {
 
-            alertManager.showErrorAlert(ioRes.message);
+            if (!this.getWidget().continuesToCreateRequests) {
+                alertManager.showErrorAlert(ioRes.message);
+            }
 
-        } else if (ioRes.name === "NoResult") {
-            alertManager.showErrorAlert(ioRes.message);
+
         } else if (ioRes.name === "Paragraph") {
 
             if (request.input.type === Paragraph.className) {
@@ -37,8 +38,11 @@ class ParagraphSwitcher extends Presentation {
                 $("." + requestID + ".er-ps-original-text").hide();
 
 
+
             }
         }
+
+        globalEventListener.presentationFinished(this);
 
 
     }

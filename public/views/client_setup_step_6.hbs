@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{profile_wizard_step_6_heading}}</title>
+    {{> head }}
+    <link href="/css/client-profile-setup.css" rel="stylesheet"/>
+    <script src="/js/client-profile-setup.js"></script>
+
+</head>
+
+<body>
+
+<div class="row wrapper main-content">
+
+    <main>
+        <form method="POST" action="/client/setup">
+            <div class="medium-12 columns">
+
+                <div class="setup">
+                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container"
+                         data-name="text_selection">
+                        <h1 id="desc1">
+                           {{interaction_label}}
+                        </h1>
+                        <div class="container">
+                            <div class="radio-button large wide {{#ifEquals setupInformation.[4].text_selection
+                                                                       "click"}} checked {{/ifEquals}}"
+                                 data-value="click">
+                                <img src="/images/setup/step6/mouse-click.png" alt="">
+                                <span class="container-info margin-top"> {{click_label}}</span>
+                            </div>
+                            <div class="radio-button large wide {{#ifEquals setupInformation.[4].text_selection
+                                                                       "mark"}} checked {{/ifEquals}}"
+                                 data-value="mark">
+                                <img src="/images/setup/step6/mouse-mark.png" alt="">
+                                <span class="container-info margin-top"> {{mark_label}}</span>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+
+
+                <span class="clearfix"></span>
+
+
+            </div>
+
+
+            <div class="row">
+
+                <div class="columns small-6 small-centered">
+                    <div>
+                        {{#if previousStep}}
+
+                            <input type="image" src="/images/back.png" alt="Back" name="back"
+                                   class="button step-button">
+                            <!--  <a href="#" class="button step-button"><img src="/images/back.png" alt="Back"/></a>-->
+                        {{/if}}
+
+
+
+
+                        <div class="progress-indicator-container">
+                            <ol class="progress-indicator">
+
+                                {{#each stepInformation}}
+                                    {{#ifEquals step "completedStep"}}
+                                        <li class="is-complete" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "currentStep"}}
+                                        <li class="is-current" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                    {{#ifEquals step "upcomingStep"}}
+                                        <li class="" data-step="{{stepNumber}}">
+                                        </li>
+                                    {{/ifEquals}}
+                                {{/each}}
+                            </ol>
+                        </div>
+                        <input type="image" src="/images/next.png" alt="Next" name="next" class="button step-button"
+                               id="">
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </main>
+
+
+</div>
+
+
+</body>
+</html>

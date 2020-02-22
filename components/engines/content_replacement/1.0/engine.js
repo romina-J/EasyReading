@@ -26,7 +26,10 @@ class Dictionary extends base.EngineBase {
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
-                category: base.EngineFunction.FunctionCategory.DICTIONARY,
+                category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.text_support.simplified_language,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.URLType.className,
                     "name": "Url",

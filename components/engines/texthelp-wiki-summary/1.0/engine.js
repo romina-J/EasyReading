@@ -23,6 +23,9 @@ class TextHelpWikiSummary extends base.EngineBase {
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
+                supportCategories: [
+                    base.functionSupportCategories.text_support.multimedia_annotation,
+                ],
                 inputTypes: [{
                     "inputType": ioType.IOTypes.Paragraph.className,
                     "name": "Paragraph",

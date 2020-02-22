@@ -2,6 +2,8 @@ const core = rootRequire("core/core");
 const databaseManager = core.databaseManager;
 const profileBuilder = rootRequire("core/profile/profile-builder");
 const profileRepo = require("../../repository/profileRepo");
+const widgets = [...rootRequire("core/core").widgets];
+const presentations = [...rootRequire("core/core").presentations];
 
 function loadFunctions(userInterfaceConfig, engineFunctionConfigObjects) {
     for (const engineFunction of engineFunctionConfigObjects) {
@@ -15,10 +17,42 @@ function loadFunctions(userInterfaceConfig, engineFunctionConfigObjects) {
                 defaultConfigurationForEngineFunction[0].function.configuration[engineConfigProperty] = engineFunction.config[0][engineConfigProperty];
             }
         }
+
+        if (defaultConfigurationForEngineFunction.length > 0 && engineFunction.widget!=null) {
+            for (let wIndex = 0; wIndex < widgets.length; wIndex++) {
+                var widget = widgets[wIndex];
+
+                for (let vIndex = 0; vIndex < widget.versions.length; vIndex++) {
+                    const version = widget.versions[vIndex].version;
+
+                    if (version.id === engineFunction.widget.source.id && version.version === engineFunction.widget.source.version) {
+                        defaultConfigurationForEngineFunction[0].widget.source = version;
+                        defaultConfigurationForEngineFunction[0].widget.configuration = engineFunction.widget.configuration;
+                    }
+                }
+            }
+        }
+
+        if (defaultConfigurationForEngineFunction.length > 0 && engineFunction.presentation!=null) {
+            for (let pIndex = 0; pIndex < presentations.length; pIndex++) {
+                var presentation = presentations[pIndex];
+
+                for (let vIndex = 0; vIndex < presentation.versions.length; vIndex++) {
+                    const version = presentation.versions[vIndex].version;
+
+                    if(engineFunction.presentation.source){
+                        if (version.id === engineFunction.presentation.source.id && version.version === engineFunction.presentation.source.version) {
+                            defaultConfigurationForEngineFunction[0].presentation.source = version;
+                            defaultConfigurationForEngineFunction[0].presentation.configuration = engineFunction.presentation.configuration;
+                        }
+                    }
+
+                }
+            }
+        }        
+
         userInterfaceConfig.tools = userInterfaceConfig.tools.concat(defaultConfigurationForEngineFunction);
-
     }
-
 }
 
 module.exports = {

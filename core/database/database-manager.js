@@ -4,25 +4,24 @@ let DatabaseManager = {
 
         let credentialManager = require("../util/credential-manager");
         let databaseConfiguration = {};
-        if(credentialManager.hasKey("EASY_READING_DB_DRIVER") &&
+        if (credentialManager.hasKey("EASY_READING_DB_DRIVER") &&
             credentialManager.hasKey("EASY_READING_DB_USER") &&
             credentialManager.hasKey("EASY_READING_DB_PW") &&
             credentialManager.hasKey("EASY_READING_DB_HOST") &&
             credentialManager.hasKey("EASY_READING_DB_PORT") &&
-            credentialManager.hasKey("EASY_READING_DB_NAME")){
+            credentialManager.hasKey("EASY_READING_DB_NAME")) {
             databaseConfiguration = {
                 driver: credentialManager.getValueForKey("EASY_READING_DB_DRIVER"),
                 host: credentialManager.getValueForKey("EASY_READING_DB_HOST"),
                 user: credentialManager.getValueForKey("EASY_READING_DB_USER"),
                 password: credentialManager.getValueForKey("EASY_READING_DB_PW"),
-                port:credentialManager.getValueForKey("EASY_READING_DB_PORT"),
+                port: credentialManager.getValueForKey("EASY_READING_DB_PORT"),
                 database: credentialManager.getValueForKey("EASY_READING_DB_NAME"),
             }
 
-        }else{
+        } else {
             databaseConfiguration = require("./../../database-config");
         }
-
 
 
         if (databaseConfiguration.driver) {
@@ -36,6 +35,11 @@ let DatabaseManager = {
         } else {
             throw Error("No database driver given!");
         }
+    },
+
+    getConnection:function(){
+
+        return activeDatabase;
     },
 
     createBaseTables: async function () {
@@ -60,11 +64,11 @@ let DatabaseManager = {
         });
     },
 
-        createOrSyncTablesFromSchema: async function (schema, tableName) {
+    createOrSyncTablesFromSchema: async function (schema, tableName) {
 
         let errorMsg = null;
 
-        try{
+        try {
             let $RefParser = require('json-schema-ref-parser');
 
             let completeSchema = await $RefParser.bundle(schema).catch(function (error) {
@@ -74,7 +78,7 @@ let DatabaseManager = {
             if (typeof tableName === "undefined") {
                 tableName = completeSchema.title;
             }
-            if(!completeSchema.$id){
+            if (!completeSchema.$id) {
                 completeSchema.$id = tableName;
             }
             databaseTableSchemas.push({
@@ -83,12 +87,10 @@ let DatabaseManager = {
             });
 
 
-
             await createTablesFromSchema(tableName, completeSchema);
-        }catch (error){
+        } catch (error) {
             errorMsg = error;
         }
-
 
 
         return new Promise(function (resolve, reject) {
@@ -111,7 +113,7 @@ let DatabaseManager = {
 
         let errorMsg = null;
         let result = null;
-        try {   
+        try {
             result = await activeDatabase.executeSQL(sql, parameters);
         } catch (error) {
             errorMsg = error;
@@ -133,22 +135,26 @@ let DatabaseManager = {
         let result = null;
         try {
             let schema = getSchemaForTable(request.tableName);
-            if (request.op === "INSERT" || request.op === "UPDATE") {
+            if (request.op === "INSERT" || request.op === "UPDATE" || request.op === "INSERT_OR_UPDATE") {
 
 
                 //console.log(schema);
 
 
-
-               // let objectIsValid = ajv.validate(schema, request.object);
-                let objectIsValid = validateObject(request.object,schema);
+                // let objectIsValid = ajv.validate(schema, request.object);
+                let objectIsValid = validateObject(request.object, schema);
                 if (objectIsValid) {
-                    request.columnValues = getColumnValuePairsForObject(request.object, schema);
+
                     let sql = null;
                     if (request.op === "INSERT") {
+                        request.columnValues = getColumnValuePairsForObject(request.object, schema);
                         sql = activeDatabase.createInsertSQL(request);
-                    } else {
+                    } else if (request.op === "UPDATE") {
+                        request.columnValues = getColumnValuePairsForObject(request.object, schema);
                         sql = activeDatabase.createUpdateSQL(request);
+                    } else {
+                        request.columnValues = getColumnValuePairsForObject(request.object, schema,true);
+                        sql = activeDatabase.createInsertOrUpdateSQL(request);
                     }
                     result = await activeDatabase.executeSQL(sql);
 
@@ -201,7 +207,7 @@ let DatabaseManager = {
 
         let errorMsg = null;
         let defaultObject = null;
-        try{
+        try {
             let schema = getSchemaForTable(tableName);
             let defaults = require('json-schema-defaults');
             defaultObject = defaults(schema);
@@ -212,14 +218,14 @@ let DatabaseManager = {
             }
 
             //TODO handle nested object and arrays...
-        }catch (error){
+        } catch (error) {
             errorMsg = error;
         }
 
         return new Promise(function (resolve, reject) {
-            if(errorMsg){
+            if (errorMsg) {
                 reject(errorMsg);
-            }else{
+            } else {
                 resolve(defaultObject);
             }
 
@@ -260,20 +266,20 @@ async function createTablesFromSchema(tableName, schema, referencingTableName, t
                     console.log("object");
                     break;
                 default:
-                    errorMsg =  new Error("Unsupported type:" + schema.properties[properties[i]].type);
+                    errorMsg = new Error("Unsupported type:" + schema.properties[properties[i]].type);
                     break;
             }
         }
 
         if (!errorMsg) {
             let result = null;
-            if (! await activeDatabase.tableExists(tableName)) {
+            if (!await activeDatabase.tableExists(tableName)) {
                 let sqlCommand = activeDatabase.getTableDescription(tableName, columnDescriptions, schema.unique);
                 result = await activeDatabase.executeSQL(sqlCommand);
             } else {
                 // Check if any columns must be removed
                 result = await activeDatabase.executeSQL(activeDatabase.getTableColumnDescriptions(tableName));
-                for (let j=0; j<result.result.length; j++) {
+                for (let j = 0; j < result.result.length; j++) {
                     let field_name = result.result[j].Field;
                     let drop_column = false;
                     if (field_name !== "id") {
@@ -283,8 +289,8 @@ async function createTablesFromSchema(tableName, schema, referencingTableName, t
                                 found = true;
                                 if ('type' in schema.properties[properties[k]]) {
                                     let compatible = await activeDatabase.areColumnTypesCompatible(
-                                                                            result.result[j].Type,
-                                                                            schema.properties[properties[k]]['type']);
+                                        result.result[j].Type,
+                                        schema.properties[properties[k]]['type']);
                                     drop_column = !compatible;
                                 }
                                 break;
@@ -303,7 +309,7 @@ async function createTablesFromSchema(tableName, schema, referencingTableName, t
                 for (let col in columnDescriptions) {
 
                     // Check if any new columns must be added
-                    if (! await activeDatabase.columnExists(tableName, col)) {
+                    if (!await activeDatabase.columnExists(tableName, col)) {
                         let sqlCommand = activeDatabase.getColumnDescription(tableName, columnDescriptions[col]);
                         result = await activeDatabase.executeSQL(sqlCommand);
                     }
@@ -364,7 +370,7 @@ function getSchemaForTable(tableName) {
 
 }
 
-function getColumnValuePairsForObject(object, schema) {
+function getColumnValuePairsForObject(object, schema,considerID = false) {
     let columns = Object.keys(object);
 
     let columnValuePairs = [];
@@ -381,6 +387,7 @@ function getColumnValuePairsForObject(object, schema) {
             } else {
 
 
+
                 columnValuePairs.push({
                     column: columns[i],
                     value: object[columns[i]],
@@ -388,29 +395,45 @@ function getColumnValuePairsForObject(object, schema) {
                 });
 
             }
+        }else{
+
+            if(considerID){
+                //ID is never part of the schema
+                if(columns[i] === "id"){
+                    columnValuePairs.push({
+                        column: columns[i],
+                        value: object[columns[i]],
+                        type: "integer"
+                    });
+
+                }
+            }
+
         }
 
     }
     return columnValuePairs;
 
 }
+
 let Ajv = require('ajv');
 let ajv = new Ajv({
     unknownFormats: ['color'],
 });
 
-function validateObject(object, schema){
+function validateObject(object, schema) {
 
-    if(schema.$id){
+    if (schema.$id) {
 
-        if(ajv.getSchema(schema.$id)){
-            return  ajv.validate(schema.$id, object);
-        }else{
-            return ajv.valueOf(schema,object);
+        if (ajv.getSchema(schema.$id)) {
+            return ajv.validate(schema.$id, object);
+        } else {
+            return ajv.valueOf(schema, object);
         }
-    }else{
+    } else {
         //TODO should never happen anyway... but could produce memory leaks if it would happen.
-        return ajv.valueOf(schema,object);
+        return ajv.valueOf(schema, object);
     }
 }
+
 let databaseTableSchemas = [];
