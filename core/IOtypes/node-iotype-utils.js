@@ -43,16 +43,15 @@ let nodeIoTypeUtils = {
                 case 'URLType':
                     IOret = new ioTypes.IOTypes.URLType(ioObject.url, ioObject.target);
                     break;
-
                 case 'ContentReplacement':
                     IOret = new ioTypes.IOTypes.ContentReplacement(ioObject.replacements,ioObject.lang);
+                    break;
                 case 'Error':
                     IOret = new ioTypes.IOTypes.Error(ioObject.message,ioObject.type,ioObject.name,ioObject.description);
                     break;
                 case 'NoResult':
                     IOret = new ioTypes.IOTypes.NoResult(ioObject.message, ioObject.name,ioObject.description);
                     break;
-
             }
         } else {
             return ioObject; // Backwards compatibility

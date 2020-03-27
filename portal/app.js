@@ -84,6 +84,7 @@ const clientBasicSettingsController = require("./controller/view/clientBasicSett
 const caretakerClientOverviewController = require("./controller/view/caretakerClientOverviewController");
 const caretakerContentReplacementController = require("./controller/view/caretakerContentReplacementController");
 const clientSetupController = require("./controller/view/clientSetupController");
+const clientSetupFinishedController = require("./controller/view/clientSetupFinishedController");
 const localeProfileWizardController = require("./controller/view/localeProfileWizardController");
 
 
@@ -124,6 +125,10 @@ app.post('/caretaker/custom-paragraphs-action', caretakerContentReplacementContr
 // Client
 app.use('/client/welcome', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
 app.use('/client/setup', authentication.isAuthenticated, userController.setUser,localeProfileWizardController.translateProfileWizard, clientSetupController.setupController);
+app.use('/client/finished', authentication.isAuthenticated, userController.setUser,localeProfileWizardController.translateProfileWizard, clientSetupFinishedController.setupFinishedController);
+
+
+
 app.get('/client/configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, patientController.getEngineConfigByuserId, (_, res) => res.render('client_configure', res.locals.context));
 app.use('/client/basic-settings', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateBasicSetting, clientBasicSettingsController, (_, res) => res.render('client_basic_settings', res.locals.context));
 //Client Caretaker Management

@@ -593,6 +593,8 @@ let profileBuilder = {
 
             await profileBuilder.deleteProfileSupportCategories(profile);
 
+            profileBuilder.deleteProfileReasoners(profile);
+
             let deleteProfileRequest = databaseManager.createRequest("profile").where("id", "=", profile.id).delete();
             let deleteProfileRequestResult = await databaseManager.executeRequest(deleteProfileRequest);
 
@@ -930,8 +932,22 @@ let profileBuilder = {
             }
         }
 
-    }
+    },
 
+    async deleteProfileReasoners(profile) {
+        let databaseManager = require("./../database/database-manager");
+        let rUtil = rootRequire("core/user_tracking/reasoner-utils");
+        let reasoners = await rUtil.loadProfileReasoner(profile, 'all', false, false);
+        for (let i=0; i<reasoners.length; i++) {
+            let rid = reasoners[i].id;
+            if (rid) {
+                let deleteReasonerParamsRequest = databaseManager.createRequest("profile_reasoner_params").where("rid", "=", rid).delete();
+                databaseManager.executeRequest(deleteReasonerParamsRequest);
+            }
+        }
+        let deleteUserReasonersRequest = databaseManager.createRequest("profile_reasoner").where("pid", "=", profile.id).delete();
+        databaseManager.executeRequest(deleteUserReasonersRequest);
+    },
 
 };
 

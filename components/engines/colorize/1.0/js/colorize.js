@@ -11,7 +11,12 @@ function colorize(req, config,widget) {
         $("*").each(function () {
 
             if(!$(this).parents('.easy-reading-interface').length && ! $(this).hasClass('easy-reading-interface')){
-                $(this).addClass("easyReaderColorize");
+
+                if(!$(this).is("img")){
+                    $(this).addClass("easyReaderColorize");
+                }
+
+
             }
         });
 

@@ -53,6 +53,9 @@ let network = {
         });
 
 
+        let messageServerConnection = require("./message-server-connection");
+        messageServerConnection.init();
+
       // network.kickConnections();
     },
     kickConnections: function (){
@@ -92,6 +95,8 @@ let network = {
 
     updateProfileForConnectedClients:function (profile,normalized = false) {
         console.log("Updating profile - active connections:"+this.webSocketConnections.length);
+
+
         let profileNormalized = normalized;
         for (let i = 0; i < this.webSocketConnections.length; i++) {
 
@@ -108,6 +113,29 @@ let network = {
 
         }
 
+        let messageServerConnection = require("./message-server-connection");
+        if(messageServerConnection.isEnabled){
+            messageServerConnection.sendMessage({
+                type: "userUpdate",
+                message: profile.id
+            })
+        }
+
+    },
+    userUpdated: async function (pid) {
+        for (let i = 0; i < this.webSocketConnections.length; i++) {
+            if(this.webSocketConnections[i].profile){
+                if (this.webSocketConnections[i].profile.id === pid) {
+
+                    let profileBuilder = require("../profile/profile-builder");
+                    await profileBuilder.loadActiveUserInterfaces(this.webSocketConnections[i].profile);
+                    this.webSocketConnections[i].updateProfile(this.webSocketConnections[i].profile,false);
+
+
+                }
+            }
+
+        }
     },
     getProfileWithID:function (id) {
         for (let i = 0; i < this.webSocketConnections.length; i++) {

@@ -16,11 +16,6 @@ class ContinuousChoiceButton extends WidgetBase{
         this.debugMode = false;
         this.inputTypes = [
             {
-                "inputType": ioType.IOTypes.Word.className,
-                "name": "Input word",
-                "description": "A single word clicked by the user",
-            },
-            {
                 "inputType": ioType.IOTypes.Paragraph.className,
                 "name": "Input paragraph",
                 "description": "A paragraph of text clicked by the user",

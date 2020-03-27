@@ -13,6 +13,15 @@ var easyReading = {
     },
 
     startup: function (uiCollection) {
+
+        if(!classMapping){
+            setTimeout(function () {
+                easyReading.startup(uiCollection);
+            },100 );
+
+            return;
+        }
+
         
         let updated = easyReading.uiUpdated;
         this.init();
@@ -108,6 +117,7 @@ var easyReading = {
     },
     update: function (uiCollection) {
 
+        console.log("UPDAte");
         if (easyReading.started) {
 
             let uiChanged = false;
@@ -317,7 +327,7 @@ var easyReading = {
             }
             easyReading.started = false;
 
-            console.log("SHUUTING DOWN");
+            console.log("SHUTING DOWN");
         }
 
     },

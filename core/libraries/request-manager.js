@@ -1,5 +1,5 @@
 class Request {
-    constructor(id, input, uiId, toolId, functionInfo,automaticRequest=false) {
+    constructor(id, input, uiId, toolId, functionInfo, automaticRequest=false, reasoner_triggered=false) {
         this.id = id;
         this.input = input;
         this.uiId = uiId;
@@ -50,17 +50,22 @@ class Request {
             };*/
         }
 
+        let agent = 'human';
+        if (reasoner_triggered) {
+            agent = 'reasoner';
+        }
 
         this.message = {
             id: id,
             type: "cloudRequest",
+            agent: agent,
             ui: {
                 uiId: uiId,
                 toolId: toolId,
             },
 
             input: this.inputType,
-            requestInfo : new RequestInfo(uiId,toolId,automaticRequest),
+            requestInfo : new RequestInfo(uiId, toolId, automaticRequest, reasoner_triggered),
 
         };
 
@@ -99,10 +104,11 @@ class Request {
 
 }
 class RequestInfo{
-    constructor(uiIndex, toolIndex,automaticRequest) {
+    constructor(uiIndex, toolIndex,automaticRequest, reasonerTriggered) {
         this.uiIndex = uiIndex;
         this.toolIndex = toolIndex;
         this.automaticRequest = automaticRequest;
+        this.reasonerTriggered = reasonerTriggered;
 
         this.href = window.location.href;
         this.hostname = window.location.hostname;
@@ -116,31 +122,58 @@ let requestManager = {
     currentRequestID: 1,
     activeRequests: [],
     toolUsageEntries:[],
-    createRequest: function (widget, input,automaticRequest=false) {
-
+    createRequest: function (widget, input, e=null, automaticRequest=false) {
+        // Three possibilities: user-triggered (default), reasoner-triggered, widget-triggered
+        let reasoner_triggered = false;
+        let automatic_request = automaticRequest;
+        if (e && 'user_triggered' in e) {
+            automatic_request = !e['user_triggered'];
+        }
+        if (e && 'reasoner_triggered' in e) {
+            reasoner_triggered = e['reasoner_triggered'];
+        }
+        if (!automatic_request && !reasoner_triggered) {
+            // Notify user tracking reasoner that user needs help (has triggered a tool)
+            let p = widget.userInterface.tools[widget.toolIndex].presentation;
+            let instant = true;  // If tool has no presentation, it is instant
+            if (p !== null) {  // Otherwise, fetch whether its presentation is instant (i.e. not-continuous)
+                instant = p.instantDisplay;
+            }
+            contentScriptController.sendMessageToBackgroundScript({
+                type: "toolTriggeredByUser",
+                wait: !instant,
+            });
+        }
         if (widget.functionInfo.source.type === "LocalFunction") {
             functionMapping[widget.functionInfo.source.entryPoint](input, widget.functionInfo.configuration,widget);
             //   window[widget.functionInfo.source.entryPoint](input, widget.functionInfo.configuration);
 
             //Dont push this on active requests - it is local anyway
-            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo,automaticRequest);
+            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex,
+                widget.functionInfo,automatic_request, reasoner_triggered);
             contentScriptController.sendMessageToBackgroundScript(currentRequest.message);
 
         } else if (widget.functionInfo.source.type === "RemoteFunction") {
 
 
-            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo,automaticRequest);
+            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex,
+                widget.functionInfo, automatic_request, reasoner_triggered);
 
             this.activeRequests.push(currentRequest);
             contentScriptController.sendMessageToBackgroundScript(currentRequest.message);
+
+            contentScriptController.sendMessageToBackgroundScript({type: "freezeReasoner"});
 
         } else if (widget.functionInfo.source.type === "CombinedFunction") {
 
 
-            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex, widget.functionInfo,automaticRequest);
+            let currentRequest = new Request(this.currentRequestID++, input, widget.userInterface.uiIndex, widget.toolIndex,
+                widget.functionInfo, automatic_request, reasoner_triggered);
 
             this.activeRequests.push(currentRequest);
             contentScriptController.sendMessageToBackgroundScript(currentRequest.message);
+
+            contentScriptController.sendMessageToBackgroundScript({type: "freezeReasoner"});
 
         }
 
@@ -163,6 +196,9 @@ let requestManager = {
 
         }
 
+        if (this.activeRequests.length === 0) {
+            contentScriptController.sendMessageToBackgroundScript({type: "unfreezeReasoner"});
+        }
 
     },
 
@@ -176,8 +212,6 @@ let requestManager = {
                 this.activeRequests.splice(i, 1);
                 return currentRequest;
             }
-
-
         }
     },
 

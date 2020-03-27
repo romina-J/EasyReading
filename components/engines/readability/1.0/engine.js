@@ -20,7 +20,7 @@ class Readability extends base.EngineBase{
                 id : "readability",
                 name: "Readability",
                 description : "Gets Main Content",
-                defaultIcon : "assets/colorize.png",
+                defaultIcon : "assets/readability.png",
                 states: 2,
                 includeInDefaultProfile: true,
                 supportedLanguages: [],
@@ -58,7 +58,7 @@ class Readability extends base.EngineBase{
                 },
                 "fontSize": {
                     "type": "integer",
-                    "title": "Fon size",
+                    "title": "Font size",
                     "description": "Font size of the reading mode",
                     "default": 24,
                     "minimum": 15,

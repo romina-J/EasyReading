@@ -22,7 +22,7 @@ class ScreenRuler extends base.EngineBase{
                 description : "Creates a screenruler for better reading",
                 defaultIcon : "assets/screen-ruler.png",
                 states: 2,
-                includeInDefaultProfile: false,
+                includeInDefaultProfile: true,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,

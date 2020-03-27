@@ -303,7 +303,7 @@ let core = {
             let autoButton = this.getWidget("auto-button");
             return autoButton.getDefaultConfiguration();
 
-        } else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className ||
+        } else if (
             func.inputTypes[0].inputType === ioType.IOTypes.Sentence.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Paragraph.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.AnnotatedParagraph.className) {
@@ -350,6 +350,9 @@ let core = {
             }
 
 
+        }else if(func.inputTypes[0].inputType === ioType.IOTypes.Word.className){
+            let singleChoiceButton = this.getWidget("single-choice-button");
+            return singleChoiceButton.getDefaultConfiguration();
         }
 
     }
@@ -533,6 +536,8 @@ function loadUtils(core) {
 
     core.languageDetector = require("./language-detector/language-detector");
     core.languageDetector.init();
+
+    core.reasonerUtils = require("./user_tracking/reasoner-utils");
 
     core.ioUtils = require("./IOtypes/node-iotype-utils");
 

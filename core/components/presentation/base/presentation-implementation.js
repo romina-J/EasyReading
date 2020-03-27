@@ -6,16 +6,26 @@ class Presentation{
         this.configuration = configuration;
         this.requestCounter = 0;
         this.isCompatibleWithOtherPresentations = false;
-
+        this.instantDisplay = true;
+        this.lastRequestID = null;
 
     }
 
     renderResult(request,result){
 
     }
+
+
     removeResult(resultID){
 
     }
+
+    removeLastResult() {
+        if (this.lastRequestID) {
+            this.removeResult(this.lastRequestID);
+        }
+    }
+
     undo(){
 
     }
@@ -42,7 +52,8 @@ class Presentation{
 
     createRequestId(){
         this.requestCounter++;
-        return "er-result-"+this.getID()+"-"+this.requestCounter;
+        this.lastRequestID = "er-result-"+this.getID()+"-"+this.requestCounter;
+        return this.lastRequestID;
     }
 
     setToolIndex(toolIndex){

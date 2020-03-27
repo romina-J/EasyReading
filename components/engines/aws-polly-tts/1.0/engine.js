@@ -117,8 +117,8 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                 name: "AWS: Polly",
                 description: "Converts text to Speech",
                 defaultIcon: "assets/text-to-speech.png",
-                includeInDefaultProfile: false,
-                supportedLanguages: ["en","de","sv"],
+                includeInDefaultProfile: true,
+                supportedLanguages: ["en", "de", "sv", "es"],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.SPEECH_SYNTHESIS,
@@ -153,8 +153,6 @@ class AWSPollyTextToSpeech extends base.EngineBase {
 
 
         let voiceID = this.getVoiceID(config,input.lang);
-
-
 
         let params = {
 

@@ -1,4 +1,4 @@
-class Button extends WidgetBase{
+class Button extends WidgetBase {
 
     constructor(functionInfo, userInterface,targetID, configuration){
         super(functionInfo,userInterface,targetID,configuration);
@@ -15,15 +15,13 @@ class Button extends WidgetBase{
 
     disable(){
         $("#"+this.widgetID).off( "click",this, this.buttonClicked);
-
-
     }
 
     buttonClicked(e){
-        requestManager.createRequest(e.data,{
+        let voidInput = {
             type: "Void",
-        });
-
+        };
+        requestManager.createRequest(e.data, voidInput, e);
     }
 
     remove(){

@@ -56,8 +56,8 @@ class ContinuousChoiceButton extends WidgetBase {
         this.active = true;
     }
 
-    deactivateWidget(){
-        super.deactivateWidget();
+    deactivateWidget(manual=true){
+        super.deactivateWidget(manual);
 
 
         console.log("continuous Choice Button Not Active");
@@ -87,7 +87,7 @@ class ContinuousChoiceButton extends WidgetBase {
     continuousChoiceButtonClicked(e) {
 
         if(e.data.active){
-            e.data.deactivateWidget();
+            e.data.deactivateWidget(true);
         }else{
             e.data.activateWidget();
         }
@@ -102,7 +102,7 @@ class ContinuousChoiceButton extends WidgetBase {
         easyReading.busyAnimation.startAnimation();
 
         if(!this.filterUserInterfaceElements(word)){
-            requestManager.createRequest(this, word);
+            requestManager.createRequest(this, word, e);
         }
 
     }
@@ -124,13 +124,10 @@ class ContinuousChoiceButton extends WidgetBase {
                 this.textSelection =  new TextSelection(currentParagraph.textNodes,500);
                 let nextParagraph = this.textSelection.getNextParagraph();
                 if(nextParagraph){
-                    requestManager.createRequest(this, nextParagraph);
+                    requestManager.createRequest(this, nextParagraph, e);
                 }
             }
-
         }
-
-
     }
 
     filterUserInterfaceElements(element){
@@ -145,23 +142,31 @@ class ContinuousChoiceButton extends WidgetBase {
 
         let nextParagraph = this.textSelection.getNextParagraph();
         if(nextParagraph){
-            requestManager.createRequest(this, nextParagraph);
+            requestManager.createRequest(this, nextParagraph, null, true);
         }else{
             let nextElements = this.htmlIterator.getNextElements();
             if(nextElements){
                 this.textSelection =  new TextSelection(nextElements.textNodes,500);
                 nextParagraph = this.textSelection.getNextParagraph();
                 if(nextParagraph){
-                    requestManager.createRequest(this, nextParagraph);
+                    requestManager.createRequest(this, nextParagraph, null, true);
                 }
             }
         }
 
-
+        if (!nextParagraph) {
+            console.log('no next paragraph found!!');
+            contentScriptController.sendMessageToBackgroundScript({
+                type: "helpComplete",
+                ui_i: this.userInterface.id,
+                tool_i: this.toolId,
+            });
+        }
 
     }
 
     requestFinished(){
+        super.requestFinished();
         easyReading.busyAnimation.stopAnimation();
         this.requestInProgress = false;
     }
@@ -170,7 +175,7 @@ class ContinuousChoiceButton extends WidgetBase {
 
 
         if(this.active){
-            this.deactivateWidget();
+            this.deactivateWidget(false);
         }
         this.disable();
 

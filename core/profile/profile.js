@@ -100,7 +100,6 @@ class Profile {
                 this.locale = loadProfileRequestResult.result[0].locale;
                 this.ui_mode = loadProfileRequestResult.result[0].ui_mode;
 
-
                 let loadProfileRoleRequest = databaseManager.createRequest("role").where("user_id", "=", this.id );
 
                 let loadProfileRoleRequestResult = await databaseManager.executeRequest(loadProfileRoleRequest);

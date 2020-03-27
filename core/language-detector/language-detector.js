@@ -70,7 +70,7 @@ let languageDetector = {
         }
 
 
-        if(lang !== "udefined"){
+        if(lang !== "undefined"){
             return lang;
         }
 
@@ -86,7 +86,7 @@ let languageDetector = {
 
 function detectLanguageProbability(result,lang){
 
-    if(lang === "undefinded"){
+    if(lang === "undefined"){
         return 0;
     }
     //Iterate through results

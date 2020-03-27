@@ -92,16 +92,24 @@ class MysqlConnection extends DatabaseConnectionBase{
 
         sql+=") ON DUPLICATE KEY UPDATE " ;
 
+        let ignore = 0;
+        for(let i=0; i < request.columnValues.length; i++){
+            if (request.columnValues[i].column === "id") {
+                ignore = 1;
+                break;
+            }
+        }
+
         for(let i=0; i < request.columnValues.length; i++){
 
             if(request.columnValues[i].column !== "id"){
 
                 sql+=request.columnValues[i].column+"="+this.getFormattedValue(request.columnValues[i]);
-                if(i < request.columnValues.length-1){
+
+                if(i < request.columnValues.length - ignore - 1){
                     sql+=", ";
                 }
             }
-
 
         }
         sql+=";";
@@ -252,7 +260,7 @@ class MysqlConnection extends DatabaseConnectionBase{
 
 
     async executeSQL(sql, parameters){
-        //conso le.log("Executing:"+sql);
+        //console.log("Executing:"+sql);
         //console.log("parameters:"+JSON.stringify(parameters));
 
         let MySQLConnection = this;
@@ -421,7 +429,7 @@ class MysqlConnection extends DatabaseConnectionBase{
 
     getFormattedValue(columnValue){
 
-        if(!columnValue.value){
+        if(columnValue.value === null || typeof columnValue.value === "undefined") {
             return "NULL";
         }
 

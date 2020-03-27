@@ -43,19 +43,37 @@
                     </select>
                 </fieldset>
 
+                <fieldset>
+                    <legend>
+                        <strong>{{page_basic_setting_reasoner_title}}</strong><br>
+                        {{page_basic_setting_reasoner_description}}
+                    </legend>
+                    <input type="radio" id="reasoner_enabled" name="reasoner_on" value="enabled" {{#ifEquals reasoner_on "enabled"}} checked  {{/ifEquals}}>
+                    <label for="reasoner_enabled"> {{page_basic_setting_reasoner_on_label}}</label><br>
+                    <input type="radio" id="reasoner_disabled" name="reasoner_on" value="disabled" {{#ifNotEquals reasoner_on "enabled"}} checked  {{/ifNotEquals}}>
+                    <label for="reasoner_disabled"> {{page_basic_setting_reasoner_off_label}}</label><br>
+                    <label for="reasoner_model">{{page_basic_setting_reasoner_models_label}}</label>
+                    <select id="reasoner_model" name="reasoner_model">
+                        {{#each supportedModels}}
+                            {{#ifEquals userModel true}}
+                                <option value="{{id}}" selected>{{label}}</option>
+                            {{else}}
+                                <option value="{{id}}">{{label}}</option>
+                            {{/ifEquals}}
+                        {{/each}}
+                    </select>
+                </fieldset>
 
-
-                    <fieldset>
-                        <legend>
-                            <strong>{{page_basic_setting_adaptable_title}}</strong><br>
-                            {{page_basic_setting_adaptable_description}}
-                        </legend>
-                        <input type="radio" id="adaptable" name="ui_mode" value="adaptable" {{#ifEquals ui_mode "adaptable"}} checked  {{/ifEquals}}>
-                        <label for="adaptable"> {{page_basic_setting_adaptable_label}}</label><br>
-                        <input type="radio" id="adaptive" name="ui_mode" value="adaptive" {{#ifEquals ui_mode "adaptive"}} checked  {{/ifEquals}}>
-                        <label for="adaptive"> {{page_basic_setting_adaptive_label}}</label>
-                    </fieldset>
-
+                <fieldset>
+                    <legend>
+                        <strong>{{page_basic_setting_adaptable_title}}</strong><br>
+                        {{page_basic_setting_adaptable_description}}
+                    </legend>
+                    <input type="radio" id="adaptable" name="ui_mode" value="adaptable" {{#ifEquals ui_mode "adaptable"}} checked  {{/ifEquals}}>
+                    <label for="adaptable"> {{page_basic_setting_adaptable_label}}</label><br>
+                    <input type="radio" id="adaptive" name="ui_mode" value="adaptive" {{#ifEquals ui_mode "adaptive"}} checked  {{/ifEquals}}>
+                    <label for="adaptive"> {{page_basic_setting_adaptive_label}}</label>
+                </fieldset>
 
                 <input type="submit" value="{{Save}}"/>
 

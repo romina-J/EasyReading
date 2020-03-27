@@ -37,7 +37,7 @@ let DatabaseManager = {
         }
     },
 
-    getConnection:function(){
+    getConnection: function () {
 
         return activeDatabase;
     },
@@ -129,7 +129,7 @@ let DatabaseManager = {
         });
     },
 
-    executeRequest: async function (request) {
+    executeRequest: async function (request, sanitizeForSchema = false) {
 
         let errorMsg = null;
         let result = null;
@@ -153,7 +153,7 @@ let DatabaseManager = {
                         request.columnValues = getColumnValuePairsForObject(request.object, schema);
                         sql = activeDatabase.createUpdateSQL(request);
                     } else {
-                        request.columnValues = getColumnValuePairsForObject(request.object, schema,true);
+                        request.columnValues = getColumnValuePairsForObject(request.object, schema, true);
                         sql = activeDatabase.createInsertOrUpdateSQL(request);
                     }
                     result = await activeDatabase.executeSQL(sql);
@@ -175,6 +175,21 @@ let DatabaseManager = {
                 result = await activeDatabase.executeSQL(sql);
 
             }
+
+            if (sanitizeForSchema) {
+                if (sanitizeForSchema) {
+                    if (result.result) {
+                        if (result.result.length > 0) {
+
+                            for(let i=0; i < result.result.length; i++){
+                                result.result[i] = await this.getObjectFromResult(result.result[i],request.tableName);
+                            }
+
+                        }
+                    }
+                }
+
+            }
         } catch (error) {
             errorMsg = error;
         }
@@ -184,6 +199,8 @@ let DatabaseManager = {
             if (errorMsg) {
                 reject(errorMsg);
             } else {
+
+
                 resolve(result);
             }
         });
@@ -215,6 +232,20 @@ let DatabaseManager = {
             let keys = Object.keys(result);
             for (let i = 0; i < keys.length; i++) {
                 defaultObject[keys[i]] = result[keys[i]];
+
+                //Assign real bool values "true","false" instead of 0 1
+                //0 is always the id
+                if (i > 0) {
+                    if (schema.properties) {
+                        if (schema.properties[keys[i]].type === "boolean") {
+                            if (defaultObject[keys[i]] === 0) {
+                                defaultObject[keys[i]] = false;
+                            } else if (defaultObject[keys[i]] === 1) {
+                                defaultObject[keys[i]] = true;
+                            }
+                        }
+                    }
+                }
             }
 
             //TODO handle nested object and arrays...
@@ -301,7 +332,8 @@ async function createTablesFromSchema(tableName, schema, referencingTableName, t
                         }
                         if (drop_column) {
                             let col_drop_sql = activeDatabase.dropColumnDescription(tableName, field_name);
-                            result = await activeDatabase.executeSQL(col_drop_sql)
+                            result = await activeDatabase.executeSQL(col_drop_sql);
+                            console.log("Removing unused field " + field_name + "from table " + tableName);
                         }
                     }
                 }
@@ -370,7 +402,7 @@ function getSchemaForTable(tableName) {
 
 }
 
-function getColumnValuePairsForObject(object, schema,considerID = false) {
+function getColumnValuePairsForObject(object, schema, considerID = false) {
     let columns = Object.keys(object);
 
     let columnValuePairs = [];
@@ -387,7 +419,6 @@ function getColumnValuePairsForObject(object, schema,considerID = false) {
             } else {
 
 
-
                 columnValuePairs.push({
                     column: columns[i],
                     value: object[columns[i]],
@@ -395,11 +426,11 @@ function getColumnValuePairsForObject(object, schema,considerID = false) {
                 });
 
             }
-        }else{
+        } else {
 
-            if(considerID){
+            if (considerID) {
                 //ID is never part of the schema
-                if(columns[i] === "id"){
+                if (columns[i] === "id") {
                     columnValuePairs.push({
                         column: columns[i],
                         value: object[columns[i]],

@@ -60,11 +60,15 @@ class Colorize extends base.EngineBase{
             "type": "object",
             "properties": {
                 "backgroundColor": {
+                    "title": "Background color",
+                    "description": "Preferred background color",
                     "type": "string",
                     "format": "color",
                     "default": "#000000",
                 },
                 "fontColor": {
+                    "title": "Font color",
+                    "description": "Preferred font color",
                     "type": "string",
                     "format": "color",
                     "default": "#FFFFFF"
