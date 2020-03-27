@@ -55,8 +55,8 @@ class SingleChoiceButton extends WidgetBase {
 
     }
 
-    deactivateWidget(){
-        super.deactivateWidget();
+    deactivateWidget(manual=true){
+        super.deactivateWidget(manual);
         console.log("Single Choice Button Not Active");
         $("#" + this.widgetID).removeClass("easy-reading-single-choice-active");
 
@@ -85,7 +85,7 @@ class SingleChoiceButton extends WidgetBase {
 
     singleChoiceButtonClicked(e) {
         if(e.data.active){
-            e.data.deactivateWidget();
+            e.data.deactivateWidget(true);
         }else{
             e.data.activateWidget();
         }
@@ -98,7 +98,7 @@ class SingleChoiceButton extends WidgetBase {
         this.requestInProgress = true;
         easyReading.busyAnimation.startAnimation();
         if(!this.filterUserInterfaceElements(word)){
-            requestManager.createRequest(this, word);
+            requestManager.createRequest(this, word, e);
         }
 
     }
@@ -108,22 +108,15 @@ class SingleChoiceButton extends WidgetBase {
             return;
         }
         this.requestInProgress = true;
-
-
         easyReading.busyAnimation.startAnimation();
         if(!this.filterUserInterfaceElements(paragraph)){
-
             if(this.outputTypeClass === Paragraph.className){
-
-                requestManager.createRequest(this, paragraph);
+                requestManager.createRequest(this, paragraph, e);
             }else if(this.outputTypeClass === AnnotatedParagraph.className){
-
                 paragraph.type = AnnotatedParagraph.className;
-                requestManager.createRequest(this, paragraph);
+                requestManager.createRequest(this, paragraph, e);
             }
         }
-
-
     }
 
     filterUserInterfaceElements(element){
@@ -132,13 +125,14 @@ class SingleChoiceButton extends WidgetBase {
 
 
     requestFinished(){
+        super.requestFinished();
         easyReading.busyAnimation.stopAnimation();
         this.requestInProgress = false;
     }
 
     remove(){
         if(this.active){
-            this.deactivateWidget();
+            this.deactivateWidget(false);
         }
         this.disable();
         $("#" + this.widgetID).remove();

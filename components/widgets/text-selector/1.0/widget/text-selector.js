@@ -29,7 +29,7 @@ class TextSelector extends WidgetBase {
 
         if(this.active){
 
-            e.data.deactivateWidget();
+            e.data.deactivateWidget(true);
             $("#" + e.data.widgetID).removeClass("easy-reading-text-selector-active");
 
         }
@@ -55,7 +55,7 @@ class TextSelector extends WidgetBase {
 
             console.log(nextParagraph);
 
-            requestManager.createRequest(e.data, nextParagraph);
+            requestManager.createRequest(e.data, nextParagraph, e);
 
             $("#" + e.data.widgetID).addClass("easy-reading-text-selector-active");
         }
@@ -69,7 +69,7 @@ class TextSelector extends WidgetBase {
         }
         let nextParagraph = this.textSelection.getNextParagraph();
         if(nextParagraph){
-            requestManager.createRequest(this, nextParagraph);
+            requestManager.createRequest(this, nextParagraph, null, true);
         }
         $("#" + this.widgetID).removeClass("easy-reading-text-selector-active");
         this.active = false;

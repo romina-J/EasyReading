@@ -24,11 +24,10 @@ class TwoStateButton extends WidgetBase{
     buttonClicked(e){
         e.data.pressed = !e.data.pressed;
         $("#"+e.data.widgetID).toggleClass( "er-button-active" );
-
-        requestManager.createRequest(e.data,{
+        let voidInput = {
             type: "Void",
-        });
-
+        };
+        requestManager.createRequest(e.data, voidInput, e);
     }
 
     remove(){

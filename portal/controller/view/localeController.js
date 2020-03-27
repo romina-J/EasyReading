@@ -125,6 +125,14 @@ module.exports = {
             'page_configure_tool_settings_title': req.__("page_configure_tool_settings_title"),
             'page_configure_tool_card_collapse_settings': req.__("page_configure_tool_card_collapse_settings"),
             'page_configure_tool_card_collapse_close': req.__("page_configure_tool_card_collapse_close"),
+            'select_multiple_widget_title': req.__("select_multiple_widget_title"),
+            'select_single_widget_title': req.__("select_single_widget_title"),
+            'select_multiple_presentation_title': req.__("select_multiple_presentation_title"),
+            'select_single_presentation_title': req.__("select_single_presentation_title"),
+            'select_multiple_widget_legend': req.__("select_multiple_widget_legend"),
+            'select_multiple_presentation_legend': req.__("select_multiple_presentation_legend"),
+
+
         };
 
         res.locals.context = {
@@ -203,6 +211,11 @@ module.exports = {
             'page_basic_setting_adaptable_description': req.__("page_basic_setting_adaptable_description"),
             'page_basic_setting_adaptable_label': req.__("page_basic_setting_adaptable_label"),
             'page_basic_setting_adaptive_label': req.__("page_basic_setting_adaptive_label"),
+            'page_basic_setting_reasoner_title': req.__("page_basic_setting_reasoner_title"),
+            'page_basic_setting_reasoner_description': req.__("page_basic_setting_reasoner_description"),
+            'page_basic_setting_reasoner_on_label': req.__("page_basic_setting_reasoner_on_label"),
+            'page_basic_setting_reasoner_off_label': req.__("page_basic_setting_reasoner_off_label"),
+            'page_basic_setting_reasoner_models_label': req.__("page_basic_setting_reasoner_models_label"),
         };
         res.locals.context = {
             ...res.locals.context,

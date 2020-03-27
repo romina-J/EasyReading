@@ -44,7 +44,7 @@ let Profile = {
 };
 
 let Role = {
-    "$id": "https://www.easyreading.eu/schemas/Profile.json",
+    "$id": "https://www.easyreading.eu/schemas/Role.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "role",
     "type": "object",
@@ -66,7 +66,7 @@ let Role = {
 };
 
 let ClientCarerRelation = {
-    "$id": "https://www.easyreading.eu/schemas/Profile.json",
+    "$id": "https://www.easyreading.eu/schemas/ClientCarerRelation.json",
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "client_carer_relation",
     "type": "object",
@@ -606,10 +606,10 @@ let symbolSupport = {
         "preferred_library": {
             "$id": "/properties/preferred_library",
             "type": "string",
-            "enum": ["arasaac", "bliss","widgit","none"],
+            "enum": ["arasaac", "bliss", "widgit", "none"],
             "title": "Symbol Library",
             "description": "The preferred library of the user",
-            "default":"none",
+            "default": "none",
         },
 
 
@@ -723,10 +723,10 @@ let readingSupport = {
         "tts_speed": {
             "$id": "/properties/tts_speed",
             "type": "string",
-            "enum": ["slow", "normal","fast"],
+            "enum": ["slow", "normal", "fast"],
             "title": "Text to speech speed",
             "description": "The speed of the text to speech voice",
-            "default" : "normal",
+            "default": "normal",
         },
 
     }
@@ -751,7 +751,7 @@ let inputSupport = {
             "enum": ["click", "mark"],
             "title": "Text selection",
             "description": "The preferred way of selecting text",
-            "default":"click"
+            "default": "click"
         },
 
     }
@@ -774,10 +774,10 @@ let presentationSupport = {
         "annotation_display": {
             "$id": "/properties/annotation_display",
             "type": "string",
-            "enum": ["tooltip", "top","next"],
+            "enum": ["tooltip", "top", "next"],
             "title": "Annotation display",
             "description": "How annotations should be displayed",
-            "default":"tooltip"
+            "default": "tooltip"
         },
         "user_interface": {
             "$id": "/properties/tool_user_interface",
@@ -785,9 +785,69 @@ let presentationSupport = {
             "enum": ["overlay", "tab-slide-out",],
             "title": "Userinterface",
             "description": "The preferred user interface",
-            "default":"tab-slide-out"
+            "default": "tab-slide-out"
         },
 
+    }
+};
+
+
+let reasoner = {
+    "$id": "https://www.easyreading.eu/schemas/profile_reasoner.json",
+    "type": "object",
+    "title": "profile_reasoner",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the referenced user",
+        },
+        "enabled": {
+            "$id": "/properties/enabled",
+            "type": "boolean",
+            "title": "Reasoner enabled",
+            "description": "Whether the the reasoner is enabled for the user",
+            "default": true,
+        },
+        "model_type": {
+            "$id": "/properties/model_type",
+            "type": "string",
+            "enum": ["q_learning", "double_q_learning", "rnn"],
+            "title": "Reasoner model type",
+            "description": "The model used by the reasoner to learn",
+            "default": "q_learning"
+        },
+        "hyperparams": {
+            "$id": "/properties/hyperparams",
+            "type": "string",
+            "title": "Model hyperparameters",
+            "description": "JSON serialized hyperparameters employed by the learning model",
+        }
+    }
+};
+
+let reasonerParams = {
+    "$id": "https://www.easyreading.eu/schemas/reasoner_parameters.json",
+    "type": "object",
+    "title": "profile_reasoner_params",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "rid": {
+            "$id": "/properties/rid",
+            "type": "integer",
+            "title": "Reasoner ID",
+            "description": "The ID of the reasoner",
+        },
+        "params": {
+            "$id": "/properties/params",
+            "type": "string",
+            "title": "Learned parameters",
+            "description": "Current model parameters i.e. user-specific model state",
+        }
     }
 };
 
@@ -827,6 +887,74 @@ let functionUsageEntry = {
 
     }
 };
+
+
+let wizardUserTest =
+    {
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "$id": "http://example.com/example.json",
+        "type": "object",
+        "title": "wizard_user_test",
+        "description": "Saves wizard data during the user test. Anonymous user get deleted ....",
+        "required": [
+            "lang",
+            "login",
+            "json",
+            "timestamp"
+        ],
+        "properties": {
+            "lang": {
+                "$id": "#/properties/lang",
+                "type": "string",
+                "title": "The Lang Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": "",
+                "examples": [
+                    "de"
+                ]
+            },
+            "login": {
+                "$id": "#/properties/login",
+                "type": "string",
+                "title": "The Login Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": "",
+                "examples": [
+                    "google"
+                ]
+            },
+            "json": {
+                "$id": "#/properties/json",
+                "type": "string",
+                "title": "The Json Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": "",
+                "examples": [
+                    "A green door"
+                ]
+            },
+            "timestamp": {
+                "$id": "#/properties/timestamp",
+                "type": "integer",
+                "title": "The Timestamp Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": 0,
+                "examples": [
+                    12
+                ]
+            },
+            "defaultProfile": {
+                "$id": "#/properties/defaultProfile",
+                "type": "boolean",
+                "title": "The Defaultprofile Schema",
+                "description": "An explanation about the purpose of this instance.",
+                "default": false,
+                "examples": [
+                    false
+                ]
+            }
+        }
+    };
 
 
 /*
@@ -944,21 +1072,19 @@ let supportCategories = {
 */
 
 
-function createSchemasForSupportCategories(){
+function createSchemasForSupportCategories() {
     let sc = require("../profile/profile-support-categories");
     let supportCategories = sc.supportCategories;
-    Object.keys(supportCategories).forEach(function(categoryName,index) {
+    Object.keys(supportCategories).forEach(function (categoryName, index) {
 
         let category = supportCategories[categoryName];
 
-        Object.keys(category).forEach(function(subcategoryName,index) {
+        Object.keys(category).forEach(function (subcategoryName, index) {
 
             let subcategory = category[subcategoryName];
-            let subCategorySchema = createSchemaForSubCategory(categoryName,subcategoryName,subcategory);
+            let subCategorySchema = createSchemaForSubCategory(categoryName, subcategoryName, subcategory);
             coreTableDefinitions.baseTableDefinitions.push(subCategorySchema);
         });
-
-
 
 
     });
@@ -966,11 +1092,11 @@ function createSchemasForSupportCategories(){
 }
 
 
-function createSchemaForSubCategory(categoryName, subcategoryName,subcategory){
+function createSchemaForSubCategory(categoryName, subcategoryName, subcategory) {
     let schema = {
         "$id": "https://www.easyreading.eu/schemas/profile_presentation_support.json",
         "type": "object",
-        "title": "sc_"+categoryName+"__"+subcategoryName,
+        "title": "sc_" + categoryName + "__" + subcategoryName,
         "definitions": {},
         "$schema": "http://json-schema.org/draft-07/schema#",
         "properties": {
@@ -994,7 +1120,7 @@ function createSchemaForSubCategory(categoryName, subcategoryName,subcategory){
         }
     };
 
-    if(subcategory.additional_fields){
+    if (subcategory.additional_fields) {
         schema.properties = {...schema.properties, ...subcategory.additional_fields}
     }
 
@@ -1025,12 +1151,15 @@ let coreTableDefinitions = {
         readingSupport,
         inputSupport,
         presentationSupport,
+        reasoner,
+        reasonerParams,
         functionUsageEntry,
+        wizardUserTest
     ],
 
 
     getDefinitions: function () {
-        if(!supportCategoriesInitialized){
+        if (!supportCategoriesInitialized) {
             createSchemasForSupportCategories();
             supportCategoriesInitialized = true;
         }
@@ -1040,13 +1169,13 @@ let coreTableDefinitions = {
 
     },
 
-    getSupportCategories: function(){
-      return supportCategories;
+    getSupportCategories: function () {
+        return supportCategories;
     },
-    getDefinitionByTitle:function (title) {
+    getDefinitionByTitle: function (title) {
 
-        for(let i=0; i < coreTableDefinitions.baseTableDefinitions.length; i++){
-            if(coreTableDefinitions.baseTableDefinitions[i].title === title){
+        for (let i = 0; i < coreTableDefinitions.baseTableDefinitions.length; i++) {
+            if (coreTableDefinitions.baseTableDefinitions[i].title === title) {
                 return coreTableDefinitions.baseTableDefinitions[i];
             }
         }

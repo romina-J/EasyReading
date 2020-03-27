@@ -48,6 +48,14 @@ async function userLogin(req, loginInfo, callback) {
                         type: "userLoginResult",
                         result: currentProfile,
                     };
+
+                    /*
+                    //TODO Reduce data size - move libraries like jQueryUI to extension
+                    let totalDataToSend = JSON.stringify(loginResult);
+                    let byteLength = Buffer.byteLength(totalDataToSend, 'utf8');
+                    */
+
+
                     webSocketConnection.sendMessage(loginResult);
                     currentProfile.userId = currentProfile.googleID;
 

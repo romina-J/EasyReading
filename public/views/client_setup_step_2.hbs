@@ -4,63 +4,105 @@
 
 
 <head>
-    <title>{{profile_wizard_step_2_heading}}</title>
+    <title>{{step2_heading}}</title>
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
-    <script src="/js/client-profile-setup.js"></script>
+    <script src="/js/client-setup/client-profile-setup.js"></script>
+    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/client-setup/progress.js"></script>
 
 </head>
 
 <body>
 
-<div class="row wrapper main-content">
+<div>
 
+    <div class="row">
+        <header class="medium-12 columns header">
+            <div class="columns small-1 large-1 logo-column">
+                <img src="/images/setup/step1/logo.png" alt="EasyReading Logo" class="logo">
+            </div>
+            <div class="columns small-11 large-11 er-header">
+                <h1 id="heading1" class="heading1"  data-audio-src="heading.mp3">{{{step2_heading}}}</h1>
+                <hr class="header-hr">
+            </div>
+
+        </header>
+
+    </div>
 
     <main>
-        <form method="POST" action="/client/setup">
-            <div class="medium-12 columns">
+        <form id="wizard-form" method="POST" action="/client/setup">
+
+            <div class="main-container">
+                <div class="row">
+                    <div class="medium-12 columns">
+                        <div class="row-header">
+
+                            <button type="button" class="er-audio-player er-audio-player-float" data-audio-elements="heading heading2_1_text"><img
+                                    src="/images/setup/text-to-speech.png"></button>
+                            <div>
+                                <h2  id="heading" data-audio-src="/audio/step2/{{lang}}/heading.mp3" class="heading1">{{{step2_translations}}}</h2>
+                                <div>
+                                    <span id="heading2_1_text"  data-audio-src="/audio/step2/{{lang}}/heading2_1_text.mp3">{{{text_conversion_options_additional_text}}}</span>
+
+                                </div>
+                                <br>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="columns small-4 large-4">
+                        <div class="checkbox widget widget_large {{#ifEquals setupInformation.[1].easytext
+                                                                "true"}} checked {{/ifEquals}}" data-name="easytext">
+                            <img src="/images/setup/step3/{{lang}}/easy-language.png" alt="">
+                        </div>
 
 
-                <div class="setup">
-                    <div role="group" aria-labelledby="desc2" class="checkbox-container">
-                        <h1 id="desc2">
-                            {{understandable_title}}
-                        </h1>
-                        <div class="container">
-                            <div class="checkbox {{#ifEquals setupInformation.[0].easytext
-                                                             "true"}} checked {{/ifEquals}}" data-name="easytext">
-                                <img src="/images/setup/step2/easytext.png" alt=""><span class="container-info"> {{easy_text_label}}</span>
+                        <div class="row">
+
+                            <div class="columns small-12 text-center">
+                                <span id="button1_text" class="container-info" data-audio-src="/audio/step2/{{lang}}/button1_text.mp3">{{{plain_language}}}</span>
+                                <br>
+                                <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
+                                        src="/images/setup/text-to-speech.png"></button>
                             </div>
-                            <div class="checkbox  {{#ifEquals setupInformation.[0].translation
-                                                              "true"}} checked {{/ifEquals}}" data-name="translation">
-                                <img src="/images/setup/step2/translation.png" alt=""> <span class="container-info"> {{translation_label}}</span>
-                            </div>
-                            <div class="checkbox {{#ifEquals setupInformation.[0].video "true"}} checked {{/ifEquals}}"
-                                 data-name="video">
-                                <img src="/images/setup/step2/video.png" alt=""><span class="container-info"> {{multimedia_label}}</span>
-                            </div>
+
                         </div>
                     </div>
 
+                    <div class="columns small-4 large-4">
+                        <div class="checkbox  widget widget_large{{#ifEquals setupInformation.[1].translation
+                                                                "true"}} checked {{/ifEquals}}" data-name="translation">
+                            <img src="/images/setup/step3/{{lang}}/language.png" alt="">
+                        </div>
+                        <div class="row">
 
+                            <div class="columns small-12 text-center">
+                                <span id="button2_text" class="container-info" data-audio-src="/audio/step2/{{lang}}/button2_text.mp3">{{{language_translation}}}</span>
+                                <br>
+                                <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
+                                        src="/images/setup/text-to-speech.png"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="columns small-4 large-4">
+                    </div>
                 </div>
+
             </div>
 
 
             <div class="row">
 
-                <div class="columns small-6 small-centered">
-                    <div>
-                        {{#if previousStep}}
-                            <input type="hidden" value="{{nextStep}}" name="back">
-                            <input type="image" src="/images/back.png" alt="Back" name="back"
-                                   class="button step-button">
-                            <!--  <a href="#" class="button step-button"><img src="/images/back.png" alt="Back"/></a>-->
-                        {{/if}}
-
-
-
-
+                <div class="columns large-centered progress-column">
+                    <div class="progress-container">
+                        <button id="prevButton" type="button" class="button progress-button"><img src="/images/back.png"
+                                                                                                  alt="Back"></button>
                         <div class="progress-indicator-container">
                             <ol class="progress-indicator">
 
@@ -70,7 +112,7 @@
                                         </li>
                                     {{/ifEquals}}
                                     {{#ifEquals step "currentStep"}}
-                                        <li class="is-current" data-step="{{stepNumber}}">
+                                        <li class="is-current {{percent}}" data-step="{{stepNumber}}">
                                         </li>
                                     {{/ifEquals}}
                                     {{#ifEquals step "upcomingStep"}}
@@ -80,14 +122,17 @@
                                 {{/each}}
                             </ol>
                         </div>
+                        <button id="nextButton" type="button" class="button progress-button"><img src="/images/next.png"
+                                                                                                  alt="Next"></button>
+                        <br>
+                        <span class="back-label progress-label">{{previous}}</span>
+                        <span class="next-label progress-label">{{next}}</span>
 
-                        <input type="hidden" value="{{nextStep}}" name="step">
-                        <input type="image" src="/images/next.png" alt="Next" name="next" class="button step-button"
-                               id="">
                     </div>
-
                 </div>
             </div>
+
+
         </form>
     </main>
 

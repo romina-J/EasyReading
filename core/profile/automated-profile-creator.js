@@ -25,8 +25,10 @@ let automatedProfileCreator = {
 
             if (loadProfileRequestResult.result.length > 0) {
                 profile.id = loadProfileRequestResult.result[0].id;
+                profile.email = loadProfileRequestResult.result[0].email;
                 profile.type = loadProfileRequestResult.result[0].type;
                 profile.locale = loadProfileRequestResult.result[0].locale;
+                profile.ui_mode = loadProfileRequestResult.result[0].ui_mode;
                 profile.supportCategories = supportCategories;
 
 
@@ -35,9 +37,27 @@ let automatedProfileCreator = {
                 await profileBuilder.loadActiveUserInterfaces(profile);
 
 
+                if(profile.userInterfaceCollectionID){
+                    await profileBuilder.deleteUserInterfacesForCollection(profile.userInterfaceCollectionID);
+
+                    //Delete ui collection to start over...
+                    let deleteUICollectionRequest = databaseManager.createRequest("ui_collection").where("id", "=", profile.userInterfaceCollectionID).delete();
+                    await databaseManager.executeRequest(deleteUICollectionRequest);
+                    profile.userInterfaceCollectionID = 0;
+                }
+
+
+
                 profile.userInterfaces = [];
                 profile.debugMode = core.debugMode;
                 profile.userLoaded = true;
+
+
+                profileBuilder.loadDefaultProfile(profile);
+
+                //Store default tools if no tools are added because the user skipped all questions
+                let defaultTools = profile.userInterfaces[0].tools;
+                profile.userInterfaces = [];
 
                 let preferredUserInterface = null;
                 Object.keys(supportCategories.user_interface).forEach(function(key) {
@@ -84,8 +104,15 @@ let automatedProfileCreator = {
                     }
                 }
 
-                await profileBuilder.saveUserInterfaceConfiguration(profile, true);
+
+                if(profile.userInterfaces[0].tools.length === 0){
+                    profile.userInterfaces[0].tools = defaultTools;
+                }
+
+
+                await profileBuilder.saveProfile(profile, true);
                 await profileBuilder.saveProfileSupportCategories(profile);
+                profile.resetNeeded = true;
 
                 let network = require("../network/network");
                 network.updateProfileForConnectedClients(profile);

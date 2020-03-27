@@ -19,12 +19,9 @@ const getToolConfigFor = async (engineFunction, toolTable, id) => {
          && tool_conf.engine_version === engineFunction.engineVersion
          && tool_conf.function_id === engineFunction.id) {
             
-         const getEngineConfigForUser = databaseManager
-            .createRequest(toolTable)
-            .where('id', '=', tool_conf.engine_conf_id)
-            .select();
+         let getEngineConfigForUser = databaseManager.createRequest(toolTable).where('id', '=', tool_conf.engine_conf_id).select();
 
-         const eEngineConfigForUser = await databaseManager.executeRequest(getEngineConfigForUser);
+         let eEngineConfigForUser = await databaseManager.executeRequest(getEngineConfigForUser,true);
          engineConfig.push(eEngineConfigForUser);
       }
     }
@@ -51,8 +48,19 @@ const getToolConfigFor = async (engineFunction, toolTable, id) => {
          const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.${configurationDataOption.type}.label`);
          propertyTranslation[configurationDataOption.type] = translatedLabel;
       } else {
+        let propertyTranslationOptionList = {};
+        if (configurationDataOption.configurableDataOption!=null) {
+
+            configurationDataOption.configurableDataOption.forEach(option=> {
+                const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.${configurationDataOption.type}.optionList.${option.label}`);
+                propertyTranslationOptionList[option.label] = translatedLabel;
+            });
+        }
+
          const result = getTranslationForProperties(req, engine, engineFunctionType, configurationDataOption.dataSchemaProerty);
          propertyTranslation = Object.assign({}, propertyTranslation, result);
+
+         propertyTranslation[configurationDataOption.dataSchemaProerty[0]+"Options"] = propertyTranslationOptionList;
       }
    });
 
@@ -61,6 +69,7 @@ const getToolConfigFor = async (engineFunction, toolTable, id) => {
 
 module.exports = {
     getEngineConfigByuserId : async (req, res, next) => {
+        let localeService = require("../../../core/i18n/locale-service");
         const id =  parseInt(req.query.id);
      
         if (!id) {
@@ -138,8 +147,8 @@ module.exports = {
                                     widgetBase.getDefaultConfiguration = version.getDefaultConfiguration;
                                     widgetBase.getConfigurationSchema = version.getConfigurationSchema;
 
-                                    widgetBase.selected = iIndex == 0;
-                                    widgetBase.dataSchema = version.getConfigurationSchema();
+                                    widgetBase.selected = iIndex === 0;
+                                    widgetBase.dataSchema = localeService.translateSchema(version.getConfigurationSchema(),req);
 
                                     activeWidgetList.push(widgetBase);
                                 }
@@ -157,7 +166,7 @@ module.exports = {
                                 const outputType = version.outputTypes[oIndex];
 
                                 if(engineFunctionType.outputTypes[0].outputType == outputType.outputType) {
-                                    var presentationBase = new PresentationBase();
+                                    let presentationBase = new PresentationBase();
 
                                     presentationBase.outputTypes = version.outputTypes;
                                     presentationBase.name = version.name;
@@ -174,8 +183,8 @@ module.exports = {
                                     presentationBase.getDefaultConfiguration = version.getDefaultConfiguration;
                                     presentationBase.getConfigurationSchema = version.getConfigurationSchema;
 
-                                    presentationBase.selected = oIndex == 0;
-                                    presentationBase.dataSchema = version.getConfigurationSchema();
+                                    presentationBase.selected = oIndex === 0;
+                                    presentationBase.dataSchema = localeService.translateSchema(version.getConfigurationSchema(),req);
 
                                     activePresentationList.push(presentationBase);
                                 }
@@ -185,6 +194,7 @@ module.exports = {
 
                     const engineFunction = {
                         id: engineFunctionType.id,
+                        uniqueId: version.engine.id+"_"+engineFunctionType.id,
                         name: engineFunctionType.name,
                         title: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.title`),
                         description: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.description`),
@@ -196,7 +206,7 @@ module.exports = {
                         engineVersion: version.engine.version,
                         sortOrder: engineFunctionType.sortOrder,
                         enable: false,
-                        dataSchema: version.engine.getDataSchema(),
+                        dataSchema: localeService.translateSchema(version.engine.getDataSchema(),req),
                         configurationDataOptions: configurationDataOptions,
                         configurationDataOptionTranslations: configurationDataOptionTranslations,
                         bundle: engineFunctionType.bundle,
@@ -235,7 +245,7 @@ module.exports = {
                                 let widgetConfigurationRequestResult = await databaseManager.executeRequest(widgetConfigurationRequest);
         
                                 let widgetConfiguration = await databaseManager.getObjectFromResult(widgetConfigurationRequestResult.result[0], databaseManager.getConfigTableNameForComponent(engineFunction.widget.source));
-                                engineFunction.widget = engineFunction.widget.source.getConfiguration(widgetConfiguration);
+                                engineFunction.widget = engineFunction.widget.source.getConfiguration(widgetConfiguration,true);
                             }
 
                             if (engineFunctionConfig.presentation_conf_id!=null) {
@@ -243,7 +253,7 @@ module.exports = {
                                 let presentationConfigurationRequestResult = await databaseManager.executeRequest(presentationConfigurationRequest);
         
                                 let presentationConfiguration = await databaseManager.getObjectFromResult(presentationConfigurationRequestResult.result[0], databaseManager.getConfigTableNameForComponent(engineFunction.presentation.source));
-                                engineFunction.presentation = engineFunction.presentation.source.getConfiguration(presentationConfiguration);
+                                engineFunction.presentation = engineFunction.presentation.source.getConfiguration(presentationConfiguration,true);
                             }                            
 
                             break;
@@ -273,7 +283,7 @@ module.exports = {
 
         let userInterfaceData = [];
 
-        let localeService = require("../../../core/i18n/locale-service");
+
         for(let i=0; i < userInterfaces.length; i++){
 
             let latestVersion = userInterfaces[i].versions[userInterfaces[i].versions.length-1].version;
@@ -341,7 +351,7 @@ async function getUserInterfaceConfig(profileID) {
                     let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).where("id", "=", uiInfo.ui_conf_id);
                     let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
 
-                    uiConfiguration.configuration = await databaseManager.getObjectFromResult(userInterfaceConfigurationRequestResult.result[0], tableName);
+                    uiConfiguration.configuration = await databaseManager.getObjectFromResult(userInterfaceConfigurationRequestResult.result[0], tableName,true);
                 }
 
                 activeUIConfigurations.push(uiConfiguration);

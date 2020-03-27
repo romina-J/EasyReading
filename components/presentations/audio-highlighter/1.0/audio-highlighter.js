@@ -20,10 +20,25 @@ class AudioHighlighter extends PresentationBase {
         }];
     }
 
-    getConfigurationSchema() {
-
-        return {};
+    getConfigurationSchema(){
+        return {
+            "type": "object",
+            "properties": {
+                "speed": {
+                    "$id": "/properties/scope",
+                    "type": "string",
+                    "enum": ["slow", "normal","fast"],
+                    "default": "normal",
+                    "title": "Speed",
+                    "description": "Defines the speed of the speech",
+                }
+            },
+            "required": [
+                "speed"
+            ]
+        };
     }
+
 
 
 }

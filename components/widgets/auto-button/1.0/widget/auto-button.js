@@ -8,11 +8,14 @@ class AutoButton extends WidgetBase{
         this.enable();
 
         this.isActivated = false;
+        this.initialRequest = true;
 
+        this.requestInProgress = true;
+        globalEventListener.addPresentationFinishListener(this);
         let autoButton = this;
         $(document).ready(()=>{
-
-            autoButton.toggle();
+            autoButton.createRequest();
+            //autoButton.toggle();
         });
     }
 
@@ -28,7 +31,16 @@ class AutoButton extends WidgetBase{
     }
 
     buttonClicked(e){
-        e.data.toggle();
+        if(!e.data.requestInProgress){
+
+            if(e.data.isActivated){
+                e.data.toggle();
+            }else{
+                e.data.createRequest();
+            }
+
+
+        }
 
     }
 
@@ -38,20 +50,35 @@ class AutoButton extends WidgetBase{
             this.stopPresentation();
         }else{
             $("#"+this.widgetID).addClass("er-button-active");
-            this.createRequest();
         }
         this.isActivated = !this.isActivated;
     }
 
     createRequest(){
+        this.requestInProgress = true;
         requestManager.createRequest(this,{
             type: "URL",
             url: window.location.href,
-        }, true);
+        }, null, this.initialRequest);
     }
 
     remove(){
         this.isActivated = false;
         $("#"+this.widgetID).remove();
+    }
+
+    presentationFinished(presentation) {
+        super.presentationFinished(presentation);
+
+
+        if(presentation.requestCounter > 0){
+            this.toggle()
+
+        }
+
+        this.initialRequest = false;
+        this.requestInProgress = false;
+
+
     }
 }

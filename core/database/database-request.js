@@ -42,10 +42,10 @@ class DatabaseRequest{
         return this;
     }
 
-    where(identifier,compertator, value){
+    where(identifier,comparator, value){
 
-        if(typeof identifier !== 'undefined' && typeof compertator !== 'undefined'&& typeof value !== 'undefined'){
-            this.conditions.push([identifier,compertator,value]);
+        if(typeof identifier !== 'undefined' && typeof comparator !== 'undefined'&& typeof value !== 'undefined'){
+            this.conditions.push([identifier,comparator,value]);
         }else{
             if(Array.isArray(identifier)){
                 this.conditions = identifier;

@@ -31,13 +31,19 @@ class WidgetBase{
 
 
     }
-    deactivateWidget(){
+    deactivateWidget(manual=true){
         if(easyReading.userInterfaces[this.userInterface.uiId]){
             if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolIndex]){
                 if(easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolIndex].presentation){
                     easyReading.userInterfaces[this.userInterface.uiId].tools[this.toolIndex].presentation.removeAnimatedResult();
-
-
+                }
+                if (manual) {
+                    // If request has been manually cancelled by user, inform reasoner
+                    contentScriptController.sendMessageToBackgroundScript({
+                        type: "helpCancelled",
+                        ui_i: this.userInterface.id,
+                        tool_i: this.toolId,
+                    });
                 }
             }
         }
@@ -58,11 +64,11 @@ class WidgetBase{
             }
             */
             requestManager.cancelRequest(this);
-            this.deactivateWidget();
+            this.deactivateWidget(false);
         }
     }
 
-    requestFinished(){
+    requestFinished() {
 
     }
 

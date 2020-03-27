@@ -69,10 +69,14 @@ class WebSocketConnection {
                 return;
             }
 
+            let core = null;
             let req = JSON.parse(msg);
             if (req.type !== "ping") {
                 console.log("Message received:");
                 console.log(msg);
+                if (req.type !== "userLogin" && req.type !== "getUUID") {
+                    core = rootRequire("./core/core");  // Most messages perform a call to the core
+                }
             }
             if (req.type === "userLogin") {
                 //Just send default profile back
@@ -142,12 +146,10 @@ class WebSocketConnection {
 
             } else if (req.type === "cloudRequest") {
 
-                let core = rootRequire("./core/core");
                 if (!this.profile) {
 
                     console.log("attempted a cloud request without a profile.");
                     try{
-
                         if(this.ws){
                             this.ws.close();
                         }
@@ -172,6 +174,75 @@ class WebSocketConnection {
                     result: this.uuid,
                 });
 
+            } else if (req.type === "triggerHelp") {
+                let help_possible = false;
+                if ('input' in req) {
+                    try {
+                        let input = JSON.parse(req.input);
+                        let wait_tools = [];
+                        if ('wait_tools' in req) {
+                            wait_tools = JSON.parse(req.wait_tools);
+                        }
+                        let tool = await core.reasonerUtils.preferredTool(this.profile, input);
+                        if (tool !== null && tool.length === 2) {
+                            let helpers = rootRequire("./core/util/helper-functions");
+                            let wait = helpers.arrayInArray(tool, wait_tools);
+                            help_possible = true;
+                            let gaze_x = 0, gaze_y = 0;
+                            if ('gaze_x' in req) {
+                                gaze_x = req.gaze_x;
+                            }
+                            if ('gaze_y' in req) {
+                                gaze_y = req.gaze_y;
+                            }
+                            this.sendMessage({
+                                type: "triggerRequest",
+                                windowInfo: req.windowInfo,
+                                automatic: req.automatic,
+                                ui_i: tool[0],
+                                tool_i: tool[1],
+                                x: gaze_x,
+                                y: gaze_y,
+                                waitForPresentation: wait,
+                            });
+                        }
+                    } catch (err) {
+                        errorMsg = "Error triggering help: wrong request payload";
+                    }
+                }
+                if (!help_possible) {
+                    this.sendMessage({
+                        type: "triggerHelpFailed",
+                    });
+                }
+            } else if (req.type === "loadReasoner") {
+                let reasoner_data = await core.reasonerUtils.loadProfileReasoner(this.profile, 'enabled', true, false);
+                if (reasoner_data.length > 0) {
+                    this.sendMessage({
+                        type: "userReasoner",
+                        reasoner_data: JSON.stringify(reasoner_data[0]),
+                    });
+                }
+
+            } else if (req.type === "persistReasoner") {
+                let reasoner_data = JSON.parse(req.reasoner_data);
+                let reasoner_id = await core.reasonerUtils.persistReasoner(reasoner_data, this.profile);
+                if (reasoner_id > 0) {
+                    this.sendMessage({
+                        type: "setReasonerId",
+                        reasoner_id: reasoner_id,
+                    });
+                }
+            } else if (req.type === "persistReasonerParams") {
+                let reasoner_data = JSON.parse(req.reasoner_data);
+                await core.reasonerUtils.persistUserReasonerParams(reasoner_data, this.profile);
+            } else if (req.type === "loadReasonerParams") {
+                let params = await core.reasonerUtils.loadReasonerParams(req.rid);
+                this.sendMessage({
+                    type: "reasonerParams",
+                    rid: req.rid,
+                    params: JSON.stringify(params),
+                });
             }
             //Testing mobile client without Google Login
             else if (req.type === "mobileTestLogin") {

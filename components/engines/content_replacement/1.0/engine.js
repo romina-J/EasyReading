@@ -21,7 +21,7 @@ class Dictionary extends base.EngineBase {
                 id: "content_replacement",
                 name: "Content",
                 description: "Content Replacement",
-                defaultIcon: "assets/contentReplacement.png",
+                defaultIcon: "assets/content_replacement.png",
                 includeInDefaultProfile: true,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
@@ -52,11 +52,17 @@ class Dictionary extends base.EngineBase {
         let loadActiveDOMHelperRequest = databaseManager.createRequest("content_replacement").where("url", "LIKE", input.url+"%");
         let loadActiveDOMHelperResult = await databaseManager.executeRequest(loadActiveDOMHelperRequest);
 
-        let result = new ioType.IOTypes.ContentReplacement();
-        for(let i=0; i < loadActiveDOMHelperResult.result.length; i++){
-            result.addReplacement("content_replacement",loadActiveDOMHelperResult.result[i]);
+        if(loadActiveDOMHelperResult.result.length > 0){
+            let result = new ioType.IOTypes.ContentReplacement();
+            for(let i=0; i < loadActiveDOMHelperResult.result.length; i++){
+                result.addReplacement("content_replacement",loadActiveDOMHelperResult.result[i]);
+            }
+
+            callback(result);
+        }else{
+            callback(new ioType.IOTypes.NoResult("No content replacements found on this page."));
         }
-        callback(result);
+
 
     }
 

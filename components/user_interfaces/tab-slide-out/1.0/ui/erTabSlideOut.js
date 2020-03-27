@@ -173,7 +173,7 @@ $.widget("ui.erTabSlideOut", {
             }
             erTSO._adaptToWindowSize();
             erTSO.refresh();
-            erTSO._setTransitions();            
+            erTSO._setTransitions();
         });
 
         // change panel visibility on handle-click
@@ -190,6 +190,88 @@ $.widget("ui.erTabSlideOut", {
             $('.er-tab-slide-out-grid-horizontal').css({'flex-wrap' : 'nowrap'});
             erTSO._adaptToWindowSize();
             erTSO.refresh();
+        });
+
+        // drag ui with touch events
+        let prevTouchPositionX = 0;
+        let prevTouchPositionY = 0;
+        $('#er-tab-slide-out-handle').on('touchstart', function(evt) {
+            if (erTSO.dragAxis === 'x') {
+                prevTouchPositionX = evt.touches[0].clientX;
+            } else {
+                prevTouchPositionY = evt.touches[0].clientY;
+            }
+        });
+        $('#er-tab-slide-out-handle').on('touchmove', function(evt) {
+            if ((evt.touches[0].clientX > 0) && (evt.touches[0].clientX < document.documentElement.clientWidth)) { // if touch happens inside viewport
+                if (erTSO.dragAxis === 'x') {
+                    let leftMax = document.documentElement.clientWidth - erTSO.panelWidth;
+                    let handleLeftMax = erTSO.panelWidth - erTSO.handle.outerWidth();
+                    let movedpixels = 0;
+                    if (prevTouchPositionX < 0) {
+                        movedpixels = evt.touches[0].clientX;
+                    } else if (prevTouchPositionX > document.documentElement.clientWidth) {
+                        movedpixels = evt.touches[0].clientX - document.documentElement.clientWidth;
+                    } else {
+                        movedpixels = evt.touches[0].clientX - prevTouchPositionX;
+                    }
+                    if (erTSO.panel.position().left + movedpixels < 0) {
+                        let reallyMovedPixels = -erTSO.panel.position().left;
+                        let diffMovedPixels = movedpixels - reallyMovedPixels;
+                        erTSO.panel.css('left', 0);
+                        if (erTSO.handle.position().left + diffMovedPixels < 0) {
+                            erTSO.handle.css('left', 0);
+                        } else {
+                            erTSO.handle.css('left', erTSO.handle.position().left + diffMovedPixels);
+                        }
+                    } else if (erTSO.panel.position().left + movedpixels > leftMax) {
+                        let reallyMovedPixels = leftMax - erTSO.panel.position().left;
+                        let diffMovedPixels = movedpixels - reallyMovedPixels;
+                        erTSO.panel.css('left', leftMax);
+                        if (erTSO.handle.position().left + diffMovedPixels > handleLeftMax) {
+                            erTSO.handle.css('left', handleLeftMax);
+                        } else {
+                            erTSO.handle.css('left', erTSO.handle.position().left + diffMovedPixels);
+                        }
+                    } else {
+                        erTSO.panel.css('left', erTSO.panel.position().left + movedpixels);
+                    }
+                    prevTouchPositionX = evt.touches[0].clientX;
+                } else {
+                    let topMax = window.innerHeight - erTSO.panelHeight;
+                    let handleTopMax = erTSO.panelHeight - erTSO.handle.outerHeight();
+                    let movedpixels = 0;
+                    if (prevTouchPositionY < 0) {
+                        movedpixels = evt.touches[0].clientY;
+                    } else if (prevTouchPositionY > window.innerHeight) {
+                        movedpixels = evt.touches[0].clientY - window.innerHeight;
+                    } else {
+                        movedpixels = evt.touches[0].clientY - prevTouchPositionY;
+                    }
+                    if (erTSO.panel.position().top + movedpixels < 0) {
+                        let reallyMovedPixels = -erTSO.panel.position().top;
+                        let diffMovedPixels = movedpixels - reallyMovedPixels;
+                        erTSO.panel.css('top', 0);
+                        if (erTSO.handle.position().top + diffMovedPixels < 0) {
+                            erTSO.handle.css('top', 0);
+                        } else {
+                            erTSO.handle.css('top', erTSO.handle.position().top + diffMovedPixels);
+                        }
+                    } else if (erTSO.panel.position().top + movedpixels > topMax) {
+                        let reallyMovedPixels = topMax - erTSO.panel.position().top;
+                        let diffMovedPixels = movedpixels - reallyMovedPixels;
+                        erTSO.panel.css('top', topMax);
+                        if (erTSO.handle.position().top + diffMovedPixels > handleTopMax) {
+                            erTSO.handle.css('top', handleTopMax);
+                        } else {
+                            erTSO.handle.css('top', erTSO.handle.position().top + diffMovedPixels);
+                        }
+                    } else {
+                        erTSO.panel.css('top', erTSO.panel.position().top + movedpixels);
+                    }
+                    prevTouchPositionY = evt.touches[0].clientY;
+                }
+            }
         });
 
         // set handler for keyboard accessibility
@@ -304,6 +386,17 @@ $.widget("ui.erTabSlideOut", {
                 this.handle.css({'left' : (document.documentElement.clientWidth - this.handle.outerWidth()) + 'px'});
             }
         } else {
+            if (this.panelHeight > window.innerHeight) {
+                $('#er-tab-slide-out-grid-container').css({'grid-template-columns' : 'auto auto auto'});
+                this.panelHeight = this.panel.outerHeight();
+            } else {
+                $('#er-tab-slide-out-grid-container').css({'grid-template-columns' : 'auto auto'});
+                this.panelHeight = this.panel.outerHeight();
+                if (this.panelHeight > window.innerHeight) {
+                    $('#er-tab-slide-out-grid-container').css({'grid-template-columns' : 'auto auto auto'});
+                    this.panelHeight = this.panel.outerHeight();
+                }
+            }
             if (this.panel.position().top + this.panelHeight > window.innerHeight) {
                 let newPosTop = window.innerHeight - this.panelHeight;
                 if (newPosTop >= 0) {
@@ -321,6 +414,11 @@ $.widget("ui.erTabSlideOut", {
             }            
         }
         $('.er-tab-slide-out-grid-horizontal').css({'flex-wrap' : 'wrap'});
+
+        // set hight and width in case the panel has wrapped and has therefore a different size
+        this.panelHeight = this.panel.outerHeight();
+        this.panelWidth = this.panel.outerWidth();
+
         this.saveConfiguration();
     },
 
@@ -425,6 +523,16 @@ $.widget("ui.erTabSlideOut", {
                         erTSO.gridContainer.css({'display' : 'none'});
                     }
                 }, 500);
+            }
+        }
+        let tab_slide_out = $('#er-tab-slide-out');
+        if (tab_slide_out.length) {
+            if (erTSO.options.panelVisible) {
+                tab_slide_out.removeClass('er-tab-in');
+                tab_slide_out.addClass('er-tab-out');
+            } else {
+                tab_slide_out.removeClass('er-tab-out');
+                tab_slide_out.addClass('er-tab-in');
             }
         }
     }

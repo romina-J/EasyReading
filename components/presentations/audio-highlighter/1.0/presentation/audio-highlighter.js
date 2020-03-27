@@ -1,7 +1,7 @@
-class AudioHighlighter extends Presentation{
-    constructor(functionInfo, userInterface,configuration){
+class AudioHighlighter extends Presentation {
+    constructor(functionInfo, userInterface, configuration) {
 
-        super(functionInfo, userInterface,configuration);
+        super(functionInfo, userInterface, configuration);
 
         this.audio = null;
         this.lastElement = null;
@@ -10,25 +10,25 @@ class AudioHighlighter extends Presentation{
         this.sentenceTextMarker = null;
         this.sentenceSpeechMarks = [];
         this.isCompatibleWithOtherPresentations = true;
+        this.instantDisplay = false;
     }
 
-    renderResult(request,result) {
+    renderResult(request, result) {
 
         let ioRes = ioTypeUtils.toIOTypeInstance(result.result);
 
 
-
-        if(this.wordTextMarker){
+        if (this.wordTextMarker) {
             this.wordTextMarker.remove();
         }
-        if(this.sentenceTextMarker){
+        if (this.sentenceTextMarker) {
             this.sentenceTextMarker.remove();
         }
 
-        if(this.lastElement){
+        if (this.lastElement) {
             $(this.lastElement).removeClass("highlight-audio");
         }
-        if(ioRes.name === "AudioType") {
+        if (ioRes.name === "AudioType") {
 
 
             this.sentenceSpeechMarks = [];
@@ -110,6 +110,14 @@ class AudioHighlighter extends Presentation{
             }
 
             this.audio = new Audio(ioRes.mp3URL);
+            if (this.configuration.speed) {
+                if (this.configuration.speed === "slow") {
+                    this.audio.playbackRate = 0.7;
+                } else if (this.configuration.speed === "fast") {
+                    this.audio.playbackRate = 1.3;
+                }
+
+            }
 
             //Disable highlighting because mark.js does not work properly
 
@@ -159,28 +167,28 @@ class AudioHighlighter extends Presentation{
                 globalEventListener.presentationFinished(audioHighlighter);
             };
 
-        }else if(ioRes.name ==="Error"){
+        } else if (ioRes.name === "Error") {
 
             alertManager.showErrorAlert(ioRes.message);
 
-        }else if(ioRes.name === "NoResult"){
+        } else if (ioRes.name === "NoResult") {
             alertManager.showErrorAlert(ioRes.message);
         }
 
 
     }
 
-    removeResult(requestID){
+    removeResult(requestID) {
 
-        if(this.wordTextMarker){
+        if (this.wordTextMarker) {
             this.wordTextMarker.remove();
         }
-        if(this.sentenceTextMarker){
+        if (this.sentenceTextMarker) {
             this.sentenceTextMarker.remove();
         }
 
 
-        if(this.audio){
+        if (this.audio) {
             this.audio.pause();
             this.audio.ontimeupdate = null;
             this.audio.onended = null;
@@ -188,11 +196,11 @@ class AudioHighlighter extends Presentation{
         }
     }
 
-    removeAnimatedResult(){
+    removeAnimatedResult() {
         this.removeResult();
     }
 
-    undo(){
+    undo() {
 
     }
 }

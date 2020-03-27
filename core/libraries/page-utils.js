@@ -307,26 +307,9 @@ var pageUtils = {
     },
 
     getParagraph(e) {
+        // console.log("Paragraph at position: (" + e.clientX + ", " + e.clientY + ")");
         let target = $(e.target);
         if (target.length > 0) {
-
-            /*
-            let oldResult = $(e.target).closest('.easy-reading-result');
-            if (oldResult.length) {
-
-
-                let presentationID = oldResult.data("presentationid").split('-');
-                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult(oldResult.attr('id'));
-            }
-
-            $(e.target).children('.easy-reading-result').each(function () {
-
-                let presentationID = $(this).data("presentationid").split('-');
-                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult($(this).attr('id'));
-            });
-
-            */
-
             let paragraph = '';
             let iterator = new HTMLIterator(target[0]);
             let textNodes = iterator.getChildTextNodes(target[0]);
@@ -344,11 +327,6 @@ var pageUtils = {
                         return;
                     }
                 }
-
-
-
-
-
             }
             if (paragraph_container.length > 0) {
                 paragraph = paragraph_container[0].innerText.trim().replace(/(\r\n\t|\n|\r\t)/gm, "");
@@ -386,6 +364,19 @@ var pageUtils = {
                 textNodes: [],
                 lang: pageUtils.util.getLanguageOfElement(e.target),
             }
+        }
+    },
+
+    getParagraphUnderPosition(x,y){
+        let target = document.elementFromPoint(x, y);
+        if (target) {
+            return pageUtils.getParagraph({
+                target: target,
+                clientX: x,
+                clientY: y,
+            });
+        } else {
+            return null;
         }
     },
 

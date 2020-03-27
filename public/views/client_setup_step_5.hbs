@@ -4,89 +4,119 @@
 
 
 <head>
-    <title>{{profile_wizard_step_5_heading}}</title>
+    <title>{{step5_heading}}</title>
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
-    <script src="/js/client-profile-setup.js"></script>
+    <script src="/js/client-setup/client-profile-setup.js"></script>
+    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/client-setup/progress.js"></script>
 
 </head>
 
 <body>
 
-<div class="row wrapper main-content">
+<div>
+
+    <div class="row">
+        <header class="medium-12 columns header">
+            <div class="columns small-1 large-1 logo-column">
+                <img src="/images/setup/step1/logo.png" alt="EasyReading Logo" class="logo">
+            </div>
+            <div class="columns small-11 large-11 er-header">
+                <h1 id="heading1" class="heading1">{{{step5_heading}}}</h1>
+                <hr class="header-hr">
+            </div>
+
+        </header>
+
+    </div>
 
     <main>
-        <form method="POST" action="/client/setup">
-            <div class="medium-12 columns">
+        <form id="wizard-form" method="POST" action="/client/setup">
 
-                <div class="setup">
-                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container" data-name="tts">
-                        <h1 id="desc1">
-                           {{reading_title}}
-                        </h1>
-                        <div class="container">
-                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
-                                                                 "slow"}} checked {{/ifEquals}}" data-value="slow">
-                                <img src="/images/setup/step5/speed-slow.png" alt=""> <span class="container-info"> {{slow_label}}</span>
-                            </div>
-                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
-                                                                 "normal"}} checked {{/ifEquals}}" data-value="normal">
-                                <img src="/images/setup/step5/speed-normal.png" alt=""><span class="container-info"> {{normal_label}}</span>
-                            </div>
-                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
-                                                                 "fast"}} checked {{/ifEquals}}" data-value="fast">
-                                <img src="/images/setup/step5/speed-fast.png" alt=""><span class="container-info"> {{fast_label}}</span>
+            <div class="main-container">
+                <div class="row">
+                    <div class="medium-12 columns">
+                        <div class="row-header">
+                            <button type="button" class="er-audio-player er-audio-player-float" data-audio-elements="heading2_1 heading2_1_text"><img
+                                    src="/images/setup/text-to-speech.png"></button>
+                            <div>
+
+                                <h2 id="heading2_1" data-audio-src="/audio/step5/{{lang}}/heading2_1.mp3">
+                                    {{{layout_help_heading}}}
+
+                                </h2>
+                                <div id="heading2_1_text" data-audio-src="/audio/step5/{{lang}}/heading2_1_text.mp3">
+                                    {{{layout_help_heading_text}}}
+                                </div>
                             </div>
 
-                            <div class="radio-button {{#ifEquals setupInformation.[3].tts
-                                                                 "none"}} checked {{/ifEquals}}" data-value="none">
-                                <img src="/images/setup/step5/stop.png" alt=""><span class="container-info big"> {{no_tts_label}}</span>
-                            </div>
+
                         </div>
                     </div>
-
-
-                    <span class="clearfix"></span>
-
-
-                    <div role="radiogroup" aria-labelledby="desc1" class="radio-button-container"
-                         data-name="highlightning">
-                        <h1 id="desc1">
-                           {{highlightning_title}}
-                        </h1>
-                        <div class="container">
-
-
-                            <div class="radio-button large {{#ifEquals setupInformation.[3].highlightning
-                                                                       "true"}} checked {{/ifEquals}}"
-                                 data-value="true"><img src="/images/setup/step5/text-highlightning.png" alt="">
-                                <span class="container-info">{{highlightning_yes_label}}</span>
-                            </div>
-                            <div class="radio-button {{#ifEquals setupInformation.[3].highlightning
-                                                                 "false"}} checked {{/ifEquals}}" data-value="false">
-                                <img src="/images/setup/step5/stop.png" alt=""><span class="container-info big"> {{highlightning_no_label}}</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+
+                <div class="row">
+
+                    <div class="columns small-4 large-4">
+                        <div class="checkbox widget widget_large {{#ifEquals setupInformation.[4].fonts
+                                                                "true"}} checked {{/ifEquals}}" data-name="fonts">
+                            <img src="/images/setup/step5/magnify.png" alt="">
+                        </div>
+                        <div class="row">
+                            <div class="columns small-12 text-center">
+                                <span id="button1_text" data-audio-src="/audio/step5/{{lang}}/button1_text.mp3" class="container-info">{{{change_font_size}}}</span>
+                                <br>
+                                <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
+                                        src="/images/setup/text-to-speech.png"></button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="columns small-4 large-4">
+                        <div class="checkbox  widget widget_large {{#ifEquals setupInformation.[4].line_spacing
+                                                                "true"}} checked {{/ifEquals}}"
+                             data-name="line_spacing">
+                            <img src="/images/setup/step5/line-space.png" alt="">
+                        </div>
+                        <div class="row">
+                            <div class="columns small-12 text-center">
+                                <span id="button2_text" data-audio-src="/audio/step5/{{lang}}/button2_text.mp3" class="container-info">{{{change_line_spacing}}}</span>
+                                <br>
+                                <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
+                                        src="/images/setup/text-to-speech.png"></button>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="columns small-4 large-4">
+                        <div class="checkbox  widget widget_large {{#ifEquals setupInformation.[4].colorize
+                                                                "true"}} checked {{/ifEquals}}" data-name="colorize">
+                            <img src="/images/setup/step5/colorize.png" alt="">
+                        </div>
+
+                        <div class="row">
+                            <div class="columns small-12 text-center">
+                                <span id="button3_text" data-audio-src="/audio/step5/{{lang}}/button3_text.mp3" class="container-info">{{{change_color}}}</span>
+                                <br>
+                                <button type="button" class="er-audio-player" data-audio-elements="button3_text"><img
+                                        src="/images/setup/text-to-speech.png"></button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
 
             <div class="row">
 
-                <div class="columns small-6 small-centered">
-                    <div>
-                        {{#if previousStep}}
-
-                            <input type="image" src="/images/back.png" alt="Back" name="back"
-                                   class="button step-button">
-                            <!--  <a href="#" class="button step-button"><img src="/images/back.png" alt="Back"/></a>-->
-                        {{/if}}
-
-
-
-
+                <div class="columns large-centered progress-column">
+                    <div class="progress-container">
+                        <button id="prevButton" type="button" class="button progress-button"><img src="/images/back.png"
+                                                                                                  alt="Back"></button>
                         <div class="progress-indicator-container">
                             <ol class="progress-indicator">
 
@@ -96,7 +126,7 @@
                                         </li>
                                     {{/ifEquals}}
                                     {{#ifEquals step "currentStep"}}
-                                        <li class="is-current" data-step="{{stepNumber}}">
+                                        <li class="is-current {{percent}}" data-step="{{stepNumber}}">
                                         </li>
                                     {{/ifEquals}}
                                     {{#ifEquals step "upcomingStep"}}
@@ -106,14 +136,16 @@
                                 {{/each}}
                             </ol>
                         </div>
+                        <button id="nextButton" type="button" class="button progress-button"><img src="/images/next.png"
+                                                                                                  alt="Next"></button>
+                        <br>
+                        <span class="back-label progress-label">{{previous}}</span>
+                        <span class="next-label progress-label">{{next}}</span>
 
-
-                        <input type="image" src="/images/next.png" alt="Next" name="next" class="button step-button"
-                               id="">
                     </div>
-
                 </div>
             </div>
+
         </form>
     </main>
 

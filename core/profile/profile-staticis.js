@@ -8,7 +8,7 @@ module.exports = {
         try {
 
             //Do not store automatic requests
-            if (req.requestInfo.automaticRequest) {
+            if (req.requestInfo.automaticRequest || req.requestInfo.reasonerTriggered) {
                 return;
             }
 
