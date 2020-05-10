@@ -43,6 +43,7 @@ class EasyReadingAAC extends base.EngineBase {
                         "description": "Translated paragraph",
                     }
                 ],
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "createAAC",
             },
 

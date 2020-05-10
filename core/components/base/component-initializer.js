@@ -39,6 +39,8 @@ class ComponentInitializer {
                                 newComponent.version = version;
                                 newComponent.debugMode = componentInitializer.debugMode;
                                 newComponent.loadSources();
+                                newComponent.createTextualDescription();
+                                newComponent.createIconsForSchemaProperties();
 
                                 currentComponentContainer.addVersion(version,newComponent);
 

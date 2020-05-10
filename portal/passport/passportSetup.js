@@ -44,8 +44,6 @@ passport.use(
                 }
                 return done(null, profile);
             });
-
-
         } catch (err) {
 
             console.log("error");

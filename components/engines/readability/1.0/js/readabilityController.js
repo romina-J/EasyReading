@@ -2,6 +2,12 @@ let erReadabilityActive = false;
 
 function readability(req, config,widget) {
 
+    config = {
+        contentWidth: 50,
+        fontSize: 24,
+        lineSpacing: 2.5,
+    };
+
     if(erReadabilityActive){
 
         $(".er-readability-hidden").removeClass("er-readability-hidden");

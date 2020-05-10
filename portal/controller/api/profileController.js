@@ -94,6 +94,9 @@ module.exports = {
                 }
             }
 
+            let network = require("../../../core/network/network");
+            await network.userUpdated(id);
+
             return res.status(200).json({action: "updated"});
         } catch (e) {
             console.log(e);

@@ -37,6 +37,7 @@ class TextHelpPicturedDictionary extends base.EngineBase {
 
                 }],
                 supportedLanguages: ["en","sv","de"],
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "picturedDictionary",
             }
 

@@ -10,7 +10,7 @@ class ComponentBase {
         this.remoteCSS = [];
         this.remoteAssetDirectory = "";
         this.componentCategory = "";
-
+        this.iconsForSchemaProperties = [];
         //Can be overwritten by subClasses
 
         this.debugMode = false;
@@ -21,6 +21,8 @@ class ComponentBase {
         this.css = [];
         this.assetDirectory = "";
         this.implementationClass = "";
+        this.textualDescription = [];
+        this.descriptionManager = require("../util/description/descriptionManager");
 
     }
 
@@ -183,7 +185,34 @@ class ComponentBase {
 
     }
 
+    createTextualDescription(){
 
+    }
+
+    createIconForSchemaProperty(schemaProperty,iconPath,cssClass = null) {
+
+        this.iconsForSchemaProperties.push({
+            type:"propertyIcon",
+            property: schemaProperty,
+            url: this.copyToWeb(iconPath),
+            cssClass:cssClass,
+        })
+
+    }
+
+    createIconForSchemaPropertyValue(schemaProperty,value,iconPath,cssClass = null) {
+        this.iconsForSchemaProperties.push({
+            type:"propertyValueIcon",
+            property: schemaProperty,
+            value: value,
+            url: this.copyToWeb(iconPath),
+            cssClass:cssClass,
+        })
+    }
+
+    createIconsForSchemaProperties(){
+
+    }
 }
 
 module.exports = ComponentBase;

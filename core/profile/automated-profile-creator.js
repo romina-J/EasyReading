@@ -24,11 +24,9 @@ let automatedProfileCreator = {
             }
 
             if (loadProfileRequestResult.result.length > 0) {
-                profile.id = loadProfileRequestResult.result[0].id;
-                profile.email = loadProfileRequestResult.result[0].email;
-                profile.type = loadProfileRequestResult.result[0].type;
-                profile.locale = loadProfileRequestResult.result[0].locale;
-                profile.ui_mode = loadProfileRequestResult.result[0].ui_mode;
+                for(let attribute in loadProfileRequestResult.result[0]){
+                    profile[attribute]=loadProfileRequestResult.result[0][attribute];
+                }
                 profile.supportCategories = supportCategories;
 
 
@@ -110,12 +108,33 @@ let automatedProfileCreator = {
                 }
 
 
+
+
+                //Order tools according to tool categories.
+                let toolCategories = require("../../core/components/engines/base/engine-function").ToolCategories;
+                let orderedTools = [];
+                for (let category in toolCategories) {
+                    for(let i = 0; i < profile.userInterfaces[0].tools.length; i++){
+                        let tool = profile.userInterfaces[0].tools[i];
+                        let baseFunction = core.getFunction(tool.function.source.engine.id, tool.function.source.engine.version,tool.function.source.id);
+
+                        if(baseFunction.toolCategory === category){
+                            orderedTools.push(tool);
+                        }
+
+                    }
+                }
+                profile.userInterfaces[0].tools = orderedTools;
+
+
                 await profileBuilder.saveProfile(profile, true);
                 await profileBuilder.saveProfileSupportCategories(profile);
                 profile.resetNeeded = true;
 
                 let network = require("../network/network");
                 network.updateProfileForConnectedClients(profile);
+
+                profile.resetNeeded = false;
 
 
             }

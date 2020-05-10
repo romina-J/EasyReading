@@ -92,26 +92,20 @@ class MysqlConnection extends DatabaseConnectionBase{
 
         sql+=") ON DUPLICATE KEY UPDATE " ;
 
-        let ignore = 0;
+        let columnValues = [];
         for(let i=0; i < request.columnValues.length; i++){
-            if (request.columnValues[i].column === "id") {
-                ignore = 1;
-                break;
+            if (request.columnValues[i].column !== "id") {
+                columnValues.push(request.columnValues[i]);
             }
         }
 
-        for(let i=0; i < request.columnValues.length; i++){
-
-            if(request.columnValues[i].column !== "id"){
-
-                sql+=request.columnValues[i].column+"="+this.getFormattedValue(request.columnValues[i]);
-
-                if(i < request.columnValues.length - ignore - 1){
-                    sql+=", ";
-                }
+        for(let i=0; i < columnValues.length; i++){
+            sql+=columnValues[i].column+"="+this.getFormattedValue(columnValues[i]);
+            if(i < columnValues.length - 1){
+                sql+=", ";
             }
-
         }
+        sql+=";";
         sql+=";";
 
         return sql;

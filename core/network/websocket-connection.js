@@ -355,6 +355,7 @@ class WebSocketConnection {
             type: "userUpdateResult",
             result: this.profile,
         };
+
         this.sendMessage(request);
 
 

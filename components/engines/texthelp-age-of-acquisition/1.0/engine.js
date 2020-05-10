@@ -35,6 +35,7 @@ class TextHelpAgeOfAcquisition extends base.EngineBase {
                     "description": "average age of Aquisition",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "averageAgeOfAcquisition",
             },
 

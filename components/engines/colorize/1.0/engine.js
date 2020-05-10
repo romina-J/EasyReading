@@ -106,7 +106,22 @@ class Colorize extends base.EngineBase{
                 }],
                 javaScripts:['/js/colorize.js'],
                 styleSheets : [],
+                toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "colorize",
+            }
+
+        ];
+    }
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "colorize",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"intro_text","Instruction:"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_1","Click on colorize"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_2","Color of background and text changes."),
+                ]
             }
 
         ];

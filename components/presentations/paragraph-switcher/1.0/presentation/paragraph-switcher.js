@@ -28,10 +28,22 @@ class ParagraphSwitcher extends Presentation {
                 }
 
 
-                $('<span class="' + resultClass + ' ' + requestID + ' er-ps-replace-text" ' + presentationIdentifier + '>' + result.result.paragraph + '</span>').insertAfter($("." + requestID + ".er-ps-original-text").last());
-                let button = $('<button class="' + resultClass + ' ' + requestID + '" ' + presentationIdentifier + ' style="width: 2em;height: 2em;padding: 0;border: 0;"><img src="' + this.configuration.remoteAssetDirectory + '/help-logo.png" style="width: 2em;height: 2em;"></button>');
+                if($(request.input.textNodes[request.input.textNodes.length-1]).parents('a').length){
+
+                    console.log($(request.input.textNodes[request.input.textNodes.length-1]).parents('a'));
+                    $('<span class="' + resultClass + ' ' + requestID + ' er-ps-replace-text" ' + presentationIdentifier + '>' + result.result.paragraph + '</span>').insertAfter($(request.input.textNodes[request.input.textNodes.length-1]).parents('a').last());
+                }else{
+
+                    $('<span class="' + resultClass + ' ' + requestID + ' er-ps-replace-text" ' + presentationIdentifier + '>' + result.result.paragraph + '</span>').insertAfter($("." + requestID + ".er-ps-original-text").last());
+                }
+
+                let button = $('<button class="' + resultClass + ' ' + requestID + ' paragraph-switcher" ' + presentationIdentifier + '><img src="' + this.configuration.remoteAssetDirectory + '/help-logo.png" style="width: 2em;height: 2em;"></button>');
                 button.insertAfter($("." + requestID + ".er-ps-replace-text"));
                 button.click(function () {
+
+
+                    button.toggleClass("paragraph-switcher-inactive");
+
                     $("." + requestID + ".er-ps-original-text").toggle();
                     $("." + requestID + ".er-ps-replace-text").toggle();
                 });

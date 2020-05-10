@@ -39,6 +39,7 @@ class WordDefinition extends base.EngineBase {
                     "description": "Definition of the word",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "findDefinitionForWord",
             }
 

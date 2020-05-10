@@ -1,6 +1,8 @@
 class OverlayUserInterface extends UserInterfaceBase {
     constructor(configuration,tabConfiguration) {
         super(configuration,tabConfiguration);
+        this.configuration.startPositionXInPercent = 20;
+        this.configuration.startPositionYInPercent = 20;
         this.currentToolId = 1;
         this.toolsContainers = [];
     }

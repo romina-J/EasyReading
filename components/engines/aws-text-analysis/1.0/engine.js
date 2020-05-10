@@ -52,6 +52,7 @@ class AWSTextAnalysis extends base.EngineBase {
                     "description": "Processed paragraph",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "getPosTags",
             }
 

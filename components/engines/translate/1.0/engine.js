@@ -68,6 +68,17 @@ class Translate extends base.EngineBase {
         }]
     }
 
+    createIconsForSchemaProperties(){
+        this.createIconForSchemaPropertyValue("language","profile","assets/profile_language.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","en","assets/en_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","fr","assets/fr_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","de","assets/de_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","es","assets/es_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","sv","assets/sv_icon.png","radio_button_icon");
+
+    }
+
+
     getFunctions() {
         return [
             {
@@ -98,6 +109,7 @@ class Translate extends base.EngineBase {
                         "description": "Translated paragraph",
                     }
                 ],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "translateText",
             },
             {
@@ -124,6 +136,7 @@ class Translate extends base.EngineBase {
                         "description": "Translated word",
                     }
                 ],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "translateWord",
             }
         ];

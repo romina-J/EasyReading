@@ -35,6 +35,7 @@ class FontMagnificationTool extends base.EngineBase{
                 }],
                 javaScripts:['/js/font-magnification-tool.js'],
                 styleSheets : [],
+                toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "magnifyFont",
                 bundle: this.bundles[0],
             },
@@ -60,9 +61,33 @@ class FontMagnificationTool extends base.EngineBase{
                 }],
                 javaScripts:['/js/font-magnification-tool.js'],
                 styleSheets : [],
+                toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "shrinkFont",
                 bundle: this.bundles[0],
             },
+
+        ];
+    }
+
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "magnifyFont",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"magnify_intro_text","Instruction"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"magnify_instruction_1","Click on A+ and the font will get bigger."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"magnify_instruction_2","Click again and it will get even bigger."),
+                ]
+            },
+            {
+                functionID: "shrinkFont",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"shrink_intro_text","Instruction"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"shrink_instruction_1","Click on A- and the font will get smaller."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"shrink_instruction_2","Click again and it will get even smaller."),
+                ]
+            }
 
         ];
     }

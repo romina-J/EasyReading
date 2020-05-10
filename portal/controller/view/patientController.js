@@ -15,107 +15,117 @@ const getToolConfigFor = async (engineFunction, toolTable, id) => {
 
     const engineConfig = [];
     for (const tool_conf of toolConfigIdForUser.result) {
-      if (tool_conf.engine_id === engineFunction.engineId
-         && tool_conf.engine_version === engineFunction.engineVersion
-         && tool_conf.function_id === engineFunction.id) {
-            
-         let getEngineConfigForUser = databaseManager.createRequest(toolTable).where('id', '=', tool_conf.engine_conf_id).select();
+        if (tool_conf.engine_id === engineFunction.engineId
+            && tool_conf.engine_version === engineFunction.engineVersion
+            && tool_conf.function_id === engineFunction.id) {
 
-         let eEngineConfigForUser = await databaseManager.executeRequest(getEngineConfigForUser,true);
-         engineConfig.push(eEngineConfigForUser);
-      }
-    }
- 
-    return engineConfig;
- };
+            let getEngineConfigForUser = databaseManager.createRequest(toolTable).where('id', '=', tool_conf.engine_conf_id).select();
 
- const getTranslationForProperties = (req, engine, engineFunctionType, dataSchemaProerty) => {
-   let propertyTranslation = {};
-   if (dataSchemaProerty.length > 0) {
-      dataSchemaProerty.forEach(property => {
-         const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.property.${property}.label`);
-         propertyTranslation[property] = translatedLabel;
-      });
-   }
-   return propertyTranslation;
- };
-
- const getTranslationForDataOptions = (req, engine, engineFunctionType, configurationDataOptions) => {
-
-   let propertyTranslation = {};
-   configurationDataOptions.forEach(configurationDataOption => {
-      if (configurationDataOption.type.toLowerCase() === "colorcombination") {
-         const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.${configurationDataOption.type}.label`);
-         propertyTranslation[configurationDataOption.type] = translatedLabel;
-      } else {
-        let propertyTranslationOptionList = {};
-        if (configurationDataOption.configurableDataOption!=null) {
-
-            configurationDataOption.configurableDataOption.forEach(option=> {
-                const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.${configurationDataOption.type}.optionList.${option.label}`);
-                propertyTranslationOptionList[option.label] = translatedLabel;
-            });
+            let eEngineConfigForUser = await databaseManager.executeRequest(getEngineConfigForUser, true);
+            engineConfig.push(eEngineConfigForUser);
         }
+    }
 
-         const result = getTranslationForProperties(req, engine, engineFunctionType, configurationDataOption.dataSchemaProerty);
-         propertyTranslation = Object.assign({}, propertyTranslation, result);
+    return engineConfig;
+};
 
-         propertyTranslation[configurationDataOption.dataSchemaProerty[0]+"Options"] = propertyTranslationOptionList;
-      }
-   });
+const getTranslationForProperties = (req, engine, engineFunctionType, dataSchemaProerty) => {
+    let propertyTranslation = {};
+    if (dataSchemaProerty.length > 0) {
+        dataSchemaProerty.forEach(property => {
+            const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.property.${property}.label`);
+            propertyTranslation[property] = translatedLabel;
+        });
+    }
+    return propertyTranslation;
+};
 
-   return propertyTranslation;
- };
+const getTranslationForDataOptions = (req, engine, engineFunctionType, configurationDataOptions) => {
+
+    let propertyTranslation = {};
+    configurationDataOptions.forEach(configurationDataOption => {
+        if (configurationDataOption.type.toLowerCase() === "colorcombination") {
+            const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.${configurationDataOption.type}.label`);
+            propertyTranslation[configurationDataOption.type] = translatedLabel;
+        } else {
+            let propertyTranslationOptionList = {};
+            if (configurationDataOption.configurableDataOption != null) {
+
+                configurationDataOption.configurableDataOption.forEach(option => {
+                    const translatedLabel = req.__(`${engine.id}.${engine.version}.${engineFunctionType.id}.data-option.${configurationDataOption.type}.optionList.${option.label}`);
+                    propertyTranslationOptionList[option.label] = translatedLabel;
+                });
+            }
+
+            const result = getTranslationForProperties(req, engine, engineFunctionType, configurationDataOption.dataSchemaProerty);
+            propertyTranslation = Object.assign({}, propertyTranslation, result);
+
+            propertyTranslation[configurationDataOption.dataSchemaProerty[0] + "Options"] = propertyTranslationOptionList;
+        }
+    });
+
+    return propertyTranslation;
+};
 
 module.exports = {
-    getEngineConfigByuserId : async (req, res, next) => {
+    getEngineConfigByuserId: async (req, res, next) => {
         let localeService = require("../../../core/i18n/locale-service");
-        const id =  parseInt(req.query.id);
-     
+        const id = parseInt(req.query.id);
+
         if (!id) {
             return res.redirect('/profiles');
         }
-     
+
         const engines = [...rootRequire("core/core").engines];
 
         const toolConfigIdForUser = await engineRepo.getEngineConfigByUserId(id);
         const profile = await profileRepo.getProfileId(id);
         const results = [];
 
+        let toolCategories = require("../../../core/components/engines/base/engine-function").ToolCategories;
+        let categorizedEngines = {...toolCategories};
+
+        for (let category in categorizedEngines) {
+            if (categorizedEngines.hasOwnProperty(category)) {
+                categorizedEngines[category] = [];
+            }
+        }
+
+
         const completeProfile = core.network.getProfileWithID(id);
 
-        let i=0;
+        let i = 0;
         for (const engineType of engines) {
-           for (const version of engineType.versions) {
-              for (const engineFunctionType of version.engine.getFunctions()) {
+            for (const version of engineType.versions) {
+                for (const engineFunctionType of version.engine.getFunctions()) {
 
-                  if(!engineFunctionType.visibleInConfiguration){
-                      continue;
-                  }
-
-
-                  if(engineFunctionType.supportedLanguages.length > 0){
-                      if(typeof profile.locale !== "undefined"){
-                          if(!engineFunctionType.supportedLanguages.includes(profile.locale)){
-                              continue;
-                          }
-                      }
-                  }
+                    if (!engineFunctionType.visibleInConfiguration) {
+                        continue;
+                    }
 
 
-                  let configurationDataOptions = [];
-                  let configurationDataOptionTranslations = {};
+                    if (engineFunctionType.supportedLanguages.length > 0) {
+                        if (typeof profile.locale !== "undefined") {
+                            if (!engineFunctionType.supportedLanguages.includes(profile.locale)) {
+                                continue;
+                            }
+                        }
+                    }
 
-                  if (typeof version.engine.getConfigurationDataOptions === 'function') {
-                     configurationDataOptions = version.engine.getConfigurationDataOptions();
-                     configurationDataOptionTranslations  = getTranslationForDataOptions(req, version.engine, engineFunctionType, configurationDataOptions);
-                  }
 
-                  if (Object.keys(configurationDataOptionTranslations).length === 0) {
-                     if (version.engine.getDataSchema().properties) {
-                        configurationDataOptionTranslations  = getTranslationForProperties(req, version.engine, engineFunctionType, Object.keys(version.engine.getDataSchema().properties));
-                     }
-                  }
+                    let configurationDataOptions = [];
+                    let configurationDataOptionTranslations = {};
+
+                    if (typeof version.engine.getConfigurationDataOptions === 'function') {
+                        configurationDataOptions = version.engine.getConfigurationDataOptions();
+                        configurationDataOptionTranslations = getTranslationForDataOptions(req, version.engine, engineFunctionType, configurationDataOptions);
+                    }
+
+                    if (Object.keys(configurationDataOptionTranslations).length === 0) {
+                        if (version.engine.getDataSchema().properties) {
+                            configurationDataOptionTranslations = getTranslationForProperties(req, version.engine, engineFunctionType, Object.keys(version.engine.getDataSchema().properties));
+                        }
+                    }
 
                     var activeWidgetList = [];
                     var activePresentationList = [];
@@ -125,15 +135,17 @@ module.exports = {
 
                         for (let vIndex = 0; vIndex < widget.versions.length; vIndex++) {
                             const version = widget.versions[vIndex].version;
-                         
+
                             for (let iIndex = 0; iIndex < version.inputTypes.length; iIndex++) {
                                 const inputType = version.inputTypes[iIndex];
 
-                                if(engineFunctionType.inputTypes[0].inputType == inputType.inputType) {
+                                if (engineFunctionType.inputTypes[0].inputType == inputType.inputType) {
+
+
                                     var widgetBase = new WidgetBase();
 
                                     widgetBase.inputTypes = version.inputTypes;
-                                    widgetBase.name = version.name;
+                                    widgetBase.name = req.__(version.name);
                                     widgetBase.description = version.description;
                                     widgetBase.id = version.id;
                                     widgetBase.componentCategory = version.componentCategory;
@@ -147,8 +159,11 @@ module.exports = {
                                     widgetBase.getDefaultConfiguration = version.getDefaultConfiguration;
                                     widgetBase.getConfigurationSchema = version.getConfigurationSchema;
 
-                                    widgetBase.selected = iIndex === 0;
-                                    widgetBase.dataSchema = localeService.translateSchema(version.getConfigurationSchema(),req);
+                                    widgetBase.textualDescription = localeService.translateTextualDescription( version.textualDescription,req);
+                                    widgetBase.iconsForSchemaProperties= version.iconsForSchemaProperties;
+
+                                        widgetBase.selected = iIndex === 0;
+                                    widgetBase.dataSchema = localeService.translateSchema(version.getConfigurationSchema(), req);
 
                                     activeWidgetList.push(widgetBase);
                                 }
@@ -156,16 +171,40 @@ module.exports = {
                         }
                     }
 
+                    /*HACK */
+                    //TODO create stat input type to prevent this
+                    if(engineFunctionType.inputTypes[0].inputType === "VoidIOType"){
+                        if(engineFunctionType.states){
+                            for(let i=0; i < activeWidgetList.length; i++){
+
+                                if(activeWidgetList[i].id !== "two-state-button"){
+                                    activeWidgetList.splice(i, 1);
+                                }
+                            }
+                        }else{
+                            for(let i=0; i < activeWidgetList.length; i++){
+
+                                if(activeWidgetList[i].id === "two-state-button"){
+                                    activeWidgetList.splice(i, 1);
+                                }
+                            }
+                        }
+                    }
+
+
+
+                    /* END HACK */
+
                     for (let pIndex = 0; pIndex < presentations.length; pIndex++) {
                         var presentation = presentations[pIndex];
 
                         for (let vIndex = 0; vIndex < presentation.versions.length; vIndex++) {
                             const version = presentation.versions[vIndex].version;
-                         
+
                             for (let oIndex = 0; oIndex < version.outputTypes.length; oIndex++) {
                                 const outputType = version.outputTypes[oIndex];
 
-                                if(engineFunctionType.outputTypes[0].outputType == outputType.outputType) {
+                                if (engineFunctionType.outputTypes[0].outputType == outputType.outputType) {
                                     let presentationBase = new PresentationBase();
 
                                     presentationBase.outputTypes = version.outputTypes;
@@ -183,30 +222,38 @@ module.exports = {
                                     presentationBase.getDefaultConfiguration = version.getDefaultConfiguration;
                                     presentationBase.getConfigurationSchema = version.getConfigurationSchema;
 
+                                    presentationBase.textualDescription = localeService.translateTextualDescription( version.textualDescription,req);
+                                    presentationBase.iconsForSchemaProperties= version.iconsForSchemaProperties;
+
                                     presentationBase.selected = oIndex === 0;
-                                    presentationBase.dataSchema = localeService.translateSchema(version.getConfigurationSchema(),req);
+                                    presentationBase.dataSchema = localeService.translateSchema(version.getConfigurationSchema(), req);
 
                                     activePresentationList.push(presentationBase);
                                 }
                             }
                         }
-                    }                    
+                    }
+
 
                     const engineFunction = {
                         id: engineFunctionType.id,
-                        uniqueId: version.engine.id+"_"+engineFunctionType.id,
+                        uniqueId: version.engine.id + "_" + engineFunctionType.id,
                         name: engineFunctionType.name,
                         title: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.title`),
                         description: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.description`),
+                        descriptionId: `${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.description`,
                         sourceTitle: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.source-title`),
                         sourceUrl: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.source-url`),
                         howToUse: req.__(`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.howToUse`),
+                        howToUseId:`${version.engine.id}.${version.engine.version}.${engineFunctionType.id}.howToUse`,
+                        textualDescription: localeService.translateTextualDescription( version.engine.getTextualDescriptionForFunctionID(engineFunctionType.id),req),
+                        iconsForSchemaProperties: version.engine.iconsForSchemaProperties,
                         defaultIcon: `/components/engines/${version.engine.id}/${version.engine.version}/${engineFunctionType.defaultIcon}`,
                         engineId: version.engine.id,
                         engineVersion: version.engine.version,
                         sortOrder: engineFunctionType.sortOrder,
                         enable: false,
-                        dataSchema: localeService.translateSchema(version.engine.getDataSchema(),req),
+                        dataSchema: localeService.translateSchema(version.engine.getDataSchema(), req),
                         configurationDataOptions: configurationDataOptions,
                         configurationDataOptionTranslations: configurationDataOptionTranslations,
                         bundle: engineFunctionType.bundle,
@@ -216,19 +263,20 @@ module.exports = {
                         viewInputTypeSelector: activeWidgetList.length > 1,
                         viewOutputTypeSelector: activePresentationList.length > 1,
                         widget: {},
-                        presentation: new Object()
+                        presentation: new Object(),
+                        toolCategory: engineFunctionType.toolCategory,
                     };
 
-                   let defaultWidget =  core.getDefaultWidgetForFunction(engineFunctionType,completeProfile.supportCategories);
-                   if(defaultWidget){
-                       engineFunction.widget.source = activeWidgetList.filter(func => func.id === defaultWidget.source.id)[0];
-                   }
+                    let defaultWidget = core.getDefaultWidgetForFunction(engineFunctionType, completeProfile.supportCategories);
+                    if (defaultWidget) {
+                        engineFunction.widget.source = activeWidgetList.filter(func => func.id === defaultWidget.source.id)[0];
+                    }
 
-                   let defaultPresentation = core.getDefaultDisplayForFunction(engineFunctionType,completeProfile.supportCategories);
-                   if(defaultPresentation){
+                    let defaultPresentation = core.getDefaultDisplayForFunction(engineFunctionType, completeProfile.supportCategories);
+                    if (defaultPresentation) {
 
-                       engineFunction.presentation.source = activePresentationList.filter(func => func.id === defaultPresentation.source.id)[0];
-                   }
+                        engineFunction.presentation.source = activePresentationList.filter(func => func.id === defaultPresentation.source.id)[0];
+                    }
 
                     // check if this engine function is congifured for this user
                     for (const engineFunctionConfig of toolConfigIdForUser.result) {
@@ -240,21 +288,21 @@ module.exports = {
                             engineFunction.widget.source = activeWidgetList.filter(func => func.id === engineFunctionConfig.widget_id)[0];
                             engineFunction.presentation.source = activePresentationList.filter(func => func.id === engineFunctionConfig.presentation_id)[0];
 
-                            if (engineFunctionConfig.widget_conf_id!=null) {
+                            if (engineFunctionConfig.widget_conf_id != null) {
                                 let widgetConfigurationRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForComponent(engineFunction.widget.source)).where("id", "=", engineFunctionConfig.widget_conf_id);
                                 let widgetConfigurationRequestResult = await databaseManager.executeRequest(widgetConfigurationRequest);
-        
+
                                 let widgetConfiguration = await databaseManager.getObjectFromResult(widgetConfigurationRequestResult.result[0], databaseManager.getConfigTableNameForComponent(engineFunction.widget.source));
-                                engineFunction.widget = engineFunction.widget.source.getConfiguration(widgetConfiguration,true);
+                                engineFunction.widget = engineFunction.widget.source.getConfiguration(widgetConfiguration, true);
                             }
 
-                            if (engineFunctionConfig.presentation_conf_id!=null) {
+                            if (engineFunctionConfig.presentation_conf_id != null) {
                                 let presentationConfigurationRequest = databaseManager.createRequest(databaseManager.getConfigTableNameForComponent(engineFunction.presentation.source)).where("id", "=", engineFunctionConfig.presentation_conf_id);
                                 let presentationConfigurationRequestResult = await databaseManager.executeRequest(presentationConfigurationRequest);
-        
+
                                 let presentationConfiguration = await databaseManager.getObjectFromResult(presentationConfigurationRequestResult.result[0], databaseManager.getConfigTableNameForComponent(engineFunction.presentation.source));
-                                engineFunction.presentation = engineFunction.presentation.source.getConfiguration(presentationConfiguration,true);
-                            }                            
+                                engineFunction.presentation = engineFunction.presentation.source.getConfiguration(presentationConfiguration, true);
+                            }
 
                             break;
                         }
@@ -267,13 +315,14 @@ module.exports = {
                         // check if config.result[0] is not 0
                         engineConfiguratoins.forEach(config => {
                             if (config.result.length > 0)
-                            engineFunction.config.push({ ...config.result[0] });
+                                engineFunction.config.push({...config.result[0]});
                         });
                     }
-         
+
+                    categorizedEngines[engineFunctionType.toolCategory].push(engineFunction);
                     results.push(engineFunction);
-              }
-           }
+                }
+            }
         }
 
 
@@ -284,22 +333,22 @@ module.exports = {
         let userInterfaceData = [];
 
 
-        for(let i=0; i < userInterfaces.length; i++){
+        for (let i = 0; i < userInterfaces.length; i++) {
 
-            let latestVersion = userInterfaces[i].versions[userInterfaces[i].versions.length-1].version;
+            let latestVersion = userInterfaces[i].versions[userInterfaces[i].versions.length - 1].version;
             let defaultConfiguration = latestVersion.getDefaultConfiguration();
             const userInterface = {
                 id: latestVersion.id,
-                componentID:latestVersion.componentID,
+                componentID: latestVersion.componentID,
                 name: latestVersion.name,
-                dataSchema: localeService.translateSchema(latestVersion.getConfigurationSchema(),req),
+                dataSchema: localeService.translateSchema(latestVersion.getConfigurationSchema(), req),
                 configuration: defaultConfiguration.configuration,
                 active: false,
             };
 
-            for(let k=0; k < activeUserInterfaceConfigurations.length; k++){
+            for (let k = 0; k < activeUserInterfaceConfigurations.length; k++) {
 
-                if(activeUserInterfaceConfigurations[k].uiId === latestVersion.id){
+                if (activeUserInterfaceConfigurations[k].uiId === latestVersion.id) {
                     userInterface.configuration = activeUserInterfaceConfigurations[k].configuration;
                     userInterface.active = true;
                 }
@@ -308,11 +357,42 @@ module.exports = {
             userInterfaceData.push(userInterface);
         }
 
+
+        let sortedEngines = [];
+
+        for (let category in categorizedEngines) {
+            if (categorizedEngines.hasOwnProperty(category)) {
+                let engineFunctionOfCategory =   categorizedEngines[category];
+
+                for(let i=0; i < engineFunctionOfCategory.length; i++){
+
+
+                    engineFunctionOfCategory[i].category = category;
+                    engineFunctionOfCategory[i].categoryName = req.__(category);
+                    if(i === 0){
+                        engineFunctionOfCategory[i].firstCategoryElement = true;
+
+                    }else{
+                        engineFunctionOfCategory[i].firstCategoryElement = false;
+                    }
+                    if(i=== engineFunctionOfCategory.length-1){
+                        engineFunctionOfCategory[i].lastCategoryElement = true;
+                    }else{
+                        engineFunctionOfCategory[i].lastCategoryElement = false;
+                    }
+
+                    sortedEngines.push(engineFunctionOfCategory[i]);
+
+                }
+            }
+        }
+
+
         res.locals.context = {
-           engineFunctions: results,
-           userInterfaces: userInterfaceData,
-           backURL: req.session.returnTo || '/',
-           ...res.locals.context
+            engineFunctions: sortedEngines,
+            userInterfaces: userInterfaceData,
+            backURL: req.session.returnTo || '/',
+            ...res.locals.context
         };
 
         return next();
@@ -329,7 +409,7 @@ async function getUserInterfaceConfig(profileID) {
 
     if (loadActiveUserInterfaceRequestResult.result.length > 0) {
 
-        for(let k=0; k < loadActiveUserInterfaceRequestResult.result.length; k++){
+        for (let k = 0; k < loadActiveUserInterfaceRequestResult.result.length; k++) {
 
             let loadUserInterfacesRequest = databaseManager.createRequest("ui_conf").where("ui_collection", "=", loadActiveUserInterfaceRequestResult.result[k].id);
             let loadUserInterfacesRequestResult = await databaseManager.executeRequest(loadUserInterfacesRequest);
@@ -351,7 +431,7 @@ async function getUserInterfaceConfig(profileID) {
                     let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).where("id", "=", uiInfo.ui_conf_id);
                     let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
 
-                    uiConfiguration.configuration = await databaseManager.getObjectFromResult(userInterfaceConfigurationRequestResult.result[0], tableName,true);
+                    uiConfiguration.configuration = await databaseManager.getObjectFromResult(userInterfaceConfigurationRequestResult.result[0], tableName, true);
                 }
 
                 activeUIConfigurations.push(uiConfiguration);

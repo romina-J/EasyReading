@@ -38,12 +38,29 @@ class Readability extends base.EngineBase{
                 }],
                 javaScripts:['/js/Readability.js','/js/Readability-readerable.js','/js/readabilityController.js'],
                 styleSheets : ['/css/style.css'],
+                toolCategory: base.EngineFunction.ToolCategories.Reading,
                 entryPoint: "readability",
             }
 
         ];
     }
 
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "readability",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"intro_text","Instruction:"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_1","Turn on Reading Mode"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_2","Only the main content of the page will be displayed"),
+                ]
+            }
+
+        ];
+    }
+
+    /*
     getDataSchema() {
         return {
             "type": "object",
@@ -81,6 +98,7 @@ class Readability extends base.EngineBase{
             ]
         };
     }
+    */
 }
 
 module.exports.class = Readability;

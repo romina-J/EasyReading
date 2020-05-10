@@ -10,6 +10,8 @@ for usage, your page must contain the following DOM elements:
 options 
 tabPositioning: top, bottom, left, right (default)
 panelVisible: true, false (default)
+panelPos: {top: x, left: y} (default: x=200, y=200)
+handlePos: {top: x, left: y} (default: x=0, y=0)
 
 methods
 updatePanel: needs to be called every time the contents of the panel have changed
@@ -174,6 +176,9 @@ $.widget("ui.erTabSlideOut", {
             erTSO._adaptToWindowSize();
             erTSO.refresh();
             erTSO._setTransitions();
+
+            // make tooltips work on touch-hold
+            let tt = new erMobileToolTips(erTSO.panel);            
         });
 
         // change panel visibility on handle-click

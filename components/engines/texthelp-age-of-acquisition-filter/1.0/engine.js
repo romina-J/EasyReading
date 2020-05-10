@@ -35,6 +35,7 @@ class TextHelpAgeOfAcquisitionFilter extends base.EngineBase {
                     "description": "Filters elements which are too low",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "filterWordsOfAnnotatedParagraph",
             },
 

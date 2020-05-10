@@ -38,11 +38,12 @@ class AWSPollyTextToSpeech extends base.EngineBase {
             type: "singleSelectList",
             dataSchemaProerty: ["language"],
             configurableDataOption: [
+                {"label": "Language of the actual website", "value": "language_of_website"},
                 {"label": "English", "value": "en"},
                 {"label": "French", "value": "fr"},
                 {"label": "German", "value": "de"},
                 {"label": "Spanish", "value": "es"},
-                {"label": "Swedish", "value": "se"}
+                {"label": "Swedish", "value": "sv"}
             ]
         },
             {
@@ -51,13 +52,6 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                 configurableDataOption: [
                     {"label": "Male", "value": "male"},
                     {"label": "Female", "value": "female"},
-                ]
-            }, {
-                type: "singleSelectList",
-                dataSchemaProerty: ["languagePriority"],
-                configurableDataOption: [
-                    {"label": "Yes", "value": true},
-                    {"label": "No", "value": false},
                 ]
             }
 
@@ -73,8 +67,9 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                     "type": "string",
                     "title": "Language",
                     "description": "Your preferred language",
-                    "default": "en",
+                    "default": "language_of_website",
                     "enum": [
+                        "language_of_website",
                         "en",
                         "de",
                         "es",
@@ -93,13 +88,6 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                     ],
                 },
 
-                "languagePriority": {
-                    "type": "boolean",
-                    "title": "Language priority",
-                    "description": "Use your speech even on sites that have a different language",
-                    "default": false,
-                }
-
             },
             "required": [
                 "language",
@@ -108,6 +96,16 @@ class AWSPollyTextToSpeech extends base.EngineBase {
 
             ]
         };
+    }
+
+    createIconsForSchemaProperties(){
+        this.createIconForSchemaPropertyValue("language","language_of_website","assets/language_of_website_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","en","assets/en_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","de","assets/de_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","es","assets/es_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","fr","assets/fr_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","sv","assets/sv_icon.png","radio_button_icon");
+
     }
 
     getFunctions() {
@@ -144,10 +142,30 @@ class AWSPollyTextToSpeech extends base.EngineBase {
                     "description": "Image word",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Reading,
                 entryPoint: "convertTextToSpeech",
             }
         ];
     }
+
+    /*
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "tts",
+                description:[
+                    this.descriptionManager.createTextEntry(this,"intro_text","You can have the text read aloud."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_1","Click on Text to Speech."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_2","Click at the beginning of the text that you want to read aloud. Voice output starts."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_3","You can have the text read aloud."),
+                    this.descriptionManager.createEntryForImage(this,"instruction_image","assets/test.png","some alt text","description_image"),
+                ]
+            }
+
+        ];
+    }
+    */
 
     convertTextToSpeech(callback, input, config, profile, constants) {
 
@@ -268,7 +286,7 @@ class AWSPollyTextToSpeech extends base.EngineBase {
 
         let languageToUse = websiteLanguage;
 
-        if (config.languagePriority === "true") {
+        if (config.language !== "language_of_website") {
             languageToUse = config.language;
         }
 

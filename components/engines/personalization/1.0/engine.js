@@ -49,7 +49,7 @@ class Personalization extends base.EngineBase {
                 defaultIcon : "assets/personalize.png",
                 includeInDefaultProfile: false,
                 supportedLanguages: [],
-                visibleInConfiguration: true,
+                visibleInConfiguration: false,
                 type: base.EngineFunction.FuntionType.LOCAL,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
                 supportCategories: [
@@ -72,6 +72,7 @@ class Personalization extends base.EngineBase {
                     '/js/tools/templatesForFramework/TooltipBlissTemplate.js',
                     '/js/ps1_e.js'],
                 styleSheets: [],
+                toolCategory: base.EngineFunction.ToolCategories.Experimental,
                 entryPoint: "personalizeCurrentPage"
             }
 

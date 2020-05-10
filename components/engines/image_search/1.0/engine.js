@@ -39,6 +39,7 @@ class ImageSearch extends base.EngineBase {
                     "description": "Image word",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "getImage",
             }
 

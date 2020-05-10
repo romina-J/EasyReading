@@ -1,6 +1,7 @@
 let core = {
 
     debugMode: false,
+    createSpeech: false,
     engines: [],
     engineFunctionDescriptions: [],
     allFunctions: [],
@@ -19,6 +20,8 @@ let core = {
 
 
         try {
+
+
             loadUtils(core);
             console.log("Load utils complete");
 
@@ -69,8 +72,23 @@ let core = {
             await createDatabaseTables(core);
             console.log("Database tables init complete");
 
+
+            if(core.createSpeech){
+                console.log("Creating TTS");
+                let speechUtils = require("./util/speech-utils");
+                await speechUtils.createSpeechForAllCatalogues();
+            }
+
+
+
             initServer(core);
             console.log("Init server complete");
+
+
+
+
+
+
 
 
         } catch (error) {
@@ -218,22 +236,14 @@ let core = {
         }
     }
     ,
-    createDefaultConfigurationForEngine(engineID, version, userInterface, supportConfiguration) {
+    createDefaultConfigurationForEngine(engineID, version, userInterface, supportCategories) {
         let engine = this.getEngine(engineID, version);
         //   let functions = engine.getFunctions();
         let functionConfiguration = [];
         for (let i = 0; i < engine.functions.length; i++) {
 
-            let currentConfiguration = {
-                function: {
-                    source: engine.functions[i].getFunctionInformation(),
-                    configuration: engine.getDefaultData(),
-                },
-                layout: userInterface.getDefaultToolLayoutConfiguration(),
-                widget: this.getDefaultWidgetForFunction(engine.functions[i], supportConfiguration),
-                presentation: this.getDefaultDisplayForFunction(engine.functions[i], supportConfiguration),
+            let currentConfiguration = this.createDefaultConfigurationFoFunctionWithID(engine.id, engine.version,engine.functions[i].id,userInterface,supportCategories);
 
-            };
             functionConfiguration.push(currentConfiguration);
 
 
@@ -371,7 +381,8 @@ let core = {
         } else if (func.outputTypes[0].outputType === ioType.IOTypes.Word.className ||
             func.outputTypes[0].outputType === ioType.IOTypes.Sentence.className) {
 
-            let toolTip = this.getPresentation("tooltip");
+            //let toolTip = this.getPresentation("tooltip");
+            let toolTip = this.getPresentation("tippy-tooltip");
             return toolTip.getDefaultConfiguration();
 
         } else if (func.outputTypes[0].outputType === ioType.IOTypes.AudioType.className) {

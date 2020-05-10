@@ -13,6 +13,10 @@ class EngineBase {
         this.debugMode = false;
         this.functions = [];
         this.supportCategories = [];
+        this.textualDescription = [];
+        this.iconsForSchemaProperties = [];
+        this.descriptionManager = require("../../util/description/descriptionManager");
+
     }
 
     getDataSchema(){
@@ -21,9 +25,35 @@ class EngineBase {
 
 
 
+
     getDefaultData(){
         let defaults = require('json-schema-defaults');
         return defaults(this.getDataSchema());
+    }
+
+    createIconForSchemaProperty(schemaProperty,iconPath,cssClass = null) {
+
+        this.iconsForSchemaProperties.push({
+            type:"propertyIcon",
+            property: schemaProperty,
+            url: this.copyFileToWeb(iconPath),
+            cssClass:cssClass,
+        })
+
+    }
+
+    createIconForSchemaPropertyValue(schemaProperty,value,iconPath,cssClass = null) {
+        this.iconsForSchemaProperties.push({
+            type:"propertyValueIcon",
+            property: schemaProperty,
+            value: value,
+            url: this.copyFileToWeb(iconPath),
+            cssClass:cssClass,
+        })
+    }
+
+    createIconsForSchemaProperties(){
+
     }
 
     getFunctions(){
@@ -70,7 +100,7 @@ class EngineBase {
 
                 }else{
 
-                    let remoteFunction = new engineFunction.RemoteFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].entryPoint, bundle);
+                    let remoteFunction = new engineFunction.RemoteFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].entryPoint, functions[i].toolCategory,bundle);
                     remoteFunction.validateProperties();
                     this.functions.push(remoteFunction);
                 }
@@ -82,7 +112,7 @@ class EngineBase {
                     console.log(ajv.errorsText());
                 }else{
 
-                    let localFunction = new engineFunction.LocalFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].javaScripts,functions[i].styleSheets,functions[i].entryPoint, bundle);
+                    let localFunction = new engineFunction.LocalFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].javaScripts,functions[i].styleSheets,functions[i].entryPoint,functions[i].toolCategory, bundle);
                     localFunction.validateProperties();
                     this.functions.push(localFunction);
                 }
@@ -132,6 +162,31 @@ class EngineBase {
         });
     }
 
+    createTextualDescription(){
+
+    }
+
+    getTextualDescriptionForFunctionID(functionID){
+        for(let i=0; i < this.textualDescription.length; i++){
+            if(this.textualDescription[i].functionID === functionID){
+                return this.textualDescription[i].description;
+            }
+        }
+    }
+
+    copyFileToWeb(pathToFile) {
+
+        try {
+            const fs = require('fs-extra');
+            fs.copySync(require("path").join(this.baseDir, pathToFile), baseDirPath("public/components/engines/" + this.id + '/' + this.version + '/' + pathToFile));
+
+            return "/components/engines/" + this.id + '/' + this.version + '/' + pathToFile;
+        } catch (err) {
+            console.error(err)
+        }
+
+
+    }
 
 }
 

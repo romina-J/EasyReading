@@ -28,11 +28,13 @@ class TippyTooltip extends PresentationBase{
                 "outputType": ioType.IOTypes.Sentence.className,
                 "name": "Output Sentence",
                 "description": "Sentence to embed in the tooltip.",
-            },{
+            }
+            /*,{
                 "outputType": ioType.IOTypes.Paragraph.className,
                 "name": "Output Paragraph",
                 "description": "Paragraph to embed in the tooltip.",
-            }];
+            }*/
+            ];
     }
 
 }
