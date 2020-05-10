@@ -60,6 +60,7 @@ class ContentClarifier extends base.EngineBase {
                     "description": "Contextual simplify",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Experimental,
                 entryPoint: "contextualSimplify",
             },
             {
@@ -84,6 +85,7 @@ class ContentClarifier extends base.EngineBase {
                     "description": "Contextual simplify",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Experimental,
                 entryPoint: "contextualSimplifyAAC",
             },
         ];

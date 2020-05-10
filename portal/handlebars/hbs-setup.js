@@ -1,4 +1,7 @@
 const hbs = require('hbs');
+let speechUtils = require("../../core/util/speech-utils");
+let descriptionManager = require("../../core/components/util/description/descriptionManager");
+const stringHash = require("string-hash");
 hbs.registerHelper("hasRole", function (user, role, options) {
     let userHasRole = false;
     if (user) {
@@ -18,6 +21,231 @@ hbs.registerHelper("hasRole", function (user, role, options) {
 
     return userHasRole ? options.fn(this) : options.inverse(this)
 });
+hbs.registerHelper('hasValue', function() {
+    let args = Array.prototype.slice.call(arguments);
+
+    for(let i=0; i < args.length-1; i++){
+        if(args[i] === ""){
+            return args[args.length-1].inverse(this);
+        }
+    }
+    return args[args.length-1].fn(this);
+});
+
+hbs.registerHelper('componentListNeedsToBeRendered', function(componentList,options) {
+
+    //If component list is empty. e.g function without presentation.
+    if(componentList.length === 0){
+        return options.inverse(this);
+    }
+
+    //Choose between components
+    if(componentList.length > 1){
+        return options.fn(this);
+    }
+    let component = componentList[0];
+
+    //Configuration of component present
+    if(component.dataSchema && component.dataSchema.properties !== undefined) {
+        return options.fn(this);
+    }
+
+    //Component has textual description
+    if(component.textualDescription.length > 0){
+        return options.fn(this);
+    }
+
+    return options.inverse(this);
+
+});
+
+hbs.registerHelper('configurationNeedsToBeRendered', function(componentList,options) {
+    //At least two components;
+    if(componentList.length > 1){
+        return options.fn(this);
+    }
+    //At least one component with configuration
+    let component = componentList[0];
+    if(component.dataSchema && component.dataSchema.properties !== undefined) {
+        return options.fn(this);
+    }
+    return options.inverse(this);
+});
+
+hbs.registerHelper('concat', function () {
+
+    let result = "";
+
+    for(let i in arguments) {
+        result += (typeof arguments[i] === "string" ||  typeof arguments[i] === "number") ? arguments[i] : "";
+    }
+
+    return result;
+
+});
+
+hbs.registerHelper('chain', function () {
+    let helpers = [];
+    let args = Array.prototype.slice.call(arguments);
+    let argsLength = args.length;
+    let index;
+    let arg;
+
+    for (index = 0, arg = args[index];
+         index < argsLength;
+         arg = args[++index]) {
+        if (Handlebars.helpers[arg]) {
+            helpers.push(Handlebars.helpers[arg]);
+        } else {
+            args = args.slice(index);
+            break;
+        }
+    }
+
+    while (helpers.length) {
+        args = [helpers.pop().apply(Handlebars.helpers, args)];
+    }
+
+    return args.shift();
+});
+
+hbs.registerHelper('renderTextualDescription',function (textualDescription,lang,index) {
+
+
+
+    return renderTextualDescription(textualDescription,lang,index);
+});
+
+function renderTextualDescription(textualDescription,lang,index){
+    let textualDescriptionHTML = "";
+    if(textualDescription){
+
+        let audioElements =[];
+        for(let i=0; i < textualDescription.length; i++) {
+            let src = speechUtils.getAudioSourceForString(textualDescription[i].id, lang);
+            let id = textualDescription[i].id+"_"+index;
+            if(src){
+                audioElements.push({
+                    src: src,
+                    elementId:id,
+                });
+            }
+        }
+        let audioButtonHTML = createAudioButton(audioElements);
+
+        let lastItemType = "";
+        for(let i=0; i < textualDescription.length; i++){
+            let id = textualDescription[i].id+"_"+index;
+            let nextItemType = "";
+            if(i+1 < textualDescription.length){
+                nextItemType = textualDescription[i+1].type;
+            }
+
+            switch (textualDescription[i].type) {
+                case descriptionManager.entryType.PARAGRAPH:
+                    textualDescriptionHTML+="<p id='"+id+"'>"+audioButtonHTML+textualDescription[i].translatedContent+"</p>";
+                    break;
+                case descriptionManager.entryType.IMAGE:
+                     if(textualDescription[i].cssClass){
+                         textualDescriptionHTML+= audioButtonHTML+'<img id="'+id+'"  src="'+textualDescription[i].url+'" alt="'+textualDescription[i].translatedContent+'" class="'+textualDescription[i].cssClass+'">';
+                    }else{
+                        textualDescriptionHTML+= audioButtonHTML+'<img id="'+id+'"  src="'+textualDescription[i].url+'" alt="'+textualDescription[i].translatedContent+'">';
+                    }
+
+                    break;
+                case descriptionManager.entryType.ORDER_LIST_ITEM:
+                    if(lastItemType !== descriptionManager.entryType.ORDER_LIST_ITEM){
+                        if(audioButtonHTML !== ""){
+                            textualDescriptionHTML+= audioButtonHTML;
+                        }
+                        textualDescriptionHTML+="<ol>";
+                    }
+                    textualDescriptionHTML+="<li id='"+id+"'>"+textualDescription[i].translatedContent+"</li>";
+
+                    if(nextItemType  !== descriptionManager.entryType.ORDER_LIST_ITEM){
+                        textualDescriptionHTML+="</ol>";
+                    }
+
+                    break;
+                case descriptionManager.entryType.LIST_ITEM:
+                    if(lastItemType !== descriptionManager.entryType.ORDER_LIST_ITEM){
+                        if(audioButtonHTML !== ""){
+                            textualDescriptionHTML+=audioButtonHTML;
+                        }
+                        textualDescriptionHTML+="<ul>";
+                    }
+                    textualDescriptionHTML+="<li id='"+id+"'>"+textualDescription[i].translatedContent+"</li>";
+
+                    if(nextItemType  !== descriptionManager.entryType.ORDER_LIST_ITEM){
+                        textualDescriptionHTML+="</ul>";
+                    }
+                    break;
+                case descriptionManager.entryType.SUB_HEADING:
+                    textualDescriptionHTML+="<h2 id='"+id+"'>"+audioButtonHTML+textualDescription[i].translatedContent+"</h2>";
+                    break;
+                case descriptionManager.entryType.TEXT:
+                    textualDescriptionHTML+="<span id='"+id+"'>"+audioButtonHTML+textualDescription[i].translatedContent+"</span>";
+                    break;
+                default:
+
+                    break;
+            }
+
+            lastItemType = textualDescription[i].type;
+
+            audioButtonHTML = "";
+
+
+        }
+
+
+    }
+
+    return textualDescriptionHTML;
+
+}
+
+hbs.registerHelper('createTTSButton', function (speechElements,lang) {
+    let args = Array.prototype.slice.call(arguments);
+
+    speechElements = speechElements.replace(" ", "").split(",");
+
+
+
+    let audioElements = [];
+
+
+    for (let i = 0; i < speechElements.length; i++) {
+
+        let element = speechElements[i].split(":");
+
+        let src = speechUtils.getAudioSourceForString(element[0], lang);
+        if(element.length>1){
+            audioElements.push({
+                src: src,
+                elementId: element[1]
+            });
+        }else{
+            audioElements.push({
+                src: src,
+                elementId: element[0]
+            });
+        }
+
+
+
+    }
+
+
+    return createAudioButton(audioElements);
+});
+
+function createAudioButton(audioElements){
+    audioElements = btoa(JSON.stringify(audioElements));
+    return ' <button type="button" class="er-audio-player" data-audio-elements="'+audioElements+'">' +
+        '<img src="/images/setup/text-to-speech.png" alt="play audio">' +
+        '</button>';
+}
 
 hbs.registerHelper('ifEquals', function (arg1, arg2, options) {
     if (typeof arg1 === 'undefined' && arg2 === null) {
@@ -38,6 +266,8 @@ hbs.registerHelper('ifNotEquals', function (arg1, arg2, options) {
     }
     return (arg1 !== arg2) ? options.fn(this) : options.inverse(this);
 });
+
+
 
 hbs.registerHelper('convertToString', function (data) {
     return JSON.stringify(data)
@@ -67,10 +297,10 @@ hbs.registerHelper('addEnableCheckBoxLabel', function (title, icon, index) {
     return new hbs.SafeString(form)
 });
 
-hbs.registerHelper('addInputField', function (tool, index) {
+hbs.registerHelper('addInputField', function (tool, index,lang) {
     let form = "";
     if (tool.dataSchema.properties) {
-        form += createInputFields(tool, index)
+        form += createInputFields(tool, index,lang)
     }
     return new hbs.SafeString(form)
 });
@@ -83,7 +313,38 @@ hbs.registerHelper('checklength', function (v1, v2, options) {
     return options.inverse(this);
 });
 
-hbs.registerHelper('createConfigFormForComponentList', function (componentList, functionId, type, activeComponent, title) {
+hbs.registerHelper('createTextualDescriptionForComponentList', function (componentList,functionId,type,activeComponent,lang,index) {
+
+    if(componentList.length === 1){
+
+        return new hbs.SafeString(renderTextualDescription(componentList[0].textualDescription,lang,index));
+    }else{
+        let html = '<div class="textual-description-container">';
+        for(let i=0; i < componentList.length; i++){
+
+
+            if(componentList[i] === activeComponent.source){
+                html+='<div class="textual-description" id="'+createComponentTextualDescriptionIdentifier(componentList[i],functionId,type)+'">';
+            }else{
+                html+='<div class="textual-description" id="'+createComponentTextualDescriptionIdentifier(componentList[i],functionId,type)+'" style="display: none">';
+            }
+
+            html+=renderTextualDescription(componentList[i].textualDescription,lang,index);
+            html+='</div>';
+        }
+
+        html+='</div>';
+
+        return new hbs.SafeString(html);
+    }
+
+});
+
+function createComponentTextualDescriptionIdentifier(component, functionId, type){
+    return type+"_"+functionId+"_"+component.id+"_description";
+}
+
+hbs.registerHelper('createConfigFormForComponentList', function (componentList, functionId, type, activeComponent, title,lang,index) {
 
     let html = "";
     //Return if empty component list. e.g engine with void output has 0 presentations
@@ -107,7 +368,7 @@ hbs.registerHelper('createConfigFormForComponentList', function (componentList, 
         if (componentList[0].dataSchema) {
 
             prepareComponent(componentList[0], functionId, activeComponent);
-            html += createConfigFormForComponent(componentList[0]);
+            html += createConfigFormForComponent(componentList[0],lang);
         }
         html += '</div>';
         return new hbs.SafeString(html);
@@ -122,15 +383,15 @@ hbs.registerHelper('createConfigFormForComponentList', function (componentList, 
             let inputIDRadio = inputID + '-' + i;
 
             if (componentList[i].id === activeComponent.source.id) {
-                html += '<input type="radio"  class="component-select" name="' + inputID + '" id="' + inputIDRadio + '" value="' + componentList[i].id + '" checked> <label for="' + inputIDRadio + '">' + componentList[i].name + '</label> ';
+                html += '<input type="radio" class="component-select" name="' + inputID + '" id="' + inputIDRadio + '" value="' + componentList[i].id + '"  data-textual-description="'+createComponentTextualDescriptionIdentifier(componentList[i],functionId,type)+'"  checked> <label for="' + inputIDRadio + '">' + componentList[i].name + '</label> ';
             } else {
-                html += '<input type="radio"  class="component-select" name="' + inputID + '" id="' + inputIDRadio + '" value="' + componentList[i].id + '"> <label for="' + inputIDRadio + '">' + componentList[i].name + '</label> ';
+                html += '<input type="radio"  class="component-select" name="' + inputID + '" id="' + inputIDRadio + '" value="' + componentList[i].id + '" data-textual-description="'+createComponentTextualDescriptionIdentifier(componentList[i],functionId,type)+'" > <label for="' + inputIDRadio + '">' + componentList[i].name + '</label> ';
             }
 
             if (componentList[i].dataSchema) {
 
                 prepareComponent(componentList[i], functionId, activeComponent);
-                html += createConfigFormForComponent(componentList[i]);
+                html += createConfigFormForComponent(componentList[i],lang);
             }
 
             html += '</div>'
@@ -151,11 +412,11 @@ function prepareComponent(component, functionId, activeComponent) {
     }
 }
 
-hbs.registerHelper('createConfigFormForComponent', function (component) {
-    return createConfigFormForComponent(component);
+hbs.registerHelper('createConfigFormForComponent', function (component,lang) {
+    return createConfigFormForComponent(component,lang);
 });
 
-function createConfigFormForComponent(component) {
+function createConfigFormForComponent(component,lang) {
     let componentID = component.componentID + "_" + component.id;
 
     let html = "";
@@ -178,30 +439,31 @@ function createConfigFormForComponent(component) {
                 schema: schema,
                 componentID: componentID,
                 currentValue: currentValue,
-                fieldId: key
+                fieldId: key,
+                iconsForSchemaProperties: component.iconsForSchemaProperties,
             };
 
-            html = html + createInputFieldForSchemaProperty(propertyInfo);
+            html = html + createInputFieldForSchemaProperty(propertyInfo,lang);
         });
     }
 
     return new hbs.SafeString(html);
 }
 
-function createInputFieldForSchemaProperty(propertyInfo) {
+function createInputFieldForSchemaProperty(propertyInfo,lang) {
 
     switch (propertyInfo.schema.type) {
 
         case "integer": {
-            return createInputFieldForIntegerSchema(propertyInfo);
+            return createInputFieldForIntegerSchema(propertyInfo,lang);
         }
         case "string" : {
-            return createInputFieldForStringProperty(propertyInfo);
+            return createInputFieldForStringProperty(propertyInfo,lang);
         }
     }
 }
 
-function createInputFieldForIntegerSchema(propertyInfo) {
+function createInputFieldForIntegerSchema(propertyInfo,lang) {
 
     let inputID = createInputID(propertyInfo.componentID, propertyInfo.propertyName);
     let currentValue = "";
@@ -210,6 +472,20 @@ function createInputFieldForIntegerSchema(propertyInfo) {
         currentValue = 'value="' + propertyInfo.currentValue + '"';
 
     }
+    let iconHTML ="";
+    let icon = getIconForProperty(propertyInfo.iconsForSchemaProperties,propertyInfo.propertyName);
+
+    if(icon){
+        iconHTML = createIconHTML(icon);
+    }
+
+    let labelID = inputID+"_label";
+    let audioElements = [];
+    audioElements.push({
+        src: speechUtils.getAudioSourceForString(propertyInfo.schema.originalTitle, lang),
+        elementId: labelID
+    });
+    let audioButtonHTML = createAudioButton(audioElements);
 
     let describedByAttribute = "";
     let describedByAttributeSpan = "";
@@ -222,15 +498,17 @@ function createInputFieldForIntegerSchema(propertyInfo) {
     }
 
     if (typeof propertyInfo.schema.maximum !== "undefined" && typeof propertyInfo.schema.minimum !== "undefined") {
-        html += '<label for="' + inputID + '">' + propertyInfo.schema.title + '</label><input type="range" name="' + inputID + '" id="' + inputID + '" ' + currentValue + ' min="' + propertyInfo.schema.minimum + '" max="100"' + describedByAttribute + '>';
+        html += '<label for="' + inputID + '">'+audioButtonHTML + propertyInfo.schema.title + '</label><input type="range" name="' + inputID + '" id="' + inputID + '" ' + currentValue + ' min="' + propertyInfo.schema.minimum + '" max="100"' + describedByAttribute + '>';
     } else {
-        html += '<label for="' + inputID + '">' + propertyInfo.schema.title + '</label><input type="number" name="' + inputID + '" id="' + inputID + '" ' + currentValue + describedByAttribute + '>';
+        html += '<label for="' + inputID + '">'+audioButtonHTML + propertyInfo.schema.title + '</label><input type="number" name="' + inputID + '" id="' + inputID + '" ' + currentValue + describedByAttribute + '>';
     }
+
+    html+=iconHTML;
 
     return html + describedByAttributeSpan + '</div>'
 }
 
-function createInputFieldForStringProperty(propertyInfo) {
+function createInputFieldForStringProperty(propertyInfo,lang) {
     let inputID = createInputID(propertyInfo.componentID, propertyInfo.propertyName);
 
     let describedByAttribute = "";
@@ -283,30 +561,54 @@ function createInputFieldForStringProperty(propertyInfo) {
             return html + "</select></label></div>" + describedByAttributeSpan;
             //Return radio if less then 4 options
         } else {
-            let html = '<fieldset id="' + propertyInfo.fieldId + '"><legend ' + describedByAttribute + '>' + propertyInfo.schema.title + '</legend>';
+            let audioElements = [];
+
+
+            let labelID = inputID+"_label";
+            audioElements.push({
+                src: speechUtils.getAudioSourceForString(propertyInfo.schema.originalTitle, lang),
+                elementId: labelID
+            });
+            let startHtml = '<fieldset id="' + propertyInfo.fieldId + '"><legend id="'+labelID+'" ' + describedByAttribute + '>';
+            let endHtml =  propertyInfo.schema.title + '</legend>';
 
             for (let i = 0; i < propertyInfo.schema.enum.length; i++) {
 
-                html += '<div class="inputField">'
+                endHtml += '<div class="inputField">';
 
                 let inputIDRadio = inputID + '-' + i;
 
+                let iconHTML ="";
+                let icon = getIconForPropertyValue(propertyInfo.iconsForSchemaProperties,propertyInfo.propertyName,propertyInfo.schema.enum[i]);
+
+                if(icon){
+                    iconHTML = createIconHTML(icon);
+                }
+
                 if (propertyInfo.currentValue === propertyInfo.schema.enum[i]) {
-                    html += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '" checked> <label for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + '</label> ';
+                    endHtml += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '" checked> <label id="'+inputIDRadio+'_label" for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + ' '+iconHTML+'</label> ';
                 } else {
-                    html += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '"> <label for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i] + '</label> ';
+                    endHtml += '<input type="radio" name="' + inputID + '" id="' + inputIDRadio + '" value="' + propertyInfo.schema.enum[i] + '"> <label id="'+inputIDRadio+'_label" for="' + inputIDRadio + '">' + propertyInfo.schema.translatedEnum[i]+ ' '+iconHTML+'</label> ';
                 }
 
                 if (propertyInfo.schema.enumSubComponent !== undefined) {
                     if (propertyInfo.schema.enumSubComponent[i] !== undefined) {
-                        html += createConfigFormForComponent(propertyInfo.schema.enumSubComponent[i])
+                        endHtml += createConfigFormForComponent(propertyInfo.schema.enumSubComponent[i])
                     }
                 }
 
-                html += '</div>'
+                endHtml += '</div>';
+
+                let src = speechUtils.getAudioSourceForString(propertyInfo.schema.enum[i], lang);
+                audioElements.push({
+                    src: src,
+                    elementId: inputIDRadio+"_label"
+                });
             }
 
-            return html + "</fieldset>" + describedByAttributeSpan;
+            let button = createAudioButton(audioElements);
+
+            return startHtml+button+endHtml + "</fieldset>" + describedByAttributeSpan;
         }
     } else {
         let html = '<div class="inputField">'
@@ -343,7 +645,7 @@ function createCheckBoxLabel(text, icon, index) {
     return `<label class="tool-card-title-select-name" id="${id}" for="${checkboxId}"><span class="bg-image" style="background-image: url('${icon}')"></span>${text}</label>`;
 }
 
-function createInputFields(tool, index) {
+function createInputFields(tool, index,lang) {
     let inputFields = ''
     const configurationDataOptions = tool.configurationDataOptions;
 
@@ -351,21 +653,21 @@ function createInputFields(tool, index) {
         configurationDataOptions.forEach(configurationDataOption => {
             switch (configurationDataOption.type.toLowerCase()) {
                 case 'colorcombination':
-                    inputFields += createInputOptionsForColorCombination(configurationDataOption, tool, index);
+                    inputFields += createInputOptionsForColorCombination(configurationDataOption, tool, index,lang);
                     break;
                 case 'colorpicker':
-                    inputFields += createInputFieldForProperty(configurationDataOption.dataSchemaProerty, tool, index, "color");
+                    inputFields += createInputFieldForProperty(configurationDataOption.dataSchemaProerty, tool, index, "color",lang);
                     break;
                 case 'singleselectlist':
-                    inputFields += createInputFieldForSingleSelectList(configurationDataOption, tool, index);
+                    inputFields += createInputFieldForSingleSelectList(configurationDataOption, tool, index,lang);
                     break;
                 case 'text':
-                    inputFields += createInputFieldForProperty(configurationDataOption.dataSchemaProerty, tool, index, "text");
+                    inputFields += createInputFieldForProperty(configurationDataOption.dataSchemaProerty, tool, index, "text", lang);
                     break;
             }
         });
     } else {
-        inputFields += createInputFieldForProperty(Object.keys(tool.dataSchema.properties), tool, index, "text");
+        inputFields += createInputFieldForProperty(Object.keys(tool.dataSchema.properties), tool, index, "text",lang);
     }
 
     return inputFields
@@ -391,7 +693,7 @@ function isRequired(tool, configProperties) {
     return isRequired;
 }
 
-function createInputOptionsForColorCombination(configurationDataOption, tool, index) {
+function createInputOptionsForColorCombination(configurationDataOption, tool, index,lang) {
 
     let config = tool.config[0];
     const translation = tool.configurationDataOptionTranslations;
@@ -409,8 +711,23 @@ function createInputOptionsForColorCombination(configurationDataOption, tool, in
         config[dataSchemaPFontColorroerty] = tool.dataSchema.properties[dataSchemaPFontColorroerty].default;
         config[dataSchemaPbackgroundColorroerty] = tool.dataSchema.properties[dataSchemaPbackgroundColorroerty].default;
     }
+    let labelIDI18N = tool.engineId+"."+tool.engineVersion+"."+tool.id+".data-option.colorCombination.label";
 
-    inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><p>${labelTranslaoin}</p><ul>`;
+    let audioElements = [];
+
+     let src = speechUtils.getAudioSourceForString(labelIDI18N, lang);
+     labelIDI18N = stringHash(labelIDI18N);
+     if(src){
+         audioElements.push({
+             src: src,
+             elementId: labelIDI18N
+         });
+     }
+
+
+
+     let audioButton = createAudioButton(audioElements);
+    inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><p id="${labelIDI18N}">${audioButton}${labelTranslaoin}</p><ul>`;
     configurableDataOption.forEach(dataOption => {
         const fontColor = dataOption['text-color'];
         const backgroundColor = dataOption['background-color'];
@@ -437,7 +754,7 @@ function createInputOptionsForColorCombination(configurationDataOption, tool, in
     return inputField
 }
 
-function createInputFieldForProperty(dataSchemaProerty, tool, index, type) {
+function createInputFieldForProperty(dataSchemaProerty, tool, index, type,lang) {
 
     let inputField = '';
     const config = tool.config[0];
@@ -458,7 +775,155 @@ function createInputFieldForProperty(dataSchemaProerty, tool, index, type) {
     return inputField;
 }
 
-function createInputFieldForSingleSelectList(configurationDataOption, tool, index) {
+function getIconForProperty(iconsForSchema,property){
+    for(let i=0; i<iconsForSchema.length; i++){
+
+        if(iconsForSchema[i].type === "propertyIcon" && iconsForSchema[i].property === property){
+            return iconsForSchema[i];
+        }
+
+    }
+}
+
+function getIconForPropertyValue(iconsForSchema,property,value){
+    for(let i=0; i<iconsForSchema.length; i++){
+
+        if(iconsForSchema[i].type === "propertyValueIcon" && iconsForSchema[i].property === property && iconsForSchema[i].value === value){
+            return iconsForSchema[i];
+        }
+
+    }
+}
+
+function createIconHTML(icon) {
+
+    return  '<img src="'+icon.url+'" alt="" class="'+icon.cssClass+'">';;
+}
+
+function createInputFieldForSingleSelectList(configurationDataOption, tool, index,lang) {
+
+    let widget = "radio";
+    if(widget === "radio"){
+        let inputField = '';
+        const config = tool.config[0];
+        const translation = tool.configurationDataOptionTranslations;
+        const configurableDataOption = configurationDataOption.configurableDataOption;
+
+        if (configurationDataOption.dataSchemaProerty && configurationDataOption.dataSchemaProerty.length > 0) {
+            configurationDataOption.dataSchemaProerty.forEach(dataSchemaProerty => {
+
+                const required = (isRequired(tool, [dataSchemaProerty])) ? 'required' : '';
+                const prePopulatedValue = getPrePopulatedValue(tool.dataSchema.properties[dataSchemaProerty], config, dataSchemaProerty);
+                const id = dataSchemaProerty + '-' + index;
+                const translatedLabel = translation[dataSchemaProerty];
+                const translatedOptions = translation[dataSchemaProerty + "Options"];
+
+
+
+                let audioElements =[];
+                let i18nIDForProperty = tool.engineId+"."+tool.engineVersion+"."+tool.id+".data-option.property."+dataSchemaProerty+".label";
+                let src = speechUtils.getAudioSourceForString(i18nIDForProperty, lang);
+                if(src){
+                    audioElements.push({
+                        src: src,
+                        elementId: stringHash(i18nIDForProperty),
+                    });
+                }
+                let i18nIDForOptions = tool.engineId+"."+tool.engineVersion+"."+tool.id+".data-option.singleSelectList.optionList.";
+                configurableDataOption.forEach(dataOption => {
+                    src = speechUtils.getAudioSourceForString(i18nIDForOptions+dataOption.label, lang);
+                    if(src){
+                        audioElements.push({
+                            src: src,
+                            elementId: stringHash(i18nIDForOptions+dataOption.label),
+                        });
+                    }
+                });
+                //"aws-polly-tts.1.0.tts.data-option.property.language.label"
+                //"aws-polly-tts.1.0.tts.data-option.singleSelectList.optionList.English": "Englisch",
+
+
+                let audioButtonHTML = createAudioButton(audioElements);
+
+
+                inputField += `<fieldset data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'>
+                <legend id="${stringHash(i18nIDForProperty)}">${audioButtonHTML}${translatedLabel}</legend>
+             
+                <div class="${configurationDataOption.type}-option-container">`;
+                configurableDataOption.forEach(dataOption => {
+
+                    let iconHTML = "";
+                    let icon = getIconForPropertyValue(tool.iconsForSchemaProperties,dataSchemaProerty,dataOption.value);
+                    if(icon){
+                        iconHTML = createIconHTML(icon);
+                    }
+                    let optionID  = stringHash(i18nIDForOptions+dataOption.label);
+
+                    if (typeof prePopulatedValue === "boolean") {
+
+                        const isSelected = (prePopulatedValue === dataOption.value) ? 'checked' : '';
+                        inputField += '<label id="'+optionID+'"><input type="radio" name="'+id+'" value="' + dataOption.value + '" ' + isSelected + '><span class="input-label">' + translatedOptions[dataOption.label] +'</span>'+iconHTML+ '</label>';
+
+
+                    } else {
+                        const isSelected = (prePopulatedValue.toLowerCase() === dataOption.value.toLowerCase()) ? 'checked' : '';
+                        inputField += '<label id="'+optionID+'"><input type="radio" id="'+optionID+'" name="'+id+'" value="' + dataOption.value + '" ' + isSelected + '><span class="input-label">' + translatedOptions[dataOption.label] +'</span>'+ iconHTML+ '</label>';
+                    }
+
+
+                });
+                inputField += '</div>' +
+                    '</fieldset>';
+            });
+        }
+
+        return inputField;
+    }else{
+        let inputField = '';
+        const config = tool.config[0];
+        const translation = tool.configurationDataOptionTranslations;
+        const configurableDataOption = configurationDataOption.configurableDataOption;
+
+        if (configurationDataOption.dataSchemaProerty && configurationDataOption.dataSchemaProerty.length > 0) {
+            configurationDataOption.dataSchemaProerty.forEach(dataSchemaProerty => {
+
+                const required = (isRequired(tool, [dataSchemaProerty])) ? 'required' : '';
+                const prePopulatedValue = getPrePopulatedValue(tool.dataSchema.properties[dataSchemaProerty], config, dataSchemaProerty);
+                const id = dataSchemaProerty + '-' + index;
+                const translatedLabel = translation[dataSchemaProerty];
+                const translatedOptions = translation[dataSchemaProerty + "Options"];
+
+
+
+
+                inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><label for='${id}'>${translatedLabel}</label>
+            <select id='${id}' class="${configurationDataOption.type}-option-container">`;
+                configurableDataOption.forEach(dataOption => {
+
+                    if (typeof prePopulatedValue === "boolean") {
+
+                        const isSelected = (prePopulatedValue === dataOption.value) ? 'selected' : '';
+                        inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' + translatedOptions[dataOption.label] + '</option>';
+
+
+                    } else {
+                        const isSelected = (prePopulatedValue.toLowerCase() === dataOption.value.toLowerCase()) ? 'selected' : '';
+                        inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' + translatedOptions[dataOption.label] + '</option>';
+                    }
+
+
+                });
+                inputField += '</select>' +
+                    '</div>';
+            });
+        }
+
+        return inputField;
+    }
+
+}
+
+function createInputFieldForRadioSelection(configurationDataOption, tool, index) {
 
     let inputField = '';
     const config = tool.config[0];
@@ -472,16 +937,18 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
             const prePopulatedValue = getPrePopulatedValue(tool.dataSchema.properties[dataSchemaProerty], config, dataSchemaProerty);
             const id = dataSchemaProerty + '-' + index;
             const labelTranslaoin = translation[dataSchemaProerty];
-            const optionsTranslaoin = translation[dataSchemaProerty+"Options"];
+            const optionsTranslaoin = translation[dataSchemaProerty + "Options"];
 
-            //inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><label for='${id}'>${labelTranslaoin}</label><select id='${id}' ${required} class="${configurationDataOption.type}-option-container">`;
+
+
+
             inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><label for='${id}'>${labelTranslaoin}</label><select id='${id}' class="${configurationDataOption.type}-option-container">`;
             configurableDataOption.forEach(dataOption => {
 
                 if (typeof prePopulatedValue === "boolean") {
 
                     const isSelected = (prePopulatedValue === dataOption.value) ? 'selected' : '';
-                    inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' +optionsTranslaoin[dataOption.label] + '</option>';
+                    inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' + optionsTranslaoin[dataOption.label] + '</option>';
 
 
                 } else {
@@ -497,6 +964,7 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
 
     return inputField;
 }
+
 
 function getPrePopulatedValue(property, config, key) {
     if (config) {

@@ -1,6 +1,15 @@
 var pageUtils = {
     sentenceTokenizer: new SentenceTokenizer(),
+    containsTextContent:function(node) {
 
+        for (let i = 0; i < node.textContent.length; i++) {
+            if (pageUtils.util.unicodeChar.test(node.textContent[i])) {
+                return true;
+            }
+        }
+        return false;
+
+    },
     removeDisplayUnderPosition:function (x,y) {
         let oldResult = $(document.elementFromPoint(x, y)).closest('.easy-reading-result');
         if (oldResult.length) {
@@ -41,7 +50,7 @@ var pageUtils = {
             }
         }
 
-        // Firefox, Safari
+            // Firefox, Safari
         // REF: https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint
         else if (document.caretPositionFromPoint) {
             range = document.caretPositionFromPoint(x, y);
@@ -195,7 +204,7 @@ var pageUtils = {
         text = text.replace(/\n/g, '');
         let textPieces = text.split(word);
 
-        console.log(textPieces);
+
 
         let maxSentenceLength = 150;
 
@@ -284,6 +293,25 @@ var pageUtils = {
 
         }
 
+    },
+    removeDisplayInTextNodes(textNodes){
+
+
+        let foundResult = false;
+        for(let i=0; i < textNodes.length; i++){
+            let oldResult = $(textNodes[i]).closest('.easy-reading-result');
+
+            if (oldResult.length) {
+
+                let presentationID = oldResult.data("presentationid").split('-');
+                easyReading.userInterfaces[presentationID[0]].tools[presentationID[1]].presentation.removeResult(oldResult.data("requestid"));
+
+                foundResult =  true;
+            }
+
+        }
+
+        return foundResult;
     },
 
     removeDisplayInParagraph(e){
@@ -423,8 +451,80 @@ var pageUtils = {
         }
 
     },
+    getParentBlockContainerFromNode:function(node) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            node = node.parentElement;
+        }
 
+        while (!pageUtils.util.isBlockDisplay(node)) {
+            node = node.parentElement;
+
+        }
+
+        return node;
+
+    },
     util: {
+
+
+        isBlockDisplay:function(element) {
+            if (element.style.display) {
+                switch (element.style.display.toLowerCase()) {
+                    case "block":
+                    case "flex":
+                    case "grid":
+                    case "list-item":
+                    case "run-in":
+                    case "table":
+                    case "table-caption":
+                    case "table-column-group":
+                    case "table-header-group":
+                    case "table-footer-group":
+                    case "table-row-group":
+                    case "table-cell":
+                    case "table-column":
+                    case "table-row": {
+                        return true;
+                    }
+
+                    default: {
+                        return false;
+                    }
+                }
+
+            } else {
+                switch (element.nodeName.toLowerCase()) {
+                    case "body":
+                    case "h1":
+                    case "h2":
+                    case "h3":
+                    case "h4":
+                    case "h5":
+                    case "h6":
+                    case "p":
+                    case "div":
+                    case "ul":
+                    case "ol":
+                    case "li":
+                    case "dl":
+                    case "dt":
+                    case "dd":
+                    case "th":
+                    case "td":
+                    case "tr":
+                    case "thead":
+                    case "tbody": {
+                        return true;
+                    }
+
+                    default: {
+                        return false;
+                    }
+
+                }
+            }
+
+        },
 
         unicodeWord: XRegExp('^\\pL+$'),
         unicodeChar: XRegExp('^\\pL+$'),
@@ -437,6 +537,7 @@ var pageUtils = {
             }
 
             let textNodes = [];
+
 
             for(let i=0; i < selection.rangeCount; i++){
                 let range = selection.getRangeAt(i);
@@ -454,6 +555,7 @@ var pageUtils = {
                     }
                 }
 
+                let endNode = null;
                 if(range.endContainer.nodeName === '#text'){
 
                     if(range.endContainer.length !== range.endOffset){
@@ -461,10 +563,14 @@ var pageUtils = {
                         range.endContainer.splitText(range.endOffset);
 
                     }
+                    endNode = range.endContainer;
+                }else{
+                    let containerNodes = pageUtils.util.getChildTextNodes(range.endContainer);
+
+                    endNode = containerNodes[containerNodes.length-1];
                 }
 
-
-                textNodes = textNodes.concat( pageUtils.util.getTextNodesBetweenRange(startNode, range.endContainer));
+                textNodes = textNodes.concat( pageUtils.util.getTextNodesBetweenRange(startNode, endNode));
 
             }
 
@@ -717,7 +823,7 @@ var pageUtils = {
             }
         }
 
-        // Firefox, Safari
+            // Firefox, Safari
         // REF: https://developer.mozilla.org/en-US/docs/Web/API/Document/caretPositionFromPoint
         else if (document.caretPositionFromPoint) {
             range = document.caretPositionFromPoint(x, y);
@@ -1194,6 +1300,8 @@ class TextSelection {
             let newNode = this.textNodes[textNodeIndex].splitText(splitIndex);
             this.textNodes.splice(textNodeIndex+1,0,newNode);
             return newNode;
+
+
         }
     }
 

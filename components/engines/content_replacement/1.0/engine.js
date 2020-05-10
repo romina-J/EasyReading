@@ -41,6 +41,7 @@ class Dictionary extends base.EngineBase {
                     "description": "Content replacements",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Reading,
                 entryPoint: "contentReplacement",
             }
 
@@ -65,9 +66,22 @@ class Dictionary extends base.EngineBase {
 
 
     }
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "content_replacement",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"intro_text","Instruction:"),
+                    this.descriptionManager.createParagraphEntry(this,"instruction_1","The Easy to Read Symbol will be shown on the site if text in simplified language has been found."),
+                    this.descriptionManager.createParagraphEntry(this,"instruction_2","A click on the symbol shows the simplified text. Another click on the symbol will show the original again."),
+                ]
+            }
+
+        ];
+    }
 
 
 }
-
 
 module.exports.class = Dictionary;

@@ -4,10 +4,12 @@
         container: ".jsToggleCardContainer",
         triggerSelector: ".jsToggleCardButton",
         target: function ($elem) {
-            return $elem.parents(".jsToggleCardContainer").find('.jsToggleCardTarget')
+            return $elem.parents(".jsToggleCardContainer").find('.jsToggleCardTarget').first()
         },
         toggleAction: function ($target) {
+            console.log($target);
             $target.slideToggle("300", function () { });
+
         }
     });
     var toggleCardContainerInner = new funkanu.ariatoggle({

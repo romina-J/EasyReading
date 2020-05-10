@@ -38,7 +38,27 @@ class ScreenRuler extends base.EngineBase{
                 }],
                 javaScripts:['/js/screen-ruler.js'],
                 styleSheets : ['/css/screen-ruler.css'],
+                toolCategory: base.EngineFunction.ToolCategories.Reading,
                 entryPoint: "easyReadingScreenRuler",
+            }
+
+        ];
+    }
+
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "screen-ruler",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"intro_text","Instruction:"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_1","Turn on the screen ruler"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_2","A line in the text will be brighter, like a ruler."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_3","You can move the ruler up and down."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_4","Click again on the ruler."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"instruction_5","The ruler disappears again."),
+
+                ]
             }
 
         ];

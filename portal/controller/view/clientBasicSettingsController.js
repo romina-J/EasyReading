@@ -1,7 +1,7 @@
 let express = require('express');
 let router = express.Router();
 const core = rootRequire("core/core");
-
+let databaseManager = require("../../../core/database/database-manager");
 router.use('/', async function (req, res, next) {
 
     let errorMessages = [];
@@ -71,7 +71,6 @@ router.use('/', async function (req, res, next) {
             console.log('Error handling reasoner: ' + e);
         }
 
-        let databaseManager = require("../../../core/database/database-manager");
         let updateProfileRequest = databaseManager.createRequest("profile").update(req.session.user).where("id", "=", req.session.user.id);
         let updateProfileRequestResult = await databaseManager.executeRequest(updateProfileRequest);
 
@@ -83,6 +82,7 @@ router.use('/', async function (req, res, next) {
     let supportedLanguages = localeService.getLocales();
 
     res.locals.supportedLanguages = [];
+    res.locals.supportedLanguagesTTS = "page_basic_setting_language_label,";
 
     let userLocale = req.session.user.locale.split("_")[0];
     for (let i = 0; i < supportedLanguages.length; i++) {
@@ -93,9 +93,16 @@ router.use('/', async function (req, res, next) {
 
         res.locals.supportedLanguages.push({
             id: supportedLanguages[i],
+            labelID: 'language_label_' + supportedLanguages[i],
             label: translatedLabel,
             userLanguage: (userLocale === supportedLanguages[i]),
         });
+
+        if(i > 0 && i < supportedLanguages.length){
+            res.locals.supportedLanguagesTTS+=","
+        }
+        res.locals.supportedLanguagesTTS+='language_label_' + supportedLanguages[i];
+
 
     }
 
@@ -128,7 +135,102 @@ router.use('/', async function (req, res, next) {
     res.locals.errorMessages = errorMessages;
 
 
+    let activeUserInterfaceConfigurations = await getUserInterfaceConfig(req.session.user.id);
+
+    res.locals.UiTTS = "page_configure_settings_type_how_to_use";
+    const userInterfaces = [...rootRequire("core/core").userInterfaces];
+
+    let userInterfaceData = [];
+
+
+    for(let i=0; i < userInterfaces.length; i++){
+
+        let latestVersion = userInterfaces[i].versions[userInterfaces[i].versions.length-1].version;
+        let defaultConfiguration = latestVersion.getDefaultConfiguration();
+        const userInterface = {
+            id: latestVersion.id,
+            componentID:latestVersion.componentID,
+            name: latestVersion.name,
+            dataSchema: localeService.translateSchema(latestVersion.getConfigurationSchema(),req),
+            configuration: defaultConfiguration.configuration,
+            active: false,
+            textualDescription:latestVersion.textualDescription,
+            iconsForSchemaProperties: latestVersion.iconsForSchemaProperties
+        };
+
+        for(let k=0; k < activeUserInterfaceConfigurations.length; k++){
+
+            if(activeUserInterfaceConfigurations[k].uiId === latestVersion.id){
+                userInterface.configuration = activeUserInterfaceConfigurations[k].configuration;
+                userInterface.active = true;
+            }
+
+
+        }
+
+        userInterface.translatedName = localeService.translate({
+            phrase: 'user_interface_label_' + userInterface.id,
+            locale: userLocale
+        });
+        userInterface.labelId = "user_interface_label_"+userInterface.id;
+
+        if(i < userInterfaces.length){
+            res.locals.UiTTS+=","
+        }
+        res.locals.UiTTS+= userInterface.labelId;
+
+        userInterfaceData.push(userInterface);
+    }
+
+    res.locals.context.userInterfaces =  userInterfaceData;
+
     return next();
 });
+
+
+async function getUserInterfaceConfig(profileID) {
+    let activeUIConfigurations = [];
+    let loadActiveUserInterfaceRequest = databaseManager.createRequest("ui_collection").where("pid", "=", profileID);
+
+    let loadActiveUserInterfaceRequestResult = await databaseManager.executeRequest(loadActiveUserInterfaceRequest);
+
+    if (loadActiveUserInterfaceRequestResult.result.length > 0) {
+
+        for(let k=0; k < loadActiveUserInterfaceRequestResult.result.length; k++){
+
+            let loadUserInterfacesRequest = databaseManager.createRequest("ui_conf").where("ui_collection", "=", loadActiveUserInterfaceRequestResult.result[k].id);
+            let loadUserInterfacesRequestResult = await databaseManager.executeRequest(loadUserInterfacesRequest);
+            let userInterfaces = [];
+            for (let i = 0; i < loadUserInterfacesRequestResult.result.length; i++) {
+
+                //User Interface
+                let uiInfo = loadUserInterfacesRequestResult.result[i];
+                let userInterface = core.getUserInterface(uiInfo.ui_id, uiInfo.ui_version);
+
+                let uiConfiguration = {
+                    uiId: uiInfo.ui_id,
+                    uiVersion: uiInfo.ui_version,
+                    configuration: null,
+
+                };
+                if (userInterface.hasConfigurationSchema()) {
+                    let tableName = databaseManager.getConfigTableNameForComponent(userInterface);
+
+                    let userInterfaceConfigurationRequest = databaseManager.createRequest(tableName).where("id", "=", uiInfo.ui_conf_id);
+                    let userInterfaceConfigurationRequestResult = await databaseManager.executeRequest(userInterfaceConfigurationRequest);
+
+                    uiConfiguration.configuration = await databaseManager.getObjectFromResult(userInterfaceConfigurationRequestResult.result[0], tableName,true);
+                }
+
+                activeUIConfigurations.push(uiConfiguration);
+            }
+
+        }
+
+
+    }
+
+    return activeUIConfigurations;
+}
 
 module.exports = router;

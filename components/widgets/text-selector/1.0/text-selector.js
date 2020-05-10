@@ -24,6 +24,15 @@ class TextSelector extends WidgetBase{
 
     }
 
+    createTextualDescription(){
+
+        this.textualDescription =[
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_1","You mark the part of the page with the mouse where help is needed."),
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_2","You open Easy Reading."),
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_3","You click on the desired tool."),
+        ]
+    }
+
 }
 
 module.exports.class = TextSelector;

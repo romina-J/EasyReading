@@ -33,7 +33,8 @@ let engineComposer = {
                                 newEngine.createFunctions(versionDir);
                                 newEngine.credentialManager = require("../../util/credential-manager");
                                 newEngine.authManager = require("../../authentication/authmanager");
-
+                                newEngine.createTextualDescription();
+                                newEngine.createIconsForSchemaProperties();
                                 currentEngineContainer.addVersion(version, newEngine);
                             }
                         } else {

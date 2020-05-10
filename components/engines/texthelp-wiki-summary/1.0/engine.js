@@ -37,6 +37,7 @@ class TextHelpWikiSummary extends base.EngineBase {
                     "description": "Wikipedia summary of the word",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "wikiSummary",
             }
         ];

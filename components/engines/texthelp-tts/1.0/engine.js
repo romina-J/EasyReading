@@ -185,6 +185,7 @@ class TextHelpTTS extends base.EngineBase {
                     "description": "Image word",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Reading,
                 entryPoint: "textToSpeech",
             }
 

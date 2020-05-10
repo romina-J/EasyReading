@@ -50,6 +50,25 @@ let localeService = {
         return def;
     },
 
+    getSupportedLanguage(lang){
+
+        try{
+            let locales = ['en', 'es', 'de', 'sv'];
+
+            if(locales.includes(lang)){
+                return lang;
+            }
+
+            return "en";
+        }catch (e) {
+            console.log(e);
+        }
+
+
+        return "en";
+
+
+    },
 
 
     setLocaleMiddleWare() {
@@ -74,10 +93,12 @@ let localeService = {
             Object.keys(schema.properties).forEach(function(key,index) {
 
                 if(typeof schema.properties[key].title !== "undefined"){
+                    schema.properties[key].originalTitle = schema.properties[key].title;
                     schema.properties[key].title = req.__(schema.properties[key].title);
                 }
 
                 if(typeof schema.properties[key].description !== "undefined"){
+                    schema.properties[key].originalDescription = schema.properties[key].description;
                     schema.properties[key].description = req.__(schema.properties[key].description);
                 }
 
@@ -103,6 +124,27 @@ let localeService = {
 
 
 
+    },
+
+    translateTextualDescription(textualDescription,req){
+
+        if(!textualDescription){
+            return null;
+        }
+
+        for(let i=0; i < textualDescription.length; i++){
+
+            textualDescription[i].translatedContent = req.__(textualDescription[i].id);
+
+        }
+
+        return textualDescription;
+
+
+    },
+
+    getCatalog(){
+        return this.i18nProvider.getCatalog();
     }
 
 };

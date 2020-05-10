@@ -15,7 +15,7 @@ class LineSpacingTool extends base.EngineBase{
         return [
             {
                 id : "increaseLineHeight",
-                sortOrder: "2",
+                sortOrder: "1",
                 name: "Line spacing tool",
                 description : "Increases or decreases line spacing",
                 defaultIcon : "assets/increaseLineHeight.png",
@@ -35,6 +35,7 @@ class LineSpacingTool extends base.EngineBase{
                 }],
                 javaScripts:['/js/line-spacing-tool.js'],
                 styleSheets : [],
+                toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "increaseLineHeight",
                 bundle: this.bundles[0],
             },
@@ -61,7 +62,31 @@ class LineSpacingTool extends base.EngineBase{
                 javaScripts:['/js/line-spacing-tool.js'],
                 styleSheets : [],
                 entryPoint: "decreaseLineHeight",
+                toolCategory: base.EngineFunction.ToolCategories.Layout,
                 bundle: this.bundles[0],
+            }
+
+        ];
+    }
+
+    createTextualDescription(){
+
+        this.textualDescription = [
+            {
+                functionID: "increaseLineHeight",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"inc_intro_text","Instruction"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"inc_instruction_1","Click on the tool and the line height will get bigger."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"inc_instruction_2","Click again and it will get even bigger."),
+                ]
+            },
+            {
+                functionID: "decreaseLineHeight",
+                description:[
+                    this.descriptionManager.createSubHeadingEntry(this,"dec_intro_text","Instruction"),
+                    this.descriptionManager.createOrderedListItemEntry(this,"dec_instruction_1","Click on the tool and the line height will get smaller."),
+                    this.descriptionManager.createOrderedListItemEntry(this,"dec_instruction_2","Click again and it will get even smaller."),
+                ]
             }
 
         ];

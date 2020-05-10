@@ -79,6 +79,7 @@ class Dictionary extends base.EngineBase {
                     "description": "Meaning of the word explained with a sentence",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "dictionary",
             }
 

@@ -60,6 +60,11 @@ module.exports = {
             'menu_caretaker_list_text': req.__("menu_caretaker_list_text"),
             'menu_basic_setting_text':req.__("menu_basic_setting_text"),
             'menu_configure_clients_text': req.__("menu_configure_clients_text"),
+            'eu_funding_string': req.__("eu_funding_string"),
+            'imprint': req.__("imprint"),
+            'privacy_policy': req.__("privacy_policy"),
+            'privacy_policy_easy': req.__("privacy_policy_easy"),
+
 
             'Save': req.__("Save"),
             'Saved': req.__("Saved"),
@@ -74,7 +79,19 @@ module.exports = {
 
         return next();
     },
+    translateImprint: async (req, res, next) => {
+        let loc = {
+            'questions_about_project': req.__("questions_about_project"),
+            'website_contact': req.__("website_contact"),
+        };
 
+        res.locals.context = {
+            ...res.locals.context,
+            ...loc
+        };
+
+        return next();
+    },
     translateBackEnd: async (req, res, next) => {
 
         let loc = {
@@ -131,6 +148,7 @@ module.exports = {
             'select_single_presentation_title': req.__("select_single_presentation_title"),
             'select_multiple_widget_legend': req.__("select_multiple_widget_legend"),
             'select_multiple_presentation_legend': req.__("select_multiple_presentation_legend"),
+            'change_widget_button_label': req.__("change_widget_button_label"),
 
 
         };
@@ -216,6 +234,16 @@ module.exports = {
             'page_basic_setting_reasoner_on_label': req.__("page_basic_setting_reasoner_on_label"),
             'page_basic_setting_reasoner_off_label': req.__("page_basic_setting_reasoner_off_label"),
             'page_basic_setting_reasoner_models_label': req.__("page_basic_setting_reasoner_models_label"),
+            'adaptive_help': req.__("adaptive_help"),
+            'adaptive_help_intro': req.__("adaptive_help_intro"),
+            'page_basic_setting_adaptable_you_can_choose': req.__("page_basic_setting_adaptable_you_can_choose"),
+            'automatic_help_warning': req.__("automatic_help_warning"),
+            'automatic_help_intro': req.__("automatic_help_intro"),
+            'automatic_help': req.__("automatic_help"),
+
+
+
+
         };
         res.locals.context = {
             ...res.locals.context,
@@ -272,8 +300,9 @@ module.exports = {
             'page_caretakerlist_select': req.__("page_caretakerlist_select"),
             'page_registercaretaker_title': req.__("page_registercaretaker_title"),
             'page_remove_caretaker': req.__("page_remove_caretaker"),
-
-
+            'caretaker_name_label': req.__("caretaker_name_label"),
+            'caretaker_email_label': req.__("caretaker_email_label"),
+            'page_client_caretaker_info': req.__("page_client_caretaker_info"),
 
         };
 

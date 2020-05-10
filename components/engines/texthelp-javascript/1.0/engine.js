@@ -34,6 +34,7 @@ class TextHelpJavaScript extends base.EngineBase {
                     "description": "Javascript to call",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Experimental,
                 entryPoint: "getScript",
             }
 

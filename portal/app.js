@@ -124,8 +124,11 @@ app.post('/caretaker/custom-paragraphs-action', caretakerContentReplacementContr
 
 // Client
 app.use('/client/welcome', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
-app.use('/client/setup', authentication.isAuthenticated, userController.setUser,localeProfileWizardController.translateProfileWizard, clientSetupController.setupController);
-app.use('/client/finished', authentication.isAuthenticated, userController.setUser,localeProfileWizardController.translateProfileWizard, clientSetupFinishedController.setupFinishedController);
+app.use('/client/privacy-policy', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, (_, res) => res.render('client_privacy_policy', res.locals.context));
+app.use('/client/privacy-policy-easy', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, (_, res) => res.render('client_privacy_policy_easy', res.locals.context));
+app.use('/client/imprint', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateImprint, (_, res) => res.render('client_imprint', res.locals.context));
+app.use('/client/setup', authentication.isAuthenticated, userController.setUser,localeController.setLocale, localeProfileWizardController.translateProfileWizard, clientSetupController.setupController);
+app.use('/client/finished', authentication.isAuthenticated, userController.setUser,localeController.setLocale,localeProfileWizardController.translateProfileWizard, clientSetupFinishedController.setupFinishedController);
 
 
 

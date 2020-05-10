@@ -68,10 +68,18 @@ const SupportCategories = {
     }
 };
 
+const ToolCategories = {
+    Reading: "Reading",
+    Layout: "Layout",
+    Explanation : "Explanation",
+    Other: "Other",
+    Experimental: "Experimental"
+
+};
 
 
 class Function {
-    constructor(engine, id ,name, description, inputTypes, outputTypes, defaultIcon, bundle=null) {
+    constructor(engine, id ,name, description, inputTypes, outputTypes, defaultIcon, toolCategory,bundle=null) {
         this.engine = engine;
         this.id = id;
         this.name = name;
@@ -79,6 +87,7 @@ class Function {
         this.inputTypes = inputTypes;
         this.outputTypes = outputTypes;
         this.defaultIcon = defaultIcon;
+        this.toolCategory = toolCategory;
         this.bundle = bundle;
     }
 
@@ -130,8 +139,8 @@ class Function {
 }
 
 class RemoteFunction extends Function {
-    constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, entryPoint, bundle=null) {
-        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon, bundle);
+    constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, entryPoint,toolCategory, bundle=null) {
+        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon,toolCategory, bundle);
 
         this.type = "RemoteFunction";
         this.entryPoint = entryPoint;
@@ -161,8 +170,8 @@ class RemoteFunction extends Function {
 
 class LocalFunction extends Function {
     constructor(engine, id, name, description, inputTypes, outputTypes, defaultIcon, javaScripts, styleSheets,
-                entryPoint, bundle=null) {
-        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon, bundle);
+                entryPoint, toolCategory,bundle=null) {
+        super(engine, id, name, description, inputTypes, outputTypes, defaultIcon,toolCategory, bundle);
 
         this.type = "LocalFunction";
         this.javaScripts = javaScripts;
@@ -411,3 +420,4 @@ module.exports.OutputType = OutputType;
 module.exports.FuntionType = FunctionType;
 module.exports.FunctionCategory = FunctionCategory;
 module.exports.SupportCategories = SupportCategories;
+module.exports.ToolCategories = ToolCategories;

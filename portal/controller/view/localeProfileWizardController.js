@@ -125,6 +125,7 @@ module.exports = {
             'final_step_goto_google': req.__("final_step_goto_google"),
             'final_step_goto_config': req.__("final_step_goto_config"),
             'final_step_here_is_help': req.__("final_step_here_is_help"),
+            'final_step_goto_settings': req.__("final_step_goto_settings"),
 
 
 

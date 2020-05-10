@@ -47,11 +47,14 @@ let languageDetector = {
                 }
             }else {
                 //check if page language is likely
-                if(detectedCommonLanguage.probability -  languageProbability < 0.35){
+                if(lang !== "undefined" && lang){
+                    if(detectedCommonLanguage.probability -  languageProbability < 0.35){
 
-                    return lang;
+                        return lang;
 
+                    }
                 }
+
             }
 
 

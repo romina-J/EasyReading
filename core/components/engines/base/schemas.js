@@ -173,8 +173,20 @@ var RemoteFunctionSchema = {
         "description": "The name of the conversion function",
 
     },
+    "toolCategory": {
+        "type": "string",
+        "title": "Tool category",
+        "description": "Defines the category of the tool as it is displayed in the user interface",
+        "enum": [
+            "Reading",
+            "Layout",
+            "Explanation",
+            "Other",
+            "Experimental",
+        ],
+    },
     "required": [
-        "id", "name", "inputTypes", "outputTypes", "defaultIcon", "entryPoint"
+        "id", "name", "inputTypes", "outputTypes", "defaultIcon", "entryPoint", "toolCategory"
     ]
 };
 
@@ -356,9 +368,21 @@ var LocalFunctionSchema = {
             "description": "The function triggering the injected script",
 
         },
+        "toolCategory": {
+            "type": "string",
+            "title": "Tool category",
+            "description": "Defines the category of the tool as it is displayed in the user interface",
+            "enum": [
+                "Reading",
+                "Layout",
+                "Explanation",
+                "Other",
+                "Experimental",
+            ],
+        },
     },
     "required": [
-        "id", "name", "inputTypes", "outputTypes", "defaultIcon", "javaScripts", "entryPoint"
+        "id", "name", "inputTypes", "outputTypes", "defaultIcon", "javaScripts", "entryPoint","toolCategory"
     ]
 };
 

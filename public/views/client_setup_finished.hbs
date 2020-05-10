@@ -95,8 +95,27 @@
 
             </div>
 
+            <div class="row">
+
+                <div class="columns small-4 large-4">
+                    <a class="widget widget_large" href="configure?id={{userId}}" style="display: block">
+                        <img src="/images/setup/setup_finished/goto_settings.png" alt="Goto Settings">
+                    </a>
+                    <div class="row">
+                        <div class="columns small-12 text-center">
+                            <span id="button1_text" data-audio-src="/audio/setup_finished/{{lang}}/goto_settings.mp3" class="container-info">{{{final_step_goto_settings}}}</span>
+                            <br>
+                            <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
+                                    src="/images/setup/text-to-speech.png"></button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <div class="row">
+
 
                 <div class="columns small-4 large-4">
                     <a class="widget widget_large" href="https://www.google.com/" style="display: block">
@@ -105,9 +124,9 @@
                     </a>
                     <div class="row">
                         <div class="columns small-12 text-center">
-                            <span id="button1_text" data-audio-src="/audio/setup_finished/{{lang}}/goto_google.mp3" class="container-info">{{{final_step_goto_google}}}</span>
+                            <span id="button2_text" data-audio-src="/audio/setup_finished/{{lang}}/goto_google.mp3" class="container-info">{{{final_step_goto_google}}}</span>
                             <br>
-                            <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
+                            <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
                                     src="/images/setup/text-to-speech.png"></button>
 
                         </div>

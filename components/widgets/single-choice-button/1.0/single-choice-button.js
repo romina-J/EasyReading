@@ -29,6 +29,7 @@ class SingleChoiceButton extends WidgetBase{
 
     }
 
+    /*
     getConfigurationSchema(){
         return {
             "type": "object",
@@ -44,6 +45,16 @@ class SingleChoiceButton extends WidgetBase{
                 "backgroundColorButtonActive"
             ]
         };
+    }*/
+
+    createTextualDescription(){
+
+        this.textualDescription =[
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_1","You open Easy Reading."),
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_2","You click on the desired tool."),
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_3","You click on the part of the page where help is needed."),
+            this.descriptionManager.createOrderedListItemEntry(this,"instruction_4","Help is provided only for that part."),
+        ]
     }
 
 }

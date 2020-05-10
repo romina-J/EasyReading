@@ -24,11 +24,11 @@ async function userLogin(req, loginInfo, callback) {
                     return;
                 }
 
-
+                let localeService = require("../../core/i18n/locale-service");
                 let clientProfile = require("../../core/profile/profile");
                 let currentProfile = new clientProfile(req.session._clientToken);
                 currentProfile.email = loginInfo.email;
-                currentProfile.locale = loginInfo.locale;
+                currentProfile.locale = localeService.getSupportedLanguage(loginInfo.locale);
                 currentProfile.loginType = loginInfo.loginType;
 
                 try {
@@ -64,6 +64,8 @@ async function userLogin(req, loginInfo, callback) {
                     if(currentProfile.isNewProfile){
                         userProfile.isNewProfile = true;
                     }
+
+
                     userProfile.clientLogin = true;
 
                     callback(userProfile, error);
@@ -229,7 +231,9 @@ async function createLoginInfoGoogle(req, profile) {
     let locale = "en";
     if (profile._json) {
         if (profile._json.language) {
-            locale = profile._json.language;
+            locale = profile._json.language.split("_")[0];
+
+
         }
     }
 

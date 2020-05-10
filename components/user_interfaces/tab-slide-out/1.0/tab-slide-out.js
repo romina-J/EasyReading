@@ -8,8 +8,8 @@ class TabSlideOutUserInterface extends UserInterfaceBase{
         this.name = "TabSlideOut";
         this.description = "Simple tab slide out";
         this.versionDescription = "Initial Version";
-        this.scripts = ["ui/jquery-ui.js", "ui/erTabSlideOut.js", "ui/tab-slide-out-ui.js", "ui/imagesloaded.pkgd.js"];
-        this.css = ["ui/jquery-ui.css", "ui/tab-slide-out-ui.css", "ui/erTabSlideOut.css"];
+        this.scripts = ["ui/jquery-ui.js", "ui/erTabSlideOut.js", "ui/tab-slide-out-ui.js", "ui/imagesloaded.pkgd.js", "ui/erMobileToolTips.js"];
+        this.css = ["ui/jquery-ui.css", "ui/tab-slide-out-ui.css", "ui/erTabSlideOut.css", "ui/erMobileToolTips.css"];
         this.assetDirectory = "ui/images";
         this.implementationClass = "TabSlideOutUserInterface";
         this.supportCategories = ["slide_in"];
@@ -40,6 +40,10 @@ class TabSlideOutUserInterface extends UserInterfaceBase{
         }
     }
 
+    createIconsForSchemaProperties(){
+        this.createIconForSchemaProperty("buttonSize","assets/button_size.png","radio_button_icon");
+
+    }
 }
 
 module.exports.class = TabSlideOutUserInterface;

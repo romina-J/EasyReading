@@ -35,6 +35,7 @@ class StanfordNLP extends base.EngineBase {
                     "name": "Output paragraph",
                     "description": "Processed paragraph",
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "getPosTags",
             }
         ];

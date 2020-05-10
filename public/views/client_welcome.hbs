@@ -5,6 +5,7 @@
 <head>
     <title>{{page_client_welcome_title}}</title>
     {{> head }}
+    <script src="/js/audio.js"></script>
 </head>
 
 <body>
@@ -22,21 +23,25 @@
             <main>
                 <div class="row">
                     <div class="column">
-                        <h1 id="message">{{page_client_welcome_title}}</h1>
-                    </div>
-                </div>
+                        <h1 id="page_client_welcome_title">
 
+                            {{{createTTSButton "page_client_welcome_title" lang}}}{{page_client_welcome_title}}</h1>
+                    </div>
+
+                </div>
+                <hr class="client_welcome_hr">
                 <div class="row">
                         <div class="small-12 columns">
-                      
-                                <h2 class="page-client-welcome-intro-title">{{page_client_welcome_intro_title}}</h2>
 
-                                <p class="page-client-welcome-intro-description">{{page_client_welcome_intro_description_1}}</p>
+
+                                <h2 class="page-client-welcome-intro-title" id="page_client_welcome_intro_title">{{{createTTSButton "page_client_welcome_intro_title,page_client_welcome_intro_description_1,page_client_welcome_intro_description_2,page_client_welcome_intro_description_3,page_client_welcome_intro_description_4,page_client_welcome_intro_description_5" lang}}}{{page_client_welcome_intro_title}}</h2>
+
+                                <p class="page-client-welcome-intro-description" id="page_client_welcome_intro_description_1">{{page_client_welcome_intro_description_1}}</p>
                                 <ul class="no-bullet">
-                                    <li>{{page_client_welcome_intro_description_2}}</li>
-                                    <li>{{page_client_welcome_intro_description_3}}</li>
-                                    <li>{{page_client_welcome_intro_description_4}}</li>
-                                    <li>{{page_client_welcome_intro_description_5}}</li>
+                                    <li id="page_client_welcome_intro_description_2">{{page_client_welcome_intro_description_2}}</li>
+                                    <li id="page_client_welcome_intro_description_3">{{page_client_welcome_intro_description_3}}</li>
+                                    <li id="page_client_welcome_intro_description_4">{{page_client_welcome_intro_description_4}}</li>
+                                    <li id="page_client_welcome_intro_description_5">{{page_client_welcome_intro_description_5}}</li>
                                 </ul>
 
 
@@ -64,11 +69,17 @@
                         {{/hasRole}}
                     {{/if}}
                 </div>
+
+
             </main>
+
+            {{>footer}}
 
         </div>
 
+
     </div>
+
 
 </body>
 </html>

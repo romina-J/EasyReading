@@ -20,23 +20,6 @@ class OverlayUserInterface extends UserInterfaceBase{
         return {
             "type": "object",
             "properties": {
-                "startPositionXInPercent": {
-                    "type": "integer",
-                    "title" : "X Start Position",
-                    "description": "Dialog start position x in percent",
-                    "default": 20,
-                    "minimum": 1,
-                    "maximum": 100,
-
-                },
-                "startPositionYInPercent": {
-                    "type": "integer",
-                    "title" : "Y Start Position",
-                    "description": "Dialog start position Y in percent",
-                    "default": 20,
-                    "minimum": 1,
-                    "maximum": 100,
-                },
                 "buttonSize": {
                     "type": "integer",
                     "title" : "Button Size",
@@ -62,6 +45,10 @@ class OverlayUserInterface extends UserInterfaceBase{
                 }
             }
         }
+    }
+    createIconsForSchemaProperties(){
+        this.createIconForSchemaProperty("buttonSize","assets/button_size.png","radio_button_icon");
+
     }
 
 }

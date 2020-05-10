@@ -83,6 +83,11 @@ let ClientCarerRelation = {
             "title": "client ID ",
 
         },
+        "carer_name": {
+            "type": "string",
+            "title": "Carer Name",
+
+        },
         "state": {
             "$id": "/properties/ui_id",
             "type": "integer",

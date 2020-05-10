@@ -80,6 +80,7 @@ class MicrosoftTextAnalyticsKeyPhrase extends base.EngineBase {
                         "description": "Translated paragraph",
                     }
                 ],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "detectKeyPhrases",
             },
 
