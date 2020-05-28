@@ -15,6 +15,7 @@ handlePos: {top: x, left: y} (default: x=0, y=0)
 
 methods
 updatePanel: needs to be called every time the contents of the panel have changed
+adaptToWindowSize: call when new items have been added or items have been taken away
 refresh: refresh view status of panel
 */
 
@@ -173,7 +174,7 @@ $.widget("ui.erTabSlideOut", {
                 erTSO.panel.css({'left' : '-' + erTSO.panelWidth + 'px'});
                 erTSO.handle.css({'left' : (erTSO.panelWidth - 1) + 'px'});
             }
-            erTSO._adaptToWindowSize();
+            erTSO.adaptToWindowSize();
             erTSO.refresh();
             erTSO._setTransitions();
 
@@ -193,7 +194,7 @@ $.widget("ui.erTabSlideOut", {
         // window resize (or scaling) might change panel size
         $(window).resize(function(evt) {
             $('.er-tab-slide-out-grid-horizontal').css({'flex-wrap' : 'nowrap'});
-            erTSO._adaptToWindowSize();
+            erTSO.adaptToWindowSize();
             erTSO.refresh();
         });
 
@@ -377,7 +378,7 @@ $.widget("ui.erTabSlideOut", {
         }
     },
 
-    _adaptToWindowSize: function() {
+    adaptToWindowSize: function() {
         if (this.dragAxis === 'x') {
             if (this.panel.position().left + this.panelWidth > document.documentElement.clientWidth) {
                 let newPosLeft = document.documentElement.clientWidth - this.panelWidth;
@@ -392,7 +393,7 @@ $.widget("ui.erTabSlideOut", {
             }
         } else {
             if (this.panelHeight > window.innerHeight) {
-                $('#er-tab-slide-out-grid-container').css({'grid-template-columns' : 'auto auto auto'});
+                 $('#er-tab-slide-out-grid-container').css({'grid-template-columns' : 'auto auto auto'});
                 this.panelHeight = this.panel.outerHeight();
             } else {
                 $('#er-tab-slide-out-grid-container').css({'grid-template-columns' : 'auto auto'});

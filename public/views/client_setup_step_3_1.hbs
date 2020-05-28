@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
     <script src="/js/client-setup/progress.js"></script>
 
 </head>
@@ -40,9 +40,9 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row-header">
-                            <button type="button" class="er-audio-player" data-audio-elements="heading2_1"><img
-                                    src="/images/setup/text-to-speech.png"></button>
-                            <h2 id="heading2_1"  data-audio-src="/audio/step3_1/{{lang}}/heading2_1.mp3">
+
+                            {{{createTTSButton "step3_1_image_presentation" lang}}}
+                            <h2 id="step3_1_image_presentation">
                                 {{{step3_1_image_presentation}}}
                             </h2>
 
@@ -63,12 +63,10 @@
                             </div>
                         </div>
                         <div class="columns small-1 large-1 tts-column">
-                            <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
-                                    src="/images/setup/text-to-speech.png">
-                            </button>
+                            {{{createTTSButton "multimedia_presentation_tooltip_text" lang}}}
                         </div>
                         <div class="columns small-9 large-9">
-                            <p id="button1_text"  data-audio-src="/audio/step3_1/{{lang}}/button1_text.mp3">
+                            <p id="multimedia_presentation_tooltip_text">
                                {{{multimedia_presentation_tooltip_text}}}
 
                             </p>
@@ -84,12 +82,10 @@
                             </div>
                         </div>
                         <div class="columns small-1 large-1 tts-column">
-                            <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
-                                    src="/images/setup/text-to-speech.png">
-                            </button>
+                            {{{createTTSButton "multimedia_presentation_top_text" lang}}}
                         </div>
                         <div class="columns small-9 large-9">
-                            <p id="button2_text"  data-audio-src="/audio/step3_1/{{lang}}/button2_text.mp3">
+                            <p id="multimedia_presentation_top_text">
                               {{{multimedia_presentation_top_text}}}
 
                             </p>
@@ -106,12 +102,10 @@
                             </div>
                         </div>
                         <div class="columns small-1 large-1 tts-column">
-                            <button type="button" class="er-audio-player" data-audio-elements="button3_text"><img
-                                    src="/images/setup/text-to-speech.png">
-                            </button>
+                            {{{createTTSButton "multimedia_presentation_next_text" lang}}}
                         </div>
                         <div class="columns small-9 large-9">
-                            <p id="button3_text"  data-audio-src="/audio/step3_1/{{lang}}/button3_text.mp3">
+                            <p id="multimedia_presentation_next_text">
                                 {{{multimedia_presentation_next_text}}}
                             </p>
 

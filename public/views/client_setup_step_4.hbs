@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
     <script src="/js/client-setup/progress.js"></script>
     <script>
 
@@ -54,16 +54,17 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row-header">
-                            <button type="button" class="er-audio-player er-audio-player-float" data-audio-elements="heading2_1 heading2_1_text"><img
-                                    src="/images/setup/text-to-speech.png"></button>
+                            <div class="er-audio-player-float">
+                                {{{createTTSButton "step4_symbol_language,use_symbol_language_text" lang}}}
+                            </div>
                             <div>
 
-                                <h2 id="heading2_1" data-audio-src="/audio/step4/{{lang}}/heading2_1.mp3">
+                                <h2 id="step4_symbol_language">
                                 {{{step4_symbol_language}}}
 
                                 </h2>
 
-                                <div id="heading2_1_text" data-audio-src="/audio/step4/{{lang}}/heading2_1_text.mp3">
+                                <div id="use_symbol_language_text">
                                 {{{use_symbol_language_text}}}
 
                                 </div>
@@ -81,10 +82,9 @@
                         </div>
                         <div class="row">
                             <div class="columns small-12 text-center">
-                                <span id="button1_text" data-audio-src="/audio/step4/{{lang}}/button1_text.mp3" class="container-info">{{{use_symbol_language_yes}}}</span>
+                                <span id="use_symbol_language_yes" class="container-info">{{{use_symbol_language_yes}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "use_symbol_language_yes" lang}}}
 
                             </div>
                         </div>
@@ -97,10 +97,9 @@
 
                         <div class="row">
                             <div class="columns small-12 text-center">
-                                <span id="button2_text" data-audio-src="/audio/step4/{{lang}}/button2_text.mp3" class="container-info">{{{use_symbol_language_no}}}</span>
+                                <span id="use_symbol_language_no" class="container-info">{{{use_symbol_language_no}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "use_symbol_language_no" lang}}}
 
                             </div>
                         </div>
@@ -118,9 +117,8 @@
                     <div class="row">
                         <div class="medium-12 columns">
                             <div class="row-header">
-                                <button type="button" class="er-audio-player" data-audio-elements="heading2_2"><img
-                                        src="/images/setup/text-to-speech.png"></button>
-                                <h2 id="heading2_2" data-audio-src="/audio/step4/{{lang}}/heading2_2.mp3">
+                                {{{createTTSButton "use_symbol_language_which" lang}}}
+                                <h2 id="use_symbol_language_which">
                                     {{{use_symbol_language_which}}}
                                 </h2>
                             </div>
@@ -135,11 +133,9 @@
                             </div>
                             <div class="row">
                                 <div class="columns small-12 text-center">
-                                    <span id="button3_text" data-audio-src="/audio/step4/{{lang}}/button3_text.mp3" class="container-info">{{{use_symbol_language_bliss}}}</span>
+                                    <span id="use_symbol_language_bliss" class="container-info">{{{use_symbol_language_bliss}}}</span>
                                     <br>
-                                    <button type="button" class="er-audio-player" data-audio-elements="button3_text">
-                                        <img src="/images/setup/text-to-speech.png">
-                                    </button>
+                                    {{{createTTSButton "use_symbol_language_bliss" lang}}}
 
                                 </div>
                             </div>
@@ -152,11 +148,9 @@
                             </div>
                             <div class="row">
                                 <div class="columns small-12 text-center">
-                                    <span id="button4_text" data-audio-src="/audio/step4/{{lang}}/button4_text.mp3" class="container-info">{{{use_symbol_language_widgit}}}</span>
+                                    <span id="use_symbol_language_widgit" class="container-info">{{{use_symbol_language_widgit}}}</span>
                                     <br>
-                                    <button type="button" class="er-audio-player" data-audio-elements="button4_text">
-                                        <img src="/images/setup/text-to-speech.png">
-                                    </button>
+                                    {{{createTTSButton "use_symbol_language_widgit" lang}}}
 
                                 </div>
                             </div>
@@ -168,11 +162,9 @@
                             </div>
                             <div class="row">
                                 <div class="columns small-12 text-center">
-                                    <span id="button5_text" data-audio-src="/audio/step4/{{lang}}/button5_text.mp3" class="container-info">{{{use_symbol_language_arasaac}}}</span>
+                                    <span id="use_symbol_language_arasaac" class="container-info">{{{use_symbol_language_arasaac}}}</span>
                                     <br>
-                                    <button type="button" class="er-audio-player" data-audio-elements="button5_text">
-                                        <img src="/images/setup/text-to-speech.png">
-                                    </button>
+                                    {{{createTTSButton "use_symbol_language_arasaac" lang}}}
                                 </div>
                             </div>
                         </div>

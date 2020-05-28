@@ -166,6 +166,10 @@ function loadEnginesForCategory(category,supportCategories,profile,toolEntries) 
                         }
                     }
 
+                    if(!functions[j].visibleInConfiguration){
+                        continue;
+                    }
+
                     if (Array.isArray(functions[j].supportCategories)) {
 
                         for (let k = 0; k < functions[j].supportCategories.length; k++) {

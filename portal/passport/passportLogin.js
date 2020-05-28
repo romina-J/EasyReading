@@ -13,6 +13,7 @@ async function userLogin(req, loginInfo, callback) {
     //Client side login(extension, apps)...
     if (req.session._clientToken) {
 
+        req.session.returnTo ="/client/welcome";
         let network = require("../../core/network/network");
         let webSocketConnection = network.getConnectionWithUUID(req.session._clientToken);
         if (webSocketConnection) {
@@ -82,7 +83,76 @@ async function userLogin(req, loginInfo, callback) {
 
             });
         }else{
-            callback(null,"No connected client found.");
+
+            ///in case sticky sessions do not work. User logs in over http but is connected to another instance via websocket
+            //Therefore we log in the user over http, and pass the loginInfo to the message server that broadcasts it to all the other instances
+            let password = require('password-hash-and-salt');
+            await password(loginInfo.id).hash("this is my salt and not yours!!!", async function (error, hashedUserLoginID) {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+
+                let localeService = require("../../core/i18n/locale-service");
+                let clientProfile = require("../../core/profile/profile");
+                let currentProfile = new clientProfile(req.session._clientToken);
+                currentProfile.email = loginInfo.email;
+                currentProfile.locale = localeService.getSupportedLanguage(loginInfo.locale);
+                currentProfile.loginType = loginInfo.loginType;
+
+                try {
+
+                    if (loginInfo.loginType === "Facebook") {
+                        await currentProfile.loginFacebook(hashedUserLoginID, currentProfile.email, null);
+
+                    } else if (loginInfo.loginType === "Google") {
+                        await currentProfile.loginGoogle(hashedUserLoginID, currentProfile.email, null);
+
+                    } else if (loginInfo.loginType === "Anonym") {
+                        await currentProfile.loginAnonym(hashedUserLoginID, currentProfile.email, null);
+                    }
+
+                    let sessionID = req.session.id;
+                    let clientToken = req.session._clientToken;
+
+                    currentProfile.userId = currentProfile.googleID;
+
+                    const userProfile = await profileRepo.getProfileByEmail(currentProfile.email);
+
+                    if(currentProfile.isNewProfile){
+                        userProfile.isNewProfile = true;
+                    }
+
+                    userProfile.clientLogin = true;
+
+                    callback(userProfile, error);
+
+                    let messageServerConnection = require("../../core/network/message-server-connection");
+                    if(messageServerConnection.isEnabled){
+                        messageServerConnection.sendMessage({
+                            type: "userLoginWebsocket",
+                            message: {
+                                profileID: userProfile.id,
+                                token: clientToken,
+                                sessionID: sessionID,
+                                loginInfo: loginInfo,
+
+
+                            }
+                        });
+                    }
+
+
+                } catch (e) {
+
+                    console.log(e);
+                    callback(userProfile, e);
+
+
+                }
+
+
+            });
         }
 
 
@@ -91,6 +161,7 @@ async function userLogin(req, loginInfo, callback) {
         //Portal side login, Caretakers & Clients
         try {
 
+            req.session.returnTo ="/";
             const healthCareWorkerProfile = await profileRepo.getProfileByEmail(loginInfo.email);
 
             if (healthCareWorkerProfile) {

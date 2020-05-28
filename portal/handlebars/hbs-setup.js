@@ -246,7 +246,12 @@ function createAudioButton(audioElements){
         '<img src="/images/setup/text-to-speech.png" alt="play audio">' +
         '</button>';
 }
-
+hbs.registerHelper('eq', function () {
+    const args = Array.prototype.slice.call(arguments, 0, -1);
+    return args.every(function (expression) {
+        return args[0] === expression;
+    });
+});
 hbs.registerHelper('ifEquals', function (arg1, arg2, options) {
     if (typeof arg1 === 'undefined' && arg2 === null) {
         return options.fn(this);

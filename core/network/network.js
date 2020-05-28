@@ -136,6 +136,74 @@ let network = {
             }
 
         }
+
+    },
+    userLoginWebsocket: async function (message) {
+        ///in case sticky sessions do not work. User logs in over http but is connected to another instance via websocket
+        //Then a message is sent over the websocket server to find the corresponding connection and login the client.
+        for (let i = 0; i < this.webSocketConnections.length; i++) {
+            if (this.webSocketConnections[i].uuid === message.token) {
+
+                let loginInfo = message.loginInfo;
+
+                let websocketConnection = this.webSocketConnections[i];
+                let password = require('password-hash-and-salt');
+                await password(loginInfo.id).hash("this is my salt and not yours!!!", async function (error, hashedUserLoginID) {
+                    if (error) {
+                        console.log(error);
+                        return;
+                    }
+
+                    let localeService = require("../../core/i18n/locale-service");
+                    let clientProfile = require("../../core/profile/profile");
+                    let currentProfile = new clientProfile(message.token);
+                    currentProfile.email = loginInfo.email;
+                    currentProfile.locale = localeService.getSupportedLanguage(loginInfo.locale);
+                    currentProfile.loginType = loginInfo.loginType;
+
+                    try {
+
+                        if (loginInfo.loginType === "Facebook") {
+                            await currentProfile.loginFacebook(hashedUserLoginID, currentProfile.email, websocketConnection);
+
+                        } else if (loginInfo.loginType === "Google") {
+                            await currentProfile.loginGoogle(hashedUserLoginID, currentProfile.email, websocketConnection);
+
+                        } else if (loginInfo.loginType === "Anonym") {
+                            await currentProfile.loginAnonym(hashedUserLoginID, currentProfile.email, websocketConnection);
+                            websocketConnection.sessionID = message.sessionID;
+                        }
+                        websocketConnection.setProfile(currentProfile);
+                        let loginResult = {
+                            type: "userLoginResult",
+                            result: currentProfile,
+                        };
+
+
+                        websocketConnection.sendMessage(loginResult);
+
+                    } catch (e) {
+                        console.log(e);
+
+                    }
+
+
+                });
+
+
+            }
+
+        }
+    },
+    userLogoutWebsocket:async function (token) {
+        ///in case sticky sessions do not work. User logs in over http but is connected to another instance via websocket
+        //Message is sent to logout the client also with the websocket connection after he logged out via http
+        for (let i = 0; i < this.webSocketConnections.length; i++) {
+            if (this.webSocketConnections[i].uuid === token) {
+                this.webSocketConnections[i].logout();
+
+            }
+        }
     },
     getProfileWithID:function (id) {
         for (let i = 0; i < this.webSocketConnections.length; i++) {

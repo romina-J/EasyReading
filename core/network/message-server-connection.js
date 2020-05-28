@@ -77,6 +77,14 @@ let messageServerConnection = {
 
                 let network = require("./network");
                 network.userUpdated(req.message);
+            }else if (req.type === "userLoginWebsocket"){
+
+                let network = require("./network");
+                network.userLoginWebsocket(req.message);
+            }else if (req.type === "userLogoutWebsocket"){
+
+                let network = require("./network");
+                network.userLogoutWebsocket(req.message);
             }else if(req.type === "registerNamespaceComplete"){
                 for(let i=0; i< messageServerConnection.messageQueue.length; i++){
                     messageServerConnection.sendMessage(messageServerConnection.messageQueue[i]);

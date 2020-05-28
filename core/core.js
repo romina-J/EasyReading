@@ -660,6 +660,7 @@ function loadStaticComponents(core) {
     staticSources.push("core/libraries/start-up.js");
     staticSources.push("core/libraries/request-manager.js");
     staticSources.push("core/libraries/ui-update-manager.js");
+    staticSources.push("core/libraries/feedbackForm/feedbackForm.js");
     if (core.debugMode) {
         staticSources.push("core/libraries/content-script-controller-debug.js");
     }
@@ -694,6 +695,7 @@ function loadStaticComponents(core) {
 
     let staticCSS = [];
     staticCSS.push("core/libraries/external/micromodal/micromodal.css");
+    staticCSS.push("core/libraries/feedbackForm/feedbackForm.css");
 
     if (core.debugMode) {
 

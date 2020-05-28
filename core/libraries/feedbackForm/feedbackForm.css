@@ -1,0 +1,157 @@
+.modal__container {
+    border: 5px solid #00b050;
+    padding: 5px;
+    width: 35em;
+    height: 32em;
+    font-size: initial;;
+    color: black;
+}
+
+.modal__container fieldset {
+    border: none;
+}
+
+#er-feedback-logo {
+    width: 3em;
+    height: 3em;
+}
+
+.modal__header {
+    display: grid;
+    grid-template-columns: 30em 1.5em;
+    align-items: normal;
+}
+
+.modal__content {
+    margin: 1em;
+}
+
+.modal__content legend {
+    font-family: Arial, Helvetica, sans-serif;
+    color: black;
+    padding-bottom: 1em;
+    font-size: 1em;
+}
+
+#er-feedback-title, .erFeedback_page1, .erFeedback_page7 {
+    color: #00b050 !important;
+}
+
+.erFeedback_page1, .erFeedback_page7 {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.erFeedback_page1, .erFeedback_page7 {
+    margin-top: 4em;
+}
+
+.erFeedback_page2 input[type='radio'] {
+    margin-left: 27em;
+    width: 0.8em;
+    height: 0.8em;
+}
+
+.erFeedback_page2 img {
+    width: 1.8em;
+    height: 1.8em;
+    float: left;
+    position: absolute;
+}
+
+.erFeedback_page2 div {
+    height: 1.8em;
+}
+
+.erRadioLabel {
+    float: left;
+    position: absolute;
+    margin-left: 2.3em;
+}
+
+.radioDiv {
+    float: left;
+    text-align: center;
+    padding-right: 1em;
+}
+
+.radioDiv img {
+    display: block;
+    width: 4em;
+    height: 4em;
+}
+
+.radioDiv label {
+    display: block;
+}
+
+.addDiv {
+    clear: left;
+}
+
+.addDiv img {
+    float: left;
+    width: 3em;
+    height: 3em;
+}
+
+#q3_add, #q4_add {
+    min-height: 5em;
+    height: 5em;
+    width: 25em;
+}
+
+#q5 {
+    min-height: 15em;
+    height: 15em;
+    width: 25em;
+}
+
+.erFeedback_page6 img {
+    float: left;
+    width: 3em;
+    height: 3em;
+}
+
+.modal__close {
+    margin-bottom: 2em;
+}
+
+.modal__close:focus {
+    background-color: #e6e6e6 !important;
+    color: black !important;
+}
+
+.modal__footer {
+    position: absolute;
+    top: 28em;
+    display: grid;
+    grid-template-columns: 3em auto 7em 2em;
+    width: 33.5em;
+}
+
+.modal__footer img {
+    width: 3em;
+    height: 3em;
+}
+
+#erH2020Note {
+    font-size: 60%;
+    margin-left: 1em;
+    margin-top: 0.3em;
+    padding: 5px;
+    color: white;
+    background-color: #00b050;
+    height: 5em;
+}
+
+#erBackBtn {
+    width: 2em;
+    margin-left: 5em;
+    margin-top: 0.5em;
+}
+
+#erForwardBtn {
+    width: 2em;
+    margin-top: 0.5em;
+}

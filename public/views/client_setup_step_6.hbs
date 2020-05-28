@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
     <script src="/js/client-setup/progress.js"></script>
 
 </head>
@@ -40,15 +40,16 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row-header">
-                            <button type="button" class="er-audio-player er-audio-player-float" data-audio-elements="heading2_1 heading2_1_text"><img
-                                    src="/images/setup/text-to-speech.png"></button>
+                            <div class="er-audio-player-float">
+                                {{{createTTSButton "structure_help_heading,structure_help_heading_text" lang}}}
+                            </div>
                             <div>
 
-                                <h2 id="heading2_1" data-audio-src="/audio/step6/{{lang}}/heading2_1.mp3">
+                                <h2 id="structure_help_heading">
                                     {{{structure_help_heading}}}
 
                                 </h2>
-                                <div id="heading2_1_text" data-audio-src="/audio/step6/{{lang}}/heading2_1_text.mp3">
+                                <div id="structure_help_heading_text">
                                     {{{structure_help_heading_text}}}
                                 </div>
                             </div>
@@ -68,10 +69,9 @@
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="button1_text" data-audio-src="/audio/step6/{{lang}}/button1_text.mp3" class="container-info">{{{remove_adds_text}}}</span>
+                                <span id="remove_adds_text" class="container-info">{{{remove_adds_text}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "remove_adds_text" lang}}}
 
                             </div>
                         </div>
@@ -84,10 +84,9 @@
                         </div>
                         <div class="row">
                             <div class="columns small-12 text-center">
-                                <span id="button2_text" data-audio-src="/audio/step6/{{lang}}/button2_text.mp3" class="container-info">{{{highlight_links_text}}}</span>
+                                <span id="highlight_links_text" class="container-info">{{{highlight_links_text}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "highlight_links_text" lang}}}
 
                             </div>
 
@@ -101,10 +100,9 @@
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="button3_text" data-audio-src="/audio/step6/{{lang}}/button3_text.mp3" class="container-info">{{{reading_mode}}}</span>
+                                <span id="reading_mode" class="container-info">{{{reading_mode}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button3_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "reading_mode" lang}}}
 
                             </div>
 

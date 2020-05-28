@@ -13,7 +13,7 @@ class OverlayUserInterface extends UserInterfaceBase {
         $("body").prepend('<div id="overlay_ui_wrapper"></div>');
         $("#overlay_ui_wrapper").prepend('<div id="easy_reader_overlay_dialog" class="easy-reading-interface" title="Easy Reader"><p><div id="overlay-grid-container" class="easy-reader-controls-container"></div></p></div>');
 
-        this.overlayWidth = this.configuration.buttonSize * 3 + 8;
+        this.overlayWidth = this.configuration.buttonSize * 3 + 10;
         let position = { my: "left+" + ((window.innerWidth - this.overlayWidth)*this.configuration.startPositionXInPercent/100) + " top+" + (window.innerHeight*this.configuration.startPositionYInPercent/100), at: "left top", of: window };
         if(this.tabConfiguration && this.tabConfiguration.aktpos) {
             position = {
@@ -177,6 +177,29 @@ class OverlayUserInterface extends UserInterfaceBase {
         }
     }
 
+    toolsLoaded() {
+        // add special buttons in a separate container
+        $("#overlay_ui").append(
+            '<div id="er-overlay-special-button-container">' + 
+                '<div id="er-overlay-container-settings" class="er-overlay-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' + 
+                    '<button id="er-overlay-settings-button" class="easy-reading-button" onclick="location.href=\'' + easyReading.uiCollection.serverURL + '/client/welcome\';">' +
+                        '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/overlay/1.0/ui/images/settings.png" title="Opens settings">' +
+                    '</button>' + 
+                '</div>' + 
+                '<div id="er-overlay-container-feedback" class="er-overlay-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' + 
+                    '<button id="er-overlay-feedback_button" class="easy-reading-button" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                        '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/overlay/1.0/ui/images/feedback.png" title="Opens feedback form">' +
+                    '</button>' + 
+                '</div>' +
+            '</div>');
+
+        $("#er-overlay-feedback_button").click(function() {
+            feedbackForm.showFeedbackForm();
+        });      
+
+        $("#er-overlay-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px"); 
+    }    
+
     remove() {
         $("#easy_reader_overlay_dialog").dialog("destroy").remove();
     }
@@ -184,9 +207,10 @@ class OverlayUserInterface extends UserInterfaceBase {
     uiUpdated() {
         if (this.tabConfiguration && this.tabConfiguration.startX && ((this.tabConfiguration.startX != this.configuration.startPositionXInPercent) || (this.tabConfiguration.startY != this.configuration.startPositionYInPercent))) {
             $("#easy_reader_overlay_dialog").dialog("option", "position", {my: "left+" + ((window.innerWidth - this.overlayWidth)*this.configuration.startPositionXInPercent/100) + " top+" + ((window.innerHeight - $("#easy_reader_overlay_dialog").parent().height())*this.configuration.startPositionYInPercent/100), at: "left top", of: window});
-            let userInterface = this;
             this.saveConfiguration();
         }
+
+        $("#er-overlay-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px");
     }
     
     saveConfiguration() {

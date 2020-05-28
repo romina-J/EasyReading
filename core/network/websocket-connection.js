@@ -268,7 +268,36 @@ class WebSocketConnection {
                 let profileRecommendation = require("./../profile/profile-recommendation");
                 await profileRecommendation.createConfigurationForRecommendation(req.data,this.profile.id);
 
+            }else if(req.type === "surveyResult") {
+
+                try{
+
+                    let password = require('password-hash-and-salt');
+                    let profile = this.profile;
+                    if(this.profile.id){
+                        password(this.profile.id.toString()).hash("another salt for you", async function (error, hashedId) {
+                            let data = {
+                                hashedId: hashedId,
+                                locale: profile.locale,
+                                timestamp: Math.floor(Date.now()/1000),
+                                data: req.data,
+                            };
+                            let databaseManager = require("../database/database-manager");
+                            let insertSurveyRequest = databaseManager.createRequest("survey_entry").insert(data);
+                            await databaseManager.executeRequest(insertSurveyRequest);
+
+
+                        });
+                    }
+
+
+
+                }catch (error) {
+                    console.log(error);
+                }
+
             }
+
         } catch (error) {
             errorMsg = error;
         }
