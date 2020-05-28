@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
     <script src="/js/client-setup/progress.js"></script>
 
 </head>
@@ -39,9 +39,8 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row-header">
-                            <button type="button" class="er-audio-player" data-audio-elements="heading2_1"><img
-                                    src="/images/setup/text-to-speech.png"></button>
-                            <h2 id="heading2_1"  data-audio-src="/audio/step3/{{lang}}/heading2_1.mp3">
+                            {{{createTTSButton "step3_image_search" lang}}}
+                            <h2 id="step3_image_search">
                                 {{{step3_image_search}}}
                             </h2>
 
@@ -60,10 +59,9 @@
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="button1_text" data-audio-src="/audio/step3/{{lang}}/button1_text.mp3" class="container-info">{{{use_image_search_yes}}}</span>
+                                <span id="use_image_search_yes" class="container-info">{{{use_image_search_yes}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "use_image_search_yes" lang}}}
                             </div>
 
                         </div>
@@ -77,10 +75,9 @@
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="button2_text" data-audio-src="/audio/step3/{{lang}}/button2_text.mp3" class="container-info">{{{use_image_search_no}}}</span>
+                                <span id="use_image_search_no" class="container-info">{{{use_image_search_no}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "use_image_search_no" lang}}}
                             </div>
                         </div>
                     </div>

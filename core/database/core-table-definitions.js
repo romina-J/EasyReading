@@ -762,6 +762,42 @@ let inputSupport = {
     }
 };
 
+let surveyResult = {
+    "$id": "https://www.easyreading.eu/schemas/functionUsageEntry.json",
+    "type": "object",
+    "title": "survey_entry",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "hashedId": {
+            "$id": "/properties/function_id",
+            "type": "string",
+            "title": "Hashed UserID",
+
+
+        },
+        "locale": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Language of the user",
+            "default": "en",
+        },
+        "timestamp": {
+            "$id": "#/properties/timestamp",
+            "type": "integer",
+            "title": "The Timestamp Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0,
+        },
+        "data": {
+            "type": "string",
+            "title": "Survey data",
+            "default": "",
+        },
+
+    }
+};
+
 
 let presentationSupport = {
     "$id": "https://www.easyreading.eu/schemas/profile_presentation_support.json",
@@ -1159,7 +1195,8 @@ let coreTableDefinitions = {
         reasoner,
         reasonerParams,
         functionUsageEntry,
-        wizardUserTest
+        wizardUserTest,
+        surveyResult,
     ],
 
 

@@ -86,7 +86,7 @@ const caretakerContentReplacementController = require("./controller/view/caretak
 const clientSetupController = require("./controller/view/clientSetupController");
 const clientSetupFinishedController = require("./controller/view/clientSetupFinishedController");
 const localeProfileWizardController = require("./controller/view/localeProfileWizardController");
-
+const permissionController = require("./controller/view/permissionController");
 
 // Authentication routes
 //Caretaker
@@ -116,35 +116,33 @@ app.use('/client/function-overview', customFunctionViewController, (_, res) => r
 
 // Caretaker
 app.get('/caretaker/clients', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientList, caretakerClientOverviewController, (_, res) => res.render('caretaker_clients', res.locals.context));
-app.get('/caretaker/client-configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, patientController.getEngineConfigByuserId, (_, res) => res.render('caretaker_client_configure', res.locals.context));
+app.get('/caretaker/client-configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure,permissionController.hasPermission,  patientController.getEngineConfigByuserId, (_, res) => res.render('caretaker_client_configure', res.locals.context));
 app.get('/caretaker/custom-paragraphs-overview', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateContentReplacements, caretakerContentReplacementController.getContentReplacementsByUserId, (_, res) => res.render('caretaker_content_replacements', res.locals.context));
 app.get('/caretaker/custom-paragraph', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateContentReplacements, caretakerContentReplacementController.getContentReplacementsById, (_, res) => res.render('caretaker_content_replacements_edit', res.locals.context));
 app.post('/caretaker/custom-paragraph', caretakerContentReplacementController.saveOrUpdateContentReplacement);
 app.post('/caretaker/custom-paragraphs-action', caretakerContentReplacementController.quickEditContentReplacement);
 
 // Client
-app.use('/client/welcome', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
-app.use('/client/privacy-policy', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, (_, res) => res.render('client_privacy_policy', res.locals.context));
-app.use('/client/privacy-policy-easy', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, (_, res) => res.render('client_privacy_policy_easy', res.locals.context));
-app.use('/client/imprint', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateImprint, (_, res) => res.render('client_imprint', res.locals.context));
-app.use('/client/setup', authentication.isAuthenticated, userController.setUser,localeController.setLocale, localeProfileWizardController.translateProfileWizard, clientSetupController.setupController);
-app.use('/client/finished', authentication.isAuthenticated, userController.setUser,localeController.setLocale,localeProfileWizardController.translateProfileWizard, clientSetupFinishedController.setupFinishedController);
-
-
-
-app.get('/client/configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, patientController.getEngineConfigByuserId, (_, res) => res.render('client_configure', res.locals.context));
-app.use('/client/basic-settings', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateBasicSetting, clientBasicSettingsController, (_, res) => res.render('client_basic_settings', res.locals.context));
+app.use('/client/welcome', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
+app.use('/client/privacy-policy', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, (_, res) => res.render('client_privacy_policy', res.locals.context));
+app.use('/client/privacy-policy-easy', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, (_, res) => res.render('client_privacy_policy_easy', res.locals.context));
+app.use('/client/imprint', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateImprint, (_, res) => res.render('client_imprint', res.locals.context));
+app.use('/client/setup', authentication.isAuthenticated, userController.setUser, permissionController.isLoggedInAsClient, localeController.setLocale, localeProfileWizardController.translateProfileWizard, clientSetupController.setupController);
+app.use('/client/finished', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient,localeController.setLocale,localeProfileWizardController.translateProfileWizard, clientSetupFinishedController.setupFinishedController);
+//Client configure
+app.get('/client/configure', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateConfigure,permissionController.hasPermission, patientController.getEngineConfigByuserId, (_, res) => res.render('client_configure', res.locals.context));
+app.use('/client/basic-settings', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateBasicSetting, clientBasicSettingsController, (_, res) => res.render('client_basic_settings', res.locals.context));
 //Client Caretaker Management
-app.use('/client/caretakers', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateCaretakerList, clientCaretakerOverviewController, (_, res) => res.render('client_caretaker_overview', res.locals.context));
-app.use('/client/caretaker/register', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateClientCaretakerRegister, clientCaretakerRegisterController, (_, res) => res.render('client_caretaker_register', res.locals.context));
+app.use('/client/caretakers', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateCaretakerList, clientCaretakerOverviewController, (_, res) => res.render('client_caretaker_overview', res.locals.context));
+app.use('/client/caretaker/register', authentication.isAuthenticated, userController.setUser,permissionController.isLoggedInAsClient, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, localeController.translateClientCaretakerRegister, clientCaretakerRegisterController, (_, res) => res.render('client_caretaker_register', res.locals.context));
 app.use('/logout-success', (_, res) => res.render('client_caretaker_register', res.locals.context));
 
 
 // API routes
 const egineController = require("./controller/api/engineController");
 const profileController = require("./controller/api/profileController");
-app.post('/api/v1/configuration', egineController.updateEngineConfiguratoin);
-app.post('/api/v1/updateUserInterface', profileController.updateUserInterface);
+app.post('/api/v1/configuration',permissionController.hasPermission, egineController.updateEngineConfiguratoin);
+app.post('/api/v1/updateUserInterface',permissionController.hasPermission, profileController.updateUserInterface);
 
 
 app.all('*', function(req, res) {

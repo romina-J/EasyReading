@@ -7,7 +7,11 @@
         {{#hasRole user "client"}}
             <li><a href="/client/configure?id={{user.id}}">{{menu_config_your_toolbar_text}}</a></li>
             <li><a href="/client/basic-settings">{{ menu_basic_setting_text }}</a></li>
-            <li><a href="/client/caretakers">{{ menu_caretaker_list_text }}</a></li>
+            {{#if activateMeLaterAgainWhenPrivacyPolicyAllowsIt}}
+                <li><a href="/client/caretakers">{{ menu_caretaker_list_text }}</a></li>
+            {{/if}}
+
+
         {{/hasRole}}
 
 

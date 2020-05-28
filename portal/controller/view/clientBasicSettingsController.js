@@ -10,9 +10,19 @@ router.use('/', async function (req, res, next) {
 
     if (req.method === "POST") {
 
+        let profileNeedsUpdate = false;
         if (req.body.user_language) {
 
             req.session.user.locale = req.body.user_language;
+
+            let network = require("../../../core/network/network");
+            let profile = network.getProfileWithID(req.session.user.id);
+            if(profile){
+                profile.locale = req.body.user_language;
+            }
+
+            profileNeedsUpdate = true;
+
         }
 
         if(req.body.ui_mode) {
@@ -73,6 +83,13 @@ router.use('/', async function (req, res, next) {
 
         let updateProfileRequest = databaseManager.createRequest("profile").update(req.session.user).where("id", "=", req.session.user.id);
         let updateProfileRequestResult = await databaseManager.executeRequest(updateProfileRequest);
+
+        if(profileNeedsUpdate){
+
+            let network = require("../../../core/network/network");
+             await network.userUpdated(req.session.user.id);
+
+        }
 
         res.redirect(req.originalUrl);
         return;

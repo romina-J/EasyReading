@@ -4,7 +4,7 @@
 
 
 <head>
-    <title>{{page_configure_title}}</title>
+    <title>Privacy Policy</title>
     {{> head }}
     <script src="/js/audio.js"></script>
 </head>
@@ -26,12 +26,14 @@
 
             <div class="row">
                 <div class="columns">
-                    <h1>{{privacy_policy_easy}}</h1>
-
-
-                    to be done ...
+                    {{#if (eq lang "de")}}
+                        {{> pp_de_easy}}
+                    {{else if (eq lang "sv")}}
+                        {{> pp_sv_easy}}
+                    {{else}}
+                        {{> pp_en_easy}}
+                    {{/if}}
                 </div>
-
             </div>
         </main>
         {{>footer}}

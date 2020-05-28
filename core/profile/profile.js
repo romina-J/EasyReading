@@ -128,11 +128,14 @@ class Profile {
             }
             profileBuilder.createClassMappings(this);
 
-            if(!this.debugMode){
-                profileBuilder.normalizeCSSPaths(this,webSocketConnection.url);
+            if(webSocketConnection){
+                if(!this.debugMode){
+                    profileBuilder.normalizeCSSPaths(this,webSocketConnection.url);
+                }
+                profileBuilder.normalizeIconPaths(this,webSocketConnection.url);
+                profileBuilder.normalizeRemoteAssetDirectoryPaths(this,webSocketConnection.url);
             }
-            profileBuilder.normalizeIconPaths(this,webSocketConnection.url);
-            profileBuilder.normalizeRemoteAssetDirectoryPaths(this,webSocketConnection.url);
+
 
 
             let core = require("../core");

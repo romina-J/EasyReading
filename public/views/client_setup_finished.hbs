@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
 
     <script>
 
@@ -20,18 +20,15 @@
                     let erSlideOut = $("#er-tab-slide-out-handle");
                     if (erSlideOut.length) {
 
-                       let html = '<div class="arrow_box">' +
-                                '<button type="button" id="bubble_audio" class="er-audio-player" data-audio-elements="bubble_audio_help"><img\n' +
-                                '                                    src="/images/setup/text-to-speech.png"></button>' +
-                                '<div id="bubble_audio_help" data-audio-src="/audio/setup_finished/{{lang}}/here_is_your_help.mp3">{{{final_step_here_is_help}}}</div>' +
+                       let html = '<div class="arrow_box"><span id="bubble_audio">{{{createTTSButton "final_step_here_is_help" lang}}}</span><div id="final_step_here_is_help">{{{final_step_here_is_help}}}</div>' +
                                 '</div>';
 
                         erSlideOut.append(html);
-                        document.getElementById("bubble_audio").addEventListener("click", function (event) {
-                            event.stopPropagation();
-                            event.preventDefault();
+                        $("#bubble_audio>button")[ 0 ].addEventListener("click", function (event) {
+                           event.stopPropagation();
+                           event.preventDefault();
 
-                            audioPlayer.playOrStop($("#bubble_audio"));
+                           audioPlayer.playOrStop($("#bubble_audio>button")[ 0 ]);
 
                         },true);
                     } else {
@@ -58,7 +55,7 @@
                 <img src="/images/setup/step1/logo.png" alt="EasyReading Logo" class="logo">
             </div>
             <div class="columns small-11 large-11 er-header">
-                <h1 id="heading1" class="heading1"  data-audio-src="heading.mp3">{{{final_step_heading}}}</h1>
+                <h1 id="heading1" class="heading1">{{{final_step_heading}}}</h1>
                 <hr class="header-hr">
             </div>
 
@@ -75,15 +72,14 @@
                         <div class="row-header">
 
                             <div class="columns small-1 large-1">
-                            <button type="button" class="er-audio-player er-audio-player-float" data-audio-elements="heading2_1 heading2_1_text heading2_2_text"><img
-                                    src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "final_step_complete,final_step_complete_text1,final_step_complete_text2" lang}}}
                             </div>
                             <div class="columns small-11 large-11">
-                                <h2  id="heading2_1" data-audio-src="/audio/setup_finished/{{lang}}/heading2_1.mp3" class="heading1">{{{final_step_complete}}}</h2>
+                                <h2  id="final_step_complete" class="heading1">{{{final_step_complete}}}</h2>
                                 <div>
-                                    <div id="heading2_1_text" data-audio-src="/audio/setup_finished/{{lang}}/heading2_1_text.mp3">{{{final_step_complete_text1}}}</div>
+                                    <div id="final_step_complete_text1">{{{final_step_complete_text1}}}</div>
 
-                                    <div id="heading2_2_text"  data-audio-src="/audio/setup_finished/{{lang}}/heading2_2_text.mp3">{{{final_step_complete_text2}}}</div>
+                                    <div id="final_step_complete_text2">{{{final_step_complete_text2}}}</div>
 
                                 </div>
                                 <br>
@@ -103,10 +99,9 @@
                     </a>
                     <div class="row">
                         <div class="columns small-12 text-center">
-                            <span id="button1_text" data-audio-src="/audio/setup_finished/{{lang}}/goto_settings.mp3" class="container-info">{{{final_step_goto_settings}}}</span>
+                            <span id="final_step_goto_settings" class="container-info">{{{final_step_goto_settings}}}</span>
                             <br>
-                            <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
-                                    src="/images/setup/text-to-speech.png"></button>
+                            {{{createTTSButton "final_step_goto_settings" lang}}}
 
                         </div>
                     </div>
@@ -124,10 +119,9 @@
                     </a>
                     <div class="row">
                         <div class="columns small-12 text-center">
-                            <span id="button2_text" data-audio-src="/audio/setup_finished/{{lang}}/goto_google.mp3" class="container-info">{{{final_step_goto_google}}}</span>
+                            <span id="final_step_goto_google" class="container-info">{{{final_step_goto_google}}}</span>
                             <br>
-                            <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
-                                    src="/images/setup/text-to-speech.png"></button>
+                            {{{createTTSButton "final_step_goto_google" lang}}}
 
                         </div>
                     </div>
@@ -142,8 +136,8 @@
 
             <img src="/images/setup/setup_finished/toolbar.png" alt="">
             <img src="/images/setup/setup_finished/click_symbol.png" alt="" id="toolbar_click_symbol">
-            <button type="button" id="bubble_audio" class="er-audio-player" data-audio-elements="more_settings"><img src="/images/setup/text-to-speech.png"></button>
-            <div id="more_settings" data-audio-src="/audio/setup_finished/{{lang}}/more_settings.mp3">{{{final_step_goto_config}}}</div>
+            {{{createTTSButton "final_step_goto_config" lang}}}
+            <div id="final_step_goto_config">{{{final_step_goto_config}}}</div>
 
 
 

@@ -80,6 +80,19 @@ module.exports = {
 
         const toolConfigIdForUser = await engineRepo.getEngineConfigByUserId(id);
         const profile = await profileRepo.getProfileId(id);
+
+
+        try{
+            //If caretaker tries to configure his onw profile by just entering it as the url...
+            if(!profile.roles.includes("client")){
+                return res.redirect('/caretaker/clients');
+            }
+
+        }catch (e) {
+
+            console.log(e);
+        }
+
         const results = [];
 
         let toolCategories = require("../../../core/components/engines/base/engine-function").ToolCategories;
@@ -92,7 +105,8 @@ module.exports = {
         }
 
 
-        const completeProfile = core.network.getProfileWithID(id);
+        let profileBuilder = require("./../../../core/profile/profile-builder");
+        await profileBuilder.loadProfileSupportCategories(profile);
 
         let i = 0;
         for (const engineType of engines) {
@@ -267,12 +281,12 @@ module.exports = {
                         toolCategory: engineFunctionType.toolCategory,
                     };
 
-                    let defaultWidget = core.getDefaultWidgetForFunction(engineFunctionType, completeProfile.supportCategories);
+                    let defaultWidget = core.getDefaultWidgetForFunction(engineFunctionType, profile.supportCategories);
                     if (defaultWidget) {
                         engineFunction.widget.source = activeWidgetList.filter(func => func.id === defaultWidget.source.id)[0];
                     }
 
-                    let defaultPresentation = core.getDefaultDisplayForFunction(engineFunctionType, completeProfile.supportCategories);
+                    let defaultPresentation = core.getDefaultDisplayForFunction(engineFunctionType, profile.supportCategories);
                     if (defaultPresentation) {
 
                         engineFunction.presentation.source = activePresentationList.filter(func => func.id === defaultPresentation.source.id)[0];

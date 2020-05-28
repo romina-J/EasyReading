@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
     <script src="/js/client-setup/progress.js"></script>
 
 </head>
@@ -38,13 +38,15 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row-header">
+                            <div class="er-audio-player-float">
+                                {{{createTTSButton "step2_translations,text_conversion_options_additional_text" lang}}}
+                            </div>
 
-                            <button type="button" class="er-audio-player er-audio-player-float" data-audio-elements="heading heading2_1_text"><img
-                                    src="/images/setup/text-to-speech.png"></button>
                             <div>
-                                <h2  id="heading" data-audio-src="/audio/step2/{{lang}}/heading.mp3" class="heading1">{{{step2_translations}}}</h2>
+
+                                <h2  id="step2_translations" class="heading1">{{{step2_translations}}}</h2>
                                 <div>
-                                    <span id="heading2_1_text"  data-audio-src="/audio/step2/{{lang}}/heading2_1_text.mp3">{{{text_conversion_options_additional_text}}}</span>
+                                    <span id="text_conversion_options_additional_text">{{{text_conversion_options_additional_text}}}</span>
 
                                 </div>
                                 <br>
@@ -58,7 +60,7 @@
 
                     <div class="columns small-4 large-4">
                         <div class="checkbox widget widget_large {{#ifEquals setupInformation.[1].easytext
-                                                                "true"}} checked {{/ifEquals}}" data-name="easytext">
+                                                                             "true"}} checked {{/ifEquals}}" data-name="easytext">
                             <img src="/images/setup/step3/{{lang}}/easy-language.png" alt="">
                         </div>
 
@@ -66,10 +68,10 @@
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="button1_text" class="container-info" data-audio-src="/audio/step2/{{lang}}/button1_text.mp3">{{{plain_language}}}</span>
+                                <span id="plain_language" class="container-info">{{{plain_language}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button1_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+
+                                {{{createTTSButton "plain_language" lang}}}
                             </div>
 
                         </div>
@@ -77,16 +79,15 @@
 
                     <div class="columns small-4 large-4">
                         <div class="checkbox  widget widget_large{{#ifEquals setupInformation.[1].translation
-                                                                "true"}} checked {{/ifEquals}}" data-name="translation">
+                                                                             "true"}} checked {{/ifEquals}}" data-name="translation">
                             <img src="/images/setup/step3/{{lang}}/language.png" alt="">
                         </div>
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="button2_text" class="container-info" data-audio-src="/audio/step2/{{lang}}/button2_text.mp3">{{{language_translation}}}</span>
+                                <span id="language_translation" class="container-info">{{{language_translation}}}</span>
                                 <br>
-                                <button type="button" class="er-audio-player" data-audio-elements="button2_text"><img
-                                        src="/images/setup/text-to-speech.png"></button>
+                                {{{createTTSButton "language_translation" lang}}}
                             </div>
                         </div>
                     </div>

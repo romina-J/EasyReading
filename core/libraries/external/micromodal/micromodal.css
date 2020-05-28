@@ -136,12 +136,16 @@
 .recommendation_image>img{
     max-height: 150px;
 }
-.recommendation_no{
-    float:left;
+.recommendation_yes{
+    position: absolute;
+    left: 20px;
+    min-width: 50px;
 }
 
 .recommendation_no{
-    float:right;
+    position: absolute;
+    right: 20px;
+    min-width: 50px;
 }
 .recommendation_outer{
     float: right;

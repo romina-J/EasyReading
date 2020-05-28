@@ -8,7 +8,7 @@
     {{> head }}
     <link href="/css/client-profile-setup.css" rel="stylesheet"/>
     <script src="/js/client-setup/client-profile-setup.js"></script>
-    <script src="/js/client-setup/audio.js"></script>
+    <script src="/js/audio.js"></script>
     <script src="/js/client-setup/progress.js"></script>
 
 </head>
@@ -40,9 +40,8 @@
                 <div class="row">
                     <div class="medium-12 columns">
                         <div class="row-header">
-                            <button type="button" class="er-audio-player" data-audio-elements="heading2_1"><img
-                                    src="/images/setup/text-to-speech.png"></button>
-                            <h2 id="heading2_1"  data-audio-src="/audio/step7/{{lang}}/heading2_1.mp3">
+                            {{{createTTSButton "step7_activate_help" lang}}}
+                            <h2 id="step7_activate_help">
                                 {{{step7_activate_help}}}
                             </h2>
 
@@ -63,15 +62,13 @@
                             </div>
                         </div>
                         <div class="columns small-1 large-1 tts-column">
-                            <button type="button" class="er-audio-player" data-audio-elements="button1_text1 button1_text2 button1_text3"><img
-                                    src="/images/setup/text-to-speech.png">
-                            </button>
+                            {{{createTTSButton "click_instruction_1,click_instruction_2,click_instruction_3" lang}}}
                         </div>
                         <div class="columns small-9 large-9">
                             <ol>
-                                <li id="button1_text1" data-audio-src="/audio/step7/{{lang}}/button1_text1.mp3"> {{{click_instruction_1}}}</li>
-                                <li id="button1_text2" data-audio-src="/audio/step7/{{lang}}/button1_text2.mp3"> {{{click_instruction_2}}}</li>
-                                <li id="button1_text3" data-audio-src="/audio/step7/{{lang}}/button1_text3.mp3"> {{{click_instruction_3}}}</li>
+                                <li id="click_instruction_1"> {{{click_instruction_1}}}</li>
+                                <li id="click_instruction_2"> {{{click_instruction_2}}}</li>
+                                <li id="click_instruction_3"> {{{click_instruction_3}}}</li>
                             </ol>
                         </div>
                     </div>
@@ -86,16 +83,14 @@
                             </div>
                         </div>
                         <div class="columns small-1 large-1 tts-column">
-                            <button type="button" class="er-audio-player" data-audio-elements="button2_text1 button2_text2 button2_text3"><img
-                                    src="/images/setup/text-to-speech.png">
-                            </button>
+                            {{{createTTSButton "mark_instruction_1,mark_instruction_2,mark_instruction_3" lang}}}
                         </div>
                         <div class="columns small-9 large-9">
 
                             <ol>
-                                <li id="button2_text1" data-audio-src="/audio/step7/{{lang}}/button2_text1.mp3"> {{{mark_instruction_1}}}</li>
-                                <li id="button2_text2" data-audio-src="/audio/step7/{{lang}}/button2_text2.mp3"> {{{mark_instruction_2}}}</li>
-                                <li id="button2_text3" data-audio-src="/audio/step7/{{lang}}/button2_text3.mp3"> {{{mark_instruction_3}}}</li>
+                                <li id="mark_instruction_1"> {{{mark_instruction_1}}}</li>
+                                <li id="mark_instruction_2"> {{{mark_instruction_2}}}</li>
+                                <li id="mark_instruction_3"> {{{mark_instruction_3}}}</li>
                             </ol>
                         </div>
                     </div>
