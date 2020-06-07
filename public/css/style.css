@@ -138,3 +138,17 @@ footer .ec_flag{
 .er-audio-player-text-highlight {
     background-color: yellow;
 }
+
+
+/* INFO CONTAINER */
+
+.info_container{
+    margin-top: 20px;
+    text-align: center;
+}
+
+
+.info_container>img{
+    margin:auto;
+    display: block;
+}

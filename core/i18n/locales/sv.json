@@ -568,7 +568,7 @@
 	"engine_screen-ruler_instruction_4": "Klicka igen på linjalen.",
 	"engine_screen-ruler_instruction_5": "Linjalen försvinner igen.",
 	"engine_colorize_intro_text": "Instruktion",
-	"engine_colorize_instruction_1": "Klicka på verktyget för bakgrundsfärg.",  
+	"engine_colorize_instruction_1": "Klicka på verktyget för bakgrundsfärg.",
 	"engine_colorize_instruction_2": "Bakgrunden och texten ändras till vald färg.",
 	"engine_font-magnification-tool_magnify_intro_text": "Instruktion",
 	"engine_font-magnification-tool_magnify_instruction_1": "Klicka på A+ så kommer texten att bli större.",
@@ -606,5 +606,6 @@
 	"privacy_policy": "Hantering av personuppgifter",
 	"privacy_policy_easy": "Hantering av personuppgifter på lättläst text",
 	"questions_about_project": "Om du har frågor, kommentarer eller förslag, kontakta oss:",
-	"website_contact": "Mer information om projektet och konsortiet hittar du på projektets webbplats:"
+	"website_contact": "Mer information om projektet och konsortiet hittar du på projektets webbplats:",
+	"leave_site_info_text": "Du kan lämna den här sidan när du vill"
 }
