@@ -48,6 +48,9 @@ module.exports = {
             'name_text': req.__("name_text"),
             'role_text': req.__("role_text"),
             'account_label': req.__("account_label"),
+            'leave_site_info_text': req.__("leave_site_info_text"),
+
+
 
             'healthcareworker_role_text': req.__("healthcareworker_role_text"),
             'client_role_text': req.__("client_role_text"),
