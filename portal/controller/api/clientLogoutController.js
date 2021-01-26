@@ -1,10 +1,21 @@
+/** Express router providing client logout route
+ * @module routers/clientLogout
+ * @requires express
+ */
+
 let express = require('express');
 let router = express.Router();
-
 const passport = require("passport");
 
-router.use('/', async function(req,res,next){
-
+/**
+ * Logout 
+ * @name use/
+ * @memberof module:routers/clientLogout
+ * @param {Request} req Request object that holdes the current user
+ * @param {Response} res Response object that is used to redirect after logout
+ * @param next Not used
+ */
+ router.use('/', async function(req, res, next){
     req.session._select_account = true;
 
     //If user is still logged in
@@ -33,24 +44,18 @@ router.use('/', async function(req,res,next){
                     });
                 }
             }
-            res.redirect("/logout-success");
 
+            res.redirect("/logout-success");
 
             //If user is logged in as caretaker
         }else{
             req.logout();
             res.redirect('/');
         }
-
     }else{
         //Redirect user to caretaker start page
         res.redirect('/');
     }
-
-
-
-
-
 });
 
 module.exports = router;

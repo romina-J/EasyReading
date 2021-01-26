@@ -11,6 +11,7 @@ class ComponentBase {
         this.remoteAssetDirectory = "";
         this.componentCategory = "";
         this.iconsForSchemaProperties = [];
+        this.embeddedJS = "";
         //Can be overwritten by subClasses
 
         this.debugMode = false;
@@ -57,6 +58,11 @@ class ComponentBase {
                     );
 
                 }
+
+
+                this.embeddedJS+=fs.readFileSync(pathToJavaScriptFile, "utf8");
+
+
             }
         }
 

@@ -59,7 +59,7 @@ let Role = {
             "$id": "/properties/ui_id",
             "type": "string",
             "title": "Role",
-            "enum": ["administrator", "client", "caretaker"],
+            "enum": ["administrator", "client", "caretaker", "admin", "embedded_site_owner"],
 
         },
     },
@@ -414,6 +414,70 @@ let ContentReplacement = {
         },
     }
 };
+
+let embeddedSite = {
+    "$id": "https://www.easyreading.eu/schemas/EmbeddedSite.json",
+    "type": "object",
+    "title": "embedded_site",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "title": {
+            "$id": "/properties/title",
+            "type": "string",
+            "title": "Title",
+            "description": "Title for the embedded website"
+        },
+        "url": {
+            "$id": "/properties/url",
+            "type": "string",
+            "title": "Site URL",
+            "description": "URL of the embedded website",
+        },
+        "esm_id": {
+            "$id": "/properties/eid",
+            "type": "integer",
+            "title": "Embedded Site ID",
+            "description": "The profile ID of the user who created the replacement",
+        },
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the user who created the replacement",
+        },
+
+    }
+};
+
+let embeddedSiteManagerProfile = {
+    "$id": "https://www.easyreading.eu/schemas/ContentReplacement.json",
+    "type": "object",
+    "title": "embedded_site_manager_profile",
+    "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "properties": {
+        "title": {
+            "$id": "/properties/title",
+            "type": "string",
+            "title": "Title",
+            "description": "Title for the embedded website"
+        },
+        "pid": {
+            "$id": "/properties/pid",
+            "type": "integer",
+            "title": "Profile ID",
+            "description": "The profile ID of the user who created the replacement",
+        },
+        "esm_id": {
+            "$id": "/properties/eid",
+            "type": "integer",
+            "title": "Embedded Site ID",
+            "description": "The profile ID of the user who created the replacement",
+        },
+    }
+};
+
 
 let CustomFunction = {
 
@@ -1197,6 +1261,8 @@ let coreTableDefinitions = {
         functionUsageEntry,
         wizardUserTest,
         surveyResult,
+        embeddedSite,
+        embeddedSiteManagerProfile
     ],
 
 

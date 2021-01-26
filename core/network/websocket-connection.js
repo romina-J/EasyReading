@@ -6,10 +6,11 @@ const client = new OAuth2Client(CHROME_CLIENT_ID);
 const uuidV4 = require('uuid/v4');
 
 class WebSocketConnection {
-    constructor(ws, url) {
+    constructor(ws, url,origin) {
         this.loggedIn = false;
         this.ws = ws;
         this.url = url;
+        this.origin = origin;
         this.uuid = uuidV4();
         this.profile = null;
         console.log("Base URL:", url);
@@ -26,32 +27,32 @@ class WebSocketConnection {
         });
 
 
-
     }
 
-    setProfile(profile){
+    setProfile(profile) {
 
         this.profile = profile;
 
-        try{
-            if(this.profile.ui_mode === "adaptive"){
+        try {
+            if (this.profile.ui_mode === "adaptive") {
                 this.startAdaptivity();
             }
-        }catch (e) {
+        } catch (e) {
             console.log(e);
         }
 
     }
 
-    startAdaptivity(){
+    startAdaptivity() {
         const webSocketConnection = this;
         this.recomendationTimeout = setTimeout(async function () {
             await webSocketConnection.createRecommendation();
         }, 60000);
         console.log("Adaptivity started");
     }
-    stopAdaptivity(){
-        if(this.recomendationTimeout){
+
+    stopAdaptivity() {
+        if (this.recomendationTimeout) {
             clearTimeout(this.recomendationTimeout);
             this.recomendationTimeout = null;
         }
@@ -144,16 +145,73 @@ class WebSocketConnection {
                 }
 
 
+            } else if (req.type === "embeddedLogin") {
+
+                let localeService = require("../../core/i18n/locale-service");
+                let clientProfile = require("../../core/profile/profile");
+
+                let databaseManager = require("../database/database-manager");
+
+                let url = this.origin;
+                if(url.startsWith("https://")){
+                    url = url.substring(8);
+                }else if(url.startsWith("http://")){
+                    url = url.substring(7);
+                }
+                let embeddedSiteRequest = databaseManager.createRequest("embedded_site").where("url","LIKE",url);
+                let embeddedSite = await databaseManager.executeRequest(embeddedSiteRequest);
+
+                if(embeddedSite.result.length){
+
+                    let embeddedSiteProfileRequest = databaseManager.createRequest("embedded_site_manager_profile").where("id","=",embeddedSite.result[0].pid);
+
+                    let embeddedSiteProfileRequestResult = await databaseManager.executeRequest(embeddedSiteProfileRequest);
+
+
+                    if(embeddedSiteProfileRequestResult.result.length){
+                        let profileRequest = databaseManager.createRequest("profile").where("id","=",embeddedSiteProfileRequestResult.result[0].pid);
+
+                        let profileRequestResult = await databaseManager.executeRequest(profileRequest);
+                        if(profileRequestResult.result.length){
+
+                            let currentProfile = new clientProfile("0");
+                            currentProfile.email = profileRequestResult.result[0].email;
+                            currentProfile.locale = localeService.getSupportedLanguage("de");
+                            currentProfile.loginType = "Embedded";
+                            await currentProfile.loginEmbedded( currentProfile.email, this);
+                            this.setProfile(currentProfile);
+                            let loginResult = {
+                                type: "userLoginResult",
+                                result: currentProfile,
+                            };
+
+                            this.sendMessage(loginResult);
+
+                        }
+                    }else{
+                        console.log("no embedded profile found")
+                    }
+
+
+
+
+
+                }else{
+
+                    console.log("Embedded site requested:"+this.origin);
+                }
+
+
             } else if (req.type === "cloudRequest") {
 
                 if (!this.profile) {
 
                     console.log("attempted a cloud request without a profile.");
-                    try{
-                        if(this.ws){
+                    try {
+                        if (this.ws) {
                             this.ws.close();
                         }
-                    }catch (e) {
+                    } catch (e) {
                         console.log(e);
                     }
                     return;
@@ -262,24 +320,24 @@ class WebSocketConnection {
                 this.sendMessage(currentProfile);
 
 
-            }else if(req.type === "recommendationResult"){
+            } else if (req.type === "recommendationResult") {
 
 
                 let profileRecommendation = require("./../profile/profile-recommendation");
-                await profileRecommendation.createConfigurationForRecommendation(req.data,this.profile.id);
+                await profileRecommendation.createConfigurationForRecommendation(req.data, this.profile.id);
 
-            }else if(req.type === "surveyResult") {
+            } else if (req.type === "surveyResult") {
 
-                try{
+                try {
 
                     let password = require('password-hash-and-salt');
                     let profile = this.profile;
-                    if(this.profile.id){
+                    if (this.profile.id) {
                         password(this.profile.id.toString()).hash("another salt for you", async function (error, hashedId) {
                             let data = {
                                 hashedId: hashedId,
                                 locale: profile.locale,
-                                timestamp: Math.floor(Date.now()/1000),
+                                timestamp: Math.floor(Date.now() / 1000),
                                 data: req.data,
                             };
                             let databaseManager = require("../database/database-manager");
@@ -291,8 +349,7 @@ class WebSocketConnection {
                     }
 
 
-
-                }catch (error) {
+                } catch (error) {
                     console.log(error);
                 }
 
@@ -335,7 +392,7 @@ class WebSocketConnection {
         const app = require("../../portal/app");
         await this.logoutUser();
 
-        if(this.sessionID){
+        if (this.sessionID) {
             let databaseManager = require("../database/database-manager");
             let deleteRoleRequest = databaseManager.createRequest("sessions").where("session_id", "=", this.sessionID).delete();
             await databaseManager.executeRequest(deleteRoleRequest);
@@ -417,14 +474,14 @@ class WebSocketConnection {
         }
     }
 
-    async createRecommendation () {
+    async createRecommendation() {
         const webSocketConnection = this;
-        if(this.profile){
+        if (this.profile) {
             let profileRecommendation = require("../profile/profile-recommendation");
             let recommendation = await profileRecommendation.createRecommendation(this.profile);
-            if(recommendation){
+            if (recommendation) {
                 recommendation.normalizeIconPaths(this.url);
-                this.sendMessage({type: "recommendation", data :recommendation});
+                this.sendMessage({type: "recommendation", data: recommendation});
             }
 
         }
@@ -433,7 +490,7 @@ class WebSocketConnection {
 
 
             webSocketConnection.createRecommendation();
-        }, 60*60*1000);
+        }, 60 * 60 * 1000);
 
 
     }

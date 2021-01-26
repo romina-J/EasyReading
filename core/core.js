@@ -2,6 +2,8 @@ let core = {
 
     debugMode: false,
     createSpeech: false,
+    createEmbeddedJavaScript: false,
+    updateCaretakerBackendUserRoles: false,
     engines: [],
     engineFunctionDescriptions: [],
     allFunctions: [],
@@ -11,7 +13,7 @@ let core = {
     busyAnimations: [],
     plugins: [],
     static: [],
-    staticCSS:[],
+    staticCSS: [],
     databaseManager: null,
 
     startUp: async function () {
@@ -65,6 +67,14 @@ let core = {
             loadBusyAnimations(core);
             console.log("Load busy animations complete");
 
+            if(core.createEmbeddedJavaScript){
+                createEmbeddedJS(core);
+                console.log("create embedded JS complete");
+            }else{
+                console.log("create embedded JS skipped");
+            }
+
+
             let profileBuilder = require("./profile/profile-builder")
             await profileBuilder.deleteAnonymousAccounts();
             console.log("Delete old anonymoous accounts complete");
@@ -73,22 +83,19 @@ let core = {
             console.log("Database tables init complete");
 
 
-            if(core.createSpeech){
+            if (core.createSpeech) {
                 console.log("Creating TTS");
                 let speechUtils = require("./util/speech-utils");
                 await speechUtils.createSpeechForAllCatalogues();
             }
 
+            if(core.updateCaretakerBackendUserRoles){
 
+                await updateCaretakerBackendUserRoles();
+            }
 
             initServer(core);
             console.log("Init server complete");
-
-
-
-
-
-
 
 
         } catch (error) {
@@ -178,22 +185,22 @@ let core = {
             }
         }
     },
-    getFunction(engineId,version,functionId){
-        let engine = core.getEngine(engineId,version);
+    getFunction(engineId, version, functionId) {
+        let engine = core.getEngine(engineId, version);
 
-        for(let i=0; i < engine.functions.length; i++){
-            if(engine.functions[i].id === functionId){
+        for (let i = 0; i < engine.functions.length; i++) {
+            if (engine.functions[i].id === functionId) {
                 return engine.functions[i];
             }
         }
 
     },
 
-    getFunctionDescription(engineId,version,functionId){
-        let engine = core.getEngine(engineId,version);
+    getFunctionDescription(engineId, version, functionId) {
+        let engine = core.getEngine(engineId, version);
         let functionDescriptions = engine.getFunctions();
-        for(let i=0; i < functionDescriptions.length; i++){
-            if(functionDescriptions[i].id === functionId){
+        for (let i = 0; i < functionDescriptions.length; i++) {
+            if (functionDescriptions[i].id === functionId) {
                 return functionDescriptions[i];
             }
         }
@@ -242,7 +249,7 @@ let core = {
         let functionConfiguration = [];
         for (let i = 0; i < engine.functions.length; i++) {
 
-            let currentConfiguration = this.createDefaultConfigurationFoFunctionWithID(engine.id, engine.version,engine.functions[i].id,userInterface,supportCategories);
+            let currentConfiguration = this.createDefaultConfigurationFoFunctionWithID(engine.id, engine.version, engine.functions[i].id, userInterface, supportCategories);
 
             functionConfiguration.push(currentConfiguration);
 
@@ -298,8 +305,8 @@ let core = {
         if (func.inputTypes[0].inputType === ioType.IOTypes.VoidIOType.className ||
             func.inputTypes[0].inputType === ioType.IOTypes.Page.className) {
 
-            if(func.states){
-                if(func.states === 2){
+            if (func.states) {
+                if (func.states === 2) {
                     let twoStateButton = this.getWidget("two-state-button");
                     return twoStateButton.getDefaultConfiguration();
                 }
@@ -323,13 +330,13 @@ let core = {
 
                 if (supportCategories) {
 
-                    try{
+                    try {
                         if (supportCategories.input.text_selection_mark.preference >= 50) {
 
                             let textSelector = this.getWidget("text-selector");
                             return textSelector.getDefaultConfiguration();
                         }
-                    }catch (e) {
+                    } catch (e) {
                         console.log(e)
                     }
 
@@ -343,13 +350,13 @@ let core = {
 
                 if (supportCategories) {
 
-                    try{
+                    try {
                         if (supportCategories.input.text_selection_mark.preference >= 50) {
 
                             let textSelector = this.getWidget("text-selector");
                             return textSelector.getDefaultConfiguration();
                         }
-                    }catch (e) {
+                    } catch (e) {
                         console.log(e)
                     }
 
@@ -360,7 +367,7 @@ let core = {
             }
 
 
-        }else if(func.inputTypes[0].inputType === ioType.IOTypes.Word.className){
+        } else if (func.inputTypes[0].inputType === ioType.IOTypes.Word.className) {
             let singleChoiceButton = this.getWidget("single-choice-button");
             return singleChoiceButton.getDefaultConfiguration();
         }
@@ -421,7 +428,6 @@ let core = {
     },
 
     async executeRequest(webSocketConnection, req, config) {
-
 
 
         //Convert input
@@ -497,16 +503,14 @@ let core = {
 
         }
 
-        if(req.functionInfo.functionType !== "CombinedFunction"){
+        if (req.functionInfo.functionType !== "CombinedFunction") {
             let profileStatistics = require("./profile/profile-staticis");
 
-            await profileStatistics.updateFunctionUsageStatistics(webSocketConnection.profile,req);
+            await profileStatistics.updateFunctionUsageStatistics(webSocketConnection.profile, req);
         }
 
 
     }
-
-
 
 
 };
@@ -610,10 +614,10 @@ function createEngineFunctionDescriptions(core) {
                 functions: core.engines[i].versions[j].engine.getFunctions(),
             });
 
-            if(j ===core.engines[i].versions.length-1){
+            if (j === core.engines[i].versions.length - 1) {
                 let functions = core.engines[i].versions[j].engine.getFunctions();
 
-                for(let k=0; k< functions.length; k++){
+                for (let k = 0; k < functions.length; k++) {
 
 
                     core.allFunctions.push({
@@ -670,6 +674,7 @@ function loadStaticComponents(core) {
     staticSources.push("core/components/busy-animation/base/busy-animation-implementation.js");
     staticSources.push("core/components/plugin/base/plugin-implementation.js");
 
+    core.staticSources = staticSources;
 
     if (core.debugMode) {
 
@@ -776,6 +781,131 @@ function loadBusyAnimations(core) {
 
 }
 
+function createEmbeddedJS(core) {
+    //let serverURL = "https://localhost:8080/";
+    //let serverURL = "https://dev.easyreading-cloud.eu/";
+    let serverURL = "https://easyreading-cloud.eu/";
+    let allScripts = "";
+    let allCSS = "";
+    let fs = require('fs');
+
+    for (let i = 0; i < core.staticSources.length; i++) {
+        allScripts += fs.readFileSync(core.staticSources[i]) + "\n";
+    }
+
+    let classMappings =[];
+
+    for (let i = 0; i < core.userInterfaces.length; i++) {
+        let version = core.userInterfaces[i].getLatestVersion();
+        allScripts += version.embeddedJS + "\n\n";
+
+        let componentInformation = version.getComponentInformation();
+        let normalizedCSS = normalizePath(componentInformation,serverURL);
+        allCSS +=normalizedCSS + "\n\n";
+
+        classMappings.push(version.implementationClass);
+    }
+
+    for (let i = 0; i < core.widgets.length; i++) {
+        let version = core.widgets[i].getLatestVersion();
+        allScripts += version.embeddedJS + "\n";
+
+        let componentInformation = version.getComponentInformation();
+        let normalizedCSS = normalizePath(componentInformation,serverURL);
+        allCSS +=normalizedCSS + "\n\n";
+
+        classMappings.push(version.implementationClass);
+    }
+
+    for (let i = 0; i < core.presentations.length; i++) {
+        let version = core.presentations[i].getLatestVersion();
+        allScripts += version.embeddedJS + "\n";
+
+        let componentInformation = version.getComponentInformation();
+        let normalizedCSS = normalizePath(componentInformation,serverURL);
+        allCSS +=normalizedCSS + "\n\n";
+
+        classMappings.push(version.implementationClass);
+    }
+
+    for (let i = 0; i < core.busyAnimations.length; i++) {
+        let version = core.busyAnimations[i].versions[core.busyAnimations[i].versions.length - 1].version;
+        allScripts += version.embeddedJS + "\n";
+
+        let componentInformation = version.getComponentInformation();
+        let normalizedCSS = normalizePath(componentInformation,serverURL);
+        allCSS +=normalizedCSS + "\n\n";
+
+        classMappings.push(version.implementationClass);
+    }
+
+    let functionMappings = [];
+    for (let i = 0; i < core.engines.length; i++) {
+
+        let version = core.engines[i].getLatestVersion();
+
+        for (let k = 0; k < version.functions.length; k++) {
+            if (version.functions[k].type === "LocalFunction") {
+                allScripts += version.functions[k].embeddedJS + "\n";
+                allCSS += version.functions[k].embeddedCSS + "\n\n";
+
+                functionMappings.push(version.functions[k].entryPoint);
+            }
+        }
+
+
+    }
+    let classMapping = "\n\nif(classMapping){delete classMapping;} var classMapping = {";
+
+    for (let i = 0; i < classMappings.length; i++) {
+        classMapping += "'" + classMappings[i] + "':" + classMappings[i] + ",";
+    }
+
+    classMapping += "};";
+
+    classMapping += "if(functionMapping){delete functionMapping;}  var functionMapping = {";
+    for (let i = 0; i < functionMappings.length; i++) {
+        classMapping += "'" + functionMappings[i] + "':" + functionMappings[i] + ",";
+    }
+    classMapping += "};";
+
+    allScripts+=classMapping+"\n";
+
+
+   let embeddedWebsocketJS =  fs.readFileSync("core/embedded/embeddedWebsocket.js") + "\n";
+    embeddedWebsocketJS =embeddedWebsocketJS.replace("easy_reading_current_endpoint_url",serverURL);
+    allScripts+=embeddedWebsocketJS;
+    allScripts += fs.readFileSync("core/embedded/embeddedContentScript.js") + "\n";
+
+
+
+    fs.writeFileSync('public/embedded/easy-reading.js', allScripts, function (err) {
+        if (err) return console.log(err);
+
+
+
+
+    });
+
+
+    let compressor = require('node-minify');
+    // Using UglifyJS with wildcards
+    compressor.minify({
+        compressor: "uglify-es",
+        input: 'public/embedded/easy-reading.js',
+        output: 'public/embedded/easy-reading-mini.js',
+        callback: function(err, min) {
+            console.log(err);
+        }
+    });
+
+
+    fs.writeFileSync('public/embedded/easy-reading.css', allCSS, function (err) {
+        if (err) return console.log(err);
+    });
+
+}
+
 
 function loadPlugins(core) {
 
@@ -820,6 +950,69 @@ async function createDatabaseTables(core) {
 function initServer(core) {
     core.network = require("./network/network");
     core.network.initServer();
+
+}
+
+
+function normalizePath(component, serverUrl) {
+
+    let css = "";
+
+    for (let i = 0; i < component.contentCSS.length; i++) {
+
+        let decodedCSS = atob(component.contentCSS[i].css);
+        let pathParts = component.contentCSS[i].id.split('/');
+        let path = "";
+        if (pathParts.length > 1) {
+            for (let k = 0; k < pathParts.length - 1; k++) {
+                path += pathParts[k] + "/";
+            }
+        }
+
+        let parseCssUrls = require('css-url-parser');
+        let cssUrls = parseCssUrls(decodedCSS);
+
+        let helperFunctions = rootRequire("core/util/helper-functions");
+        for (let j = 0; j < cssUrls.length; j++) {
+
+            if (!helperFunctions.isExternalUrl(cssUrls[j])) {
+                decodedCSS = decodedCSS.replace(new RegExp(cssUrls[j], 'g'), serverUrl + component.remoteBaseDirectory + path + cssUrls[j]);
+            }
+        }
+
+        css+=decodedCSS;
+
+    }
+
+
+    return css;
+
+
+}
+
+async function updateCaretakerBackendUserRoles(){
+    let databaseManager = require("./database/database-manager");
+    let caretakerRequest = databaseManager.createRequest("role").where("role", "=","caretaker" );
+    let caretakerRequestResult = await databaseManager.executeRequest(caretakerRequest);
+
+    if(caretakerRequestResult.result.length > 0) {
+        for (let i = 0; i < caretakerRequestResult.result.length; i++) {
+
+
+            let backendUserRequest = databaseManager.createRequest("role").where("role", "=", "backend_user").where("user_id","=",caretakerRequestResult.result[i].user_id);
+            let backendUserRequestResult = await databaseManager.executeRequest(backendUserRequest);
+
+            if (backendUserRequestResult.result.length === 0) {
+
+                let saveRoleRequest = databaseManager.createRequest("role").insert({
+                    user_id: caretakerRequestResult.result[i].user_id,
+                    role: "backend_user"
+                });
+                await databaseManager.executeRequest(saveRoleRequest);
+
+            }
+        }
+    }
 
 }
 

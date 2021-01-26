@@ -71,11 +71,13 @@ class ImageSearch extends base.EngineBase {
             return;
         }
 
+        let sentence = input.sentenceStart +" "+input.word+" "+input.sentenceEnd;
+
 
         let https = require('follow-redirects').https;
         let optionsget = {
             host : 'www.googleapis.com',
-            path : '/customsearch/v1?key='+credentials+'&q='+encodeURIComponent(input.word)+'&searchType=image&alt=json&num=10&start=1&imgType=clipart',
+            path : '/customsearch/v1?key='+credentials+'&q='+encodeURIComponent(input.word)+'&searchType=image&alt=json&imgType=clipart&num=10&start=1&exactPhrase='+encodeURIComponent(sentence)+'&lr=lang_'+input.lang,
             method : 'GET',
 
         };
@@ -97,12 +99,24 @@ class ImageSearch extends base.EngineBase {
                     let imgSearchResult =  JSON.parse(unescape(allData));
                     let ioType = rootRequire("core/IOtypes/iotypes");
                     let result = new ioType.IOTypes.ImageIOType("");
-                    if(imgSearchResult.items[0].link !== null){
-                        result.url = imgSearchResult.items[0].link;
-                        result.alt = imgSearchResult.items[0].title;
-                        result.title = imgSearchResult.items[0].title;
+
+                    let imageFound = false;
+                    for(let i=0; i< imgSearchResult.items.length; i++){
+                        if(imgSearchResult.items[i].link !== null && imgSearchResult.items[i].fileFormat !== "image/"){
+
+
+                            result.url = imgSearchResult.items[i].link;
+                            result.alt = imgSearchResult.items[i].title;
+                            result.title = imgSearchResult.items[i].title;
+                            callback(result);
+
+                            return;
+                        }
                     }
-                   callback(result);
+
+                    callback(new ioType.IOTypes.NoResult("No images found"));
+
+
                 }catch(error){
                     //Error:
                     callback(new ioType.IOTypes.Error("Error retrieving images"));

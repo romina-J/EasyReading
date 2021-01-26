@@ -1,0 +1,59 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{page_caretakerlist_title}}</title>
+    {{> head }}
+    <script src="/js/audio.js"></script>
+</head>
+
+<body>
+<div class="row wrapper">
+
+    <div class="medium-3 columns">
+        <nav>
+            {{> nav_backend }}
+            {{> nav_user_info }}
+        </nav>
+        {{> leave_site_info}}
+    </div>
+
+    <div class="medium-9 columns">
+
+        <main>
+
+            <div class="row columns">
+
+
+                <h1>Backend User Edit</h1>
+
+                {{backendProfile.email}}
+
+
+                <h2>Roles:</h2>
+                <form id="submit" method="post">
+                    <label for="caretaker">Caretaker:</label>
+                    <input type="checkbox" id="caretaker" name="caretaker"  {{#if backendProfileRoles.caretaker}} checked{{/if}} >
+                    <br>
+                    <label for="embedded_site_manager">Embedded Site Manger:</label>
+                    <input type="checkbox" id="embedded_site_manager" name="embedded_site_manager"  {{#if
+                            backendProfileRoles.embedded_site_manager}} checked{{/if}} >
+                    <br>
+                    <label for="content_replacement_creator">Content replacement creator:</label>
+                    <input type="checkbox" id="content_replacement_creator" name="content_replacement_creator"  {{#if
+                            backendProfileRoles.content_replacement_creator}} checked{{/if}} >
+
+                    <br>
+                    <input type="submit" value="save"/>
+                </form>
+            </div>
+
+        </main>
+
+        {{>footer}}
+    </div>
+</div>
+</body>
+</html>

@@ -1,9 +1,22 @@
+/** Express router providing client related routes
+ * @module routers/clientBasicSettings
+ * @requires express
+ */
+
 let express = require('express');
 let router = express.Router();
 const core = rootRequire("core/core");
 let databaseManager = require("../../../core/database/database-manager");
-router.use('/', async function (req, res, next) {
 
+/**
+ * Route serving caretaker overview page.
+ * @name use/
+ * @memberof module:routers/clientBasicSettings
+ * @param {Request} req Request object that includes the unique UserId, it can also can include language, new ui settings or settings for reasoner.
+ * @param {Response} res Response object that is used for storing the content (like current, language info and reasoner)
+ * @param next Returns the response object
+ */
+router.use('/', async function (req, res, next) {
     let errorMessages = [];
     let rUtil = rootRequire("core/user_tracking/reasoner-utils");
     let supportedModels = rUtil.models;
@@ -26,7 +39,6 @@ router.use('/', async function (req, res, next) {
         }
 
         if(req.body.ui_mode) {
-
             if(req.session.user.ui_mode !== req.body.ui_mode){
 
                 let network = require("../../../core/network/network");
@@ -44,8 +56,8 @@ router.use('/', async function (req, res, next) {
                 }
 
             }
-            req.session.user.ui_mode = req.body.ui_mode;
 
+            req.session.user.ui_mode = req.body.ui_mode;
         }
 
         try {
@@ -92,9 +104,10 @@ router.use('/', async function (req, res, next) {
         }
 
         res.redirect(req.originalUrl);
-        return;
 
+        return;
     }
+
     let localeService = require("../../../core/i18n/locale-service");
     let supportedLanguages = localeService.getLocales();
 
@@ -151,14 +164,12 @@ router.use('/', async function (req, res, next) {
 
     res.locals.errorMessages = errorMessages;
 
-
     let activeUserInterfaceConfigurations = await getUserInterfaceConfig(req.session.user.id);
 
     res.locals.UiTTS = "page_configure_settings_type_how_to_use";
     const userInterfaces = [...rootRequire("core/core").userInterfaces];
 
     let userInterfaceData = [];
-
 
     for(let i=0; i < userInterfaces.length; i++){
 
@@ -181,19 +192,19 @@ router.use('/', async function (req, res, next) {
                 userInterface.configuration = activeUserInterfaceConfigurations[k].configuration;
                 userInterface.active = true;
             }
-
-
         }
 
         userInterface.translatedName = localeService.translate({
             phrase: 'user_interface_label_' + userInterface.id,
             locale: userLocale
         });
+
         userInterface.labelId = "user_interface_label_"+userInterface.id;
 
         if(i < userInterfaces.length){
             res.locals.UiTTS+=","
         }
+
         res.locals.UiTTS+= userInterface.labelId;
 
         userInterfaceData.push(userInterface);
@@ -204,7 +215,11 @@ router.use('/', async function (req, res, next) {
     return next();
 });
 
-
+/**
+* Get the current User Interface Configuration for a profile
+* @param {number} profileID Profile ID to get the User interface for
+* @returns {[object]} Returns the active User Interface Configuration, id and version (in an array) 
+*/
 async function getUserInterfaceConfig(profileID) {
     let activeUIConfigurations = [];
     let loadActiveUserInterfaceRequest = databaseManager.createRequest("ui_collection").where("pid", "=", profileID);

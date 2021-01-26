@@ -62,6 +62,24 @@ class Profile {
         });
     }
 
+    async loginEmbedded(email, webSocketConnection) {
+        let errorMsg = null;
+        this.roles.push("embedded");
+        try {
+            await this.loginClient(email, webSocketConnection);
+        }catch (error){
+            errorMsg = error;
+        }
+
+        return new Promise(function (resolve,reject) {
+            if(errorMsg){
+                reject(errorMsg);
+            }else{
+                resolve();
+            }
+        });
+    }
+
     async loginAnonym(uuid,email, webSocketConnection) {
         let errorMsg = null;
         this.uuid = uuid;
@@ -80,6 +98,7 @@ class Profile {
             }
         });
     }
+
 
     async loginClient(email,webSocketConnection){
         let errorMsg = null;

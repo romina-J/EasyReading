@@ -47,8 +47,9 @@ let network = {
             let pathname = url.parse(req.url).pathname;
             let baseUrl = 'https://' + hostname + pathname;
 
+            console.log("New connection from: "+req.headers.origin);
             let webSocketConnection = require("./websocket-connection");
-            network.addWebSocketConnection(new webSocketConnection(ws, baseUrl));
+            network.addWebSocketConnection(new webSocketConnection(ws, baseUrl,req.headers.origin));
 
         });
 
@@ -223,6 +224,18 @@ let network = {
                 }
             }
 
+        }
+    },
+
+    kickConnectionsWithID:function (id) {
+
+        for (let i = 0; i < this.webSocketConnections.length; i++) {
+
+            if (this.webSocketConnections[i].profile) {
+                if (this.webSocketConnections[i].profile.id === parseInt(id)) {
+                    this.webSocketConnections[i].ws.close();
+                }
+            }
         }
     }
 

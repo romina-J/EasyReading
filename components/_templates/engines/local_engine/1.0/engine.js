@@ -18,21 +18,14 @@ class LocalEngine extends base.EngineBase{
         return {
             "type": "object",
             "properties": {
-                "backgroundColor": {
+                "favoriteColor": {
                     "type": "string",
-                    "format": "color",
-                    "default": "#000000",
+                    "default": "Yellow",
                 },
-                "fontColor": {
-                    "type": "string",
-                    "format": "color",
-                    "default": "#FFFFFF"
-                }
             },
 
             "required": [
-                "backgroundColor",
-                "fontColor"
+                "favoriteColor",
             ]
         };
     }
@@ -60,6 +53,7 @@ class LocalEngine extends base.EngineBase{
                 }],
                 javaScripts:['/js/script.js'],
                 styleSheets : [],
+                toolCategory: base.EngineFunction.ToolCategories.Experimental,
                 entryPoint: "entryFunction",
             }
 

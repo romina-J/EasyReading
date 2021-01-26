@@ -91,6 +91,10 @@ class TippyTooltip extends Presentation {
             const instance = tippy(tooltipElement[0]);
             if(instance){
                 instance.destroy(true);
+            }else{
+                if(tooltipElement[0]._tippy){
+                    tooltipElement[0]._tippy.destroy(true);
+                }
             }
 
             let parent = tooltipElement.parent();

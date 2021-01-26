@@ -1,13 +1,20 @@
+/** Caretaker content replacement module
+ * @module caretakerContentReplacement
+ */
+
 const contentReplacementRepo = require("../../repository/contentReplacmentRepo");
 const core = rootRequire("core/core");
 const databaseManager = core.databaseManager;
 const mysql = require('mysql');
+
 module.exports = {
     /**
      * Gets the content replacements for a given user from the repository
+     * @memberof module:caretakerContentReplacement
      * @param {Request} req Request object that includes the unique UserId
      * @param {Response} res Response object that is used for storing the content
-     * @param next Returns the response object
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
      */
     getContentReplacementsByUserId: async (req, res, next) => {
 
@@ -29,10 +36,12 @@ module.exports = {
 
     /**
      * Gets the content replacements for a given id from the repository
+     * @memberof module:caretakerContentReplacement
      * @param {Request} req Request object that includes the content ID to get
      * @param {Response} res Response object that is used for storing the content
      * @param next Returns the response object
-     */
+     * @returns Returns the next object
+     */    
     getContentReplacementsById: async (req, res, next) => {
         let id = null;
         if ('user' in req && 'id' in req.user) {
@@ -57,10 +66,12 @@ module.exports = {
 
     /**
      * Add or Update the content replacements for a given user from the repository
+     * @memberof module:caretakerContentReplacement
      * @param {Request} req Request object that includes the unique UserId and the content as body
      * @param {Response} res Response object that used for redirect to next page
      * @param next Not used
-     */
+     * @returns {Response} Returns the res object
+     */    
     saveOrUpdateContentReplacement: async (req, res, next) => {
         if (!req.body || !req.user.id) {
             return res.sendStatus(401).end();
@@ -105,11 +116,13 @@ module.exports = {
     },
 
     /**
-     * ???
+     * What does this function do?
+     * @memberof module:caretakerContentReplacement
      * @param {Request} req Request object that includes the unique UserId and the content as body
      * @param {Response} res Response object that is used for storing the content and set response status
      * @param next Not used
-     */
+     * @returns {Response} Returns the res object
+     */       
     quickEditContentReplacement: async (req, res, next) => {
         let id = 0;
         if (!req.body || !req.user.id) {
@@ -134,11 +147,13 @@ module.exports = {
 };
 
 /**
- * Deletes the content replacements for a given user from the repository
- * @param {Request} req Request object that includes the unique UserId and the content as body
- * @param {Response} res Response object that is used for storing the content and set response status
- * @param next Not used
- */
+* Deletes the content replacements for a given user from the repository
+* @memberof module:caretakerContentReplacement
+* @param {Request} req Request object that includes the unique UserId and the content as body
+* @param {Response} res Response object that is used for storing the content and set response status
+* @param next Not used
+* @returns {Response} Returns the res object
+*/    
 const deleteContentReplacement = async (req, res, next) => {
 
     let id = 0;
@@ -164,11 +179,12 @@ const deleteContentReplacement = async (req, res, next) => {
 };
 
 /**
- * Check if the user owns the requested content replacement
- * @param {number} u_id User id
- * @param {number} cr_id Content Replacement id
- * @returns {bool}
- */
+* Check if the user owns the requested content replacement
+* @memberof module:caretakerContentReplacement
+* @param {number} u_id User id
+* @param {number} cr_id Content Replacement id
+* @returns {bool}
+*/   
 const userOwnsContentReplacement = async (u_id, cr_id) => {
     if (u_id && cr_id > 0) {
         let results = [];
@@ -180,5 +196,6 @@ const userOwnsContentReplacement = async (u_id, cr_id) => {
             }
         }
     }
+    
     return false;
 };

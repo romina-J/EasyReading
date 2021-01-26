@@ -183,6 +183,8 @@ class LocalFunction extends Function {
         this.contentCSS = [];
         this.remoteScripts = [];
         this.remoteCSS = [];
+        this.embeddedJS = "";
+        this.embeddedCSS = "";
         /*
         this.loadedJavaScripts = [];
         this.loadedStyleSheets = [];
@@ -225,6 +227,8 @@ class LocalFunction extends Function {
 
                 }
 
+                this.embeddedJS+=fs.readFileSync(pathToJavaScriptFile, "utf8");
+
             }
         }
 
@@ -246,6 +250,8 @@ class LocalFunction extends Function {
                         });
 
                 }
+
+                this.embeddedCSS+=fs.readFileSync(pathToStyleSheet, "utf8");
 
             }
         }

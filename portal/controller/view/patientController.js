@@ -1,3 +1,7 @@
+/** Patient module
+ * @module patient
+  */
+
 const profileRepo = require("../../repository/profileRepo");
 const engineRepo = require("../../repository/engineRepo");
 const core = rootRequire("core/core");
@@ -7,10 +11,15 @@ const widgets = [...rootRequire("core/core").widgets];
 const presentations = [...rootRequire("core/core").presentations];
 const databaseManager = core.databaseManager;
 
-// Returns the tool:user configuration if any exists in the database.
+/**
+* Returns the tool:user configuration if any exists in the database.
+* @memberof module:patient
+* @param {object} engineFunction The engine to get tools for
+* @param {object} toolTable user configuration for the current engine
+* @param {number} id user id
+* @returns the engine configuration
+*/   
 const getToolConfigFor = async (engineFunction, toolTable, id) => {
-
-    //const toolConfigIdForUser = await getToolConfigIdForUser(googleId);
     const toolConfigIdForUser = await engineRepo.getEngineConfigByUserId(id);
 
     const engineConfig = [];
@@ -29,6 +38,15 @@ const getToolConfigFor = async (engineFunction, toolTable, id) => {
     return engineConfig;
 };
 
+/**
+* Returns the translations of the properties for the selected engine
+* @memberof module:patient
+* @param {Request} req Request object that includes what to translate
+* @param {object} engine The engine to translate properties for
+* @param {object} engineFunctionType the type of engine typ translate
+* @param {object} dataSchemaProerty the data schema for the properties in the engine
+* @returns the translated properties
+*/   
 const getTranslationForProperties = (req, engine, engineFunctionType, dataSchemaProerty) => {
     let propertyTranslation = {};
     if (dataSchemaProerty.length > 0) {
@@ -37,11 +55,20 @@ const getTranslationForProperties = (req, engine, engineFunctionType, dataSchema
             propertyTranslation[property] = translatedLabel;
         });
     }
+
     return propertyTranslation;
 };
 
+/**
+* Returns the translations of options for the selected engine
+* @memberof module:patient
+* @param {Request} req Request object that includes what to translate
+* @param {object} engine The engine to translate properties for
+* @param {object} engineFunctionType the type of engine typ translate
+* @param {object} configurationDataOptions the options to translate
+* @returns the translated options
+*/   
 const getTranslationForDataOptions = (req, engine, engineFunctionType, configurationDataOptions) => {
-
     let propertyTranslation = {};
     configurationDataOptions.forEach(configurationDataOption => {
         if (configurationDataOption.type.toLowerCase() === "colorcombination") {
@@ -68,6 +95,14 @@ const getTranslationForDataOptions = (req, engine, engineFunctionType, configura
 };
 
 module.exports = {
+    /**
+     * Gets the egngines configuration for a user. 
+     * @memberof module:patient
+     * @param {Request} req Request object that includes the unique UserId
+     * @param {Response} res Response object that is used for storing the content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */    
     getEngineConfigByuserId: async (req, res, next) => {
         let localeService = require("../../../core/i18n/locale-service");
         const id = parseInt(req.query.id);
@@ -80,7 +115,6 @@ module.exports = {
 
         const toolConfigIdForUser = await engineRepo.getEngineConfigByUserId(id);
         const profile = await profileRepo.getProfileId(id);
-
 
         try{
             //If caretaker tries to configure his onw profile by just entering it as the url...
@@ -411,10 +445,14 @@ module.exports = {
 
         return next();
     }
-
 };
 
-
+/**
+* Gets the user interface configuration for a user
+* @memberof module:patient
+* @param {number} profileID The unique UserId
+* @returns Returns the active user interface configuration
+*/    
 async function getUserInterfaceConfig(profileID) {
     let activeUIConfigurations = [];
     let loadActiveUserInterfaceRequest = databaseManager.createRequest("ui_collection").where("pid", "=", profileID);
@@ -428,6 +466,7 @@ async function getUserInterfaceConfig(profileID) {
             let loadUserInterfacesRequest = databaseManager.createRequest("ui_conf").where("ui_collection", "=", loadActiveUserInterfaceRequestResult.result[k].id);
             let loadUserInterfacesRequestResult = await databaseManager.executeRequest(loadUserInterfacesRequest);
             let userInterfaces = [];
+
             for (let i = 0; i < loadUserInterfacesRequestResult.result.length; i++) {
 
                 //User Interface
@@ -439,6 +478,7 @@ async function getUserInterfaceConfig(profileID) {
                     uiVersion: uiInfo.ui_version,
                     configuration: null,
                 };
+
                 if (userInterface.hasConfigurationSchema()) {
                     let tableName = databaseManager.getConfigTableNameForComponent(userInterface);
 
@@ -450,10 +490,7 @@ async function getUserInterfaceConfig(profileID) {
 
                 activeUIConfigurations.push(uiConfiguration);
             }
-
         }
-
-
     }
 
     return activeUIConfigurations;

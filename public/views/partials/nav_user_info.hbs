@@ -15,22 +15,7 @@
                     {{anonymous_user}}
                 {{else}}
 
-                    {{#each roles}}
-                        {{#if @index}}
-                            ,
-                        {{/if}}
-                        {{#ifEquals this "client"}}
-                            {{../client_role_text}}
-                        {{/ifEquals}}
-                        {{#ifEquals this "caretaker"}}
-                            {{../healthcareworker_role_text}}
-                        {{/ifEquals}}
-                        {{#ifEquals this "anonymous_user"}}
-                            {{../anonymous_user}}
-                        {{/ifEquals}}
-
-
-                    {{/each}}
+                   {{roleInformation}}
                 {{/hasRole}}
             </span>
 

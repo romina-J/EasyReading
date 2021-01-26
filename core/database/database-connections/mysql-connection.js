@@ -171,7 +171,12 @@ class MysqlConnection extends DatabaseConnectionBase{
 
             if(typeof request.conditions[i][2] === "string"){
 
-                sql+=request.conditions[i][0]+" "+request.conditions[i][1]+" '"+request.conditions[i][2]+"'";
+                if(request.conditions[i][1] === "LIKE"){
+                    sql+=request.conditions[i][0]+" "+request.conditions[i][1]+" '%"+request.conditions[i][2]+"%'";
+                }else{
+                    sql+=request.conditions[i][0]+" "+request.conditions[i][1]+" '"+request.conditions[i][2]+"'";
+                }
+
             }else{
 
                 sql+=request.conditions[i][0]+" "+request.conditions[i][1]+" "+request.conditions[i][2];

@@ -1,11 +1,18 @@
+/** Profile repository
+ * @module profileRepo
+*/
+
 const core = rootRequire("core/core");
 const databaseManager = core.databaseManager;
 
 module.exports = {
-
-
+    /**
+    * Get user profile by email
+    * @memberof profileRepo
+    * @param {string} email Email to get profile for
+    * @returns {object} returns the user profile  
+    */    
     getProfileByEmail: async (email) => {
-
         let loadProfileRequest = databaseManager.createRequest("profile").where("email", "=", email);
 
         let loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
@@ -26,9 +33,14 @@ module.exports = {
 
             return profile;
         }
-
-
     },
+
+    /**
+    * Get user profile by id
+    * @memberof profileRepo
+    * @param {number} id Id to get profile for
+    * @returns {object} returns the user profile  
+    */      
     getProfileId: async (id) => {
         let loadProfileRequest = databaseManager.createRequest("profile").where("id", "=", id);
 
@@ -52,6 +64,12 @@ module.exports = {
         }
     },
 
+    /**
+    * Get profile language for user id
+    * @memberof profileRepo
+    * @param {number} id User id
+    * @returns {object} returns the user profile language  
+    */      
     getProfileLanguage: async (id) => {
         const sql = `SELECT locale FROM profile
                      WHERE id = ?
@@ -67,5 +85,4 @@ module.exports = {
             return "en";
         }
     },
-
 };
