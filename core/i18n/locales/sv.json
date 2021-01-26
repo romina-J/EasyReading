@@ -607,5 +607,12 @@
 	"privacy_policy_easy": "Hantering av personuppgifter på lättläst text",
 	"questions_about_project": "Om du har frågor, kommentarer eller förslag, kontakta oss:",
 	"website_contact": "Mer information om projektet och konsortiet hittar du på projektets webbplats:",
-	"leave_site_info_text": "Du kan lämna den här sidan när du vill"
+	"leave_site_info_text": "Du kan lämna den här sidan när du vill",
+	"embedded_site_manager_role_text": "embedded_site_manager_role_text",
+	"content_replacement_creator_role_text": "content_replacement_creator_role_text",
+	"admin_role_text": "admin_role_text",
+	"caretaker_role_text": "caretaker_role_text",
+	"anonym_role_text": "anonym_role_text",
+	"[object Object]_role_text": "[object Object]_role_text",
+	"backend_user_role_text": "backend_user_role_text"
 }

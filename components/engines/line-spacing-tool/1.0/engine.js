@@ -33,7 +33,7 @@ class LineSpacingTool extends base.EngineBase{
                 outputTypes: [{
                     "outputType": ioType.IOTypes.VoidIOType.className,
                 }],
-                javaScripts:['/js/line-spacing-tool.js'],
+                javaScripts:['/js/increaseLineSpacing.js'],
                 styleSheets : [],
                 toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "increaseLineHeight",
@@ -59,7 +59,7 @@ class LineSpacingTool extends base.EngineBase{
                 outputTypes: [{
                     "outputType": ioType.IOTypes.VoidIOType.className,
                 }],
-                javaScripts:['/js/line-spacing-tool.js'],
+                javaScripts:['/js/decreaseLineSpacing.js'],
                 styleSheets : [],
                 entryPoint: "decreaseLineHeight",
                 toolCategory: base.EngineFunction.ToolCategories.Layout,

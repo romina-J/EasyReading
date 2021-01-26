@@ -1,3 +1,7 @@
+/** Passport login 
+ * @module passport/login
+ */
+
 const profileRepo = require("../repository/profileRepo");
 const {OAuth2Client} = require('google-auth-library');
 const CHROME_CLIENT_ID = "691784987953-qc6ohlnk2n6g38ea7mugvbgcfcpar6g6.apps.googleusercontent.com";
@@ -5,8 +9,14 @@ const FIREFOX_CLIENT_ID = "691784987953-2t52gjtb395j4ore0lel1526o5nboefd.apps.go
 const IOS_CLIENT_ID = "584464554129-3vsvg5igvdh7cfsc0prjkjpikq7nqd1s.apps.googleusercontent.com";
 const client = new OAuth2Client(CHROME_CLIENT_ID);
 
+/**
+* Passport login function
+* @memberof module:passport/login
+* @param {Request} req Request object that holds the session id and is used for storing return Url 
+* @param {object} loginInfo Holds information about the current login, like current email and type. 
+* @param callback Returns a user profile and error object if something did go wrong. 
+*/
 async function userLogin(req, loginInfo, callback) {
-
     let userProfile = {};
     let error = null;
 
@@ -50,13 +60,6 @@ async function userLogin(req, loginInfo, callback) {
                         result: currentProfile,
                     };
 
-                    /*
-                    //TODO Reduce data size - move libraries like jQueryUI to extension
-                    let totalDataToSend = JSON.stringify(loginResult);
-                    let byteLength = Buffer.byteLength(totalDataToSend, 'utf8');
-                    */
-
-
                     webSocketConnection.sendMessage(loginResult);
                     currentProfile.userId = currentProfile.googleID;
 
@@ -66,24 +69,16 @@ async function userLogin(req, loginInfo, callback) {
                         userProfile.isNewProfile = true;
                     }
 
-
                     userProfile.clientLogin = true;
 
                     callback(userProfile, error);
-
-
                 } catch (e) {
 
                     console.log(e);
                     callback(userProfile, e);
-
-
                 }
-
-
             });
         }else{
-
             ///in case sticky sessions do not work. User logs in over http but is connected to another instance via websocket
             //Therefore we log in the user over http, and pass the loginInfo to the message server that broadcasts it to all the other instances
             let password = require('password-hash-and-salt');
@@ -147,17 +142,10 @@ async function userLogin(req, loginInfo, callback) {
 
                     console.log(e);
                     callback(userProfile, e);
-
-
                 }
-
-
             });
         }
-
-
     } else {
-
         //Portal side login, Caretakers & Clients
         try {
 
@@ -171,7 +159,7 @@ async function userLogin(req, loginInfo, callback) {
 
                 const profileData = {
                     email: loginInfo.email,
-                    roles: ["caretaker"]
+                    roles: ["caretaker","backend_user"]
                 };
                 if (loginInfo.loginType === "Facebook") {
 
@@ -182,55 +170,58 @@ async function userLogin(req, loginInfo, callback) {
                 await profileBuilder.saveProfile(profileData, false);
 
                 callback(profileData, error);
-
             }
-
-
         } catch (e) {
             console.log(e);
             callback(userProfile, e);
-
         }
-
-
     }
-
-
 }
 
-
+/**
+* Greates a random email adress for anonymous user
+* @memberof module:passport/login
+* @returns {Promise} returns a random email adress for anonymous user
+*/
 async function createRandomEmail() {
-
     const databaseManager = require("../../core/database/database-manager");
     let email = null;
     while (!email) {
-
         let newEmail = "anonym" + randomInt(1, 10000000) + "@easyreading.eu";
-
         let loadProfileRequest = databaseManager.createRequest("profile").where("email", "=", newEmail);
-
         let loadProfileRequestResult = await databaseManager.executeRequest(loadProfileRequest);
-
 
         if (loadProfileRequestResult.result.length === 0) {
             email = newEmail;
         }
-
     }
 
     return new Promise(function (resolve, reject) {
         resolve(email);
     });
-
-
 }
 
+/**
+* Greates a random int
+* @memberof module:passport/login
+* @param {number} low Lowest number to randomize
+* @param {number} high Highest number to randomize
+* @returns {number} returns a random number
+*/
 function randomInt(low, high) {
     return Math.floor(Math.random() * (high - low) + low)
 }
 
+/**
+* Greates a anonymous user
+* @memberof module:passport/login
+* @param {Request} req Request object that holds the language and the google token
+* @param {number} uuid User ID
+* @returns {object} returns a login object with and anonymous user object
+*/
 async function createLoginInfoAnonym(req, uuid) {
     let locale = "en";
+
     if (req.query.lang) {
         locale = req.query.lang;
     }
@@ -240,7 +231,6 @@ async function createLoginInfoAnonym(req, uuid) {
         let googleInfo = await verifyGoogleToken(req.query.googleToken);
 
         if (googleInfo) {
-
             let profileInfo = {
                 id: googleInfo.googleId,
                 emails: [
@@ -249,19 +239,13 @@ async function createLoginInfoAnonym(req, uuid) {
                 _json: {
                     language: locale,
                 }
-
             };
 
-
             return await createLoginInfoGoogle(req, profileInfo);
-
-
         }
-
     }
 
     let randomEmail = await createRandomEmail();
-
 
     return {
         loginType: "Anonym",
@@ -271,40 +255,46 @@ async function createLoginInfoAnonym(req, uuid) {
     };
 }
 
+/**
+* Verify google token
+* @memberof module:passport/login
+* @param {string} token Google token 
+* @returns {object} returns a object with google id and email
+*/
 async function verifyGoogleToken(token) {
-
     try {
-
         const ticket = await client.verifyIdToken({
             idToken: token,
             audience: [CHROME_CLIENT_ID, FIREFOX_CLIENT_ID, IOS_CLIENT_ID] // Specify the CLIENT_ID of the app that accesses the backend
             // Or, if multiple clients access the backend:
             //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
         });
+
         const payload = ticket.getPayload();
         const userId = payload['sub'];
+
         console.log("verify token- user id: " + userId);
-        // If request specified a G Suite domain:
-        //const domain = payload['hd'];
+
         return {
             googleId: payload['sub'],
             email: payload['email']
         };
     } catch (e) {
-
         console.log("Error verifying Goolge Token:" + token);
     }
-
 }
 
+/**
+* Creates login information for google login
+* @memberof module:passport/login
+* @param {Request} req Not used
+* @param {object} profile Holds the user profile 
+*/
 async function createLoginInfoGoogle(req, profile) {
-
     let locale = "en";
     if (profile._json) {
         if (profile._json.language) {
             locale = profile._json.language.split("_")[0];
-
-
         }
     }
 
@@ -316,8 +306,13 @@ async function createLoginInfoGoogle(req, profile) {
     }
 }
 
+/**
+* Creates login information for Facebook login
+* @memberof module:passport/login
+* @param {Request} req Not used
+* @param {object} profile Holds the user profile 
+*/
 async function createLoginInfoFacebook(req, profile) {
-
     return {
         loginType: "Facebook",
         id: profile.id,
@@ -331,6 +326,4 @@ module.exports = {
     createLoginInfoAnonym: createLoginInfoAnonym,
     createLoginInfoGoogle: createLoginInfoGoogle,
     createLoginInfoFacebook: createLoginInfoFacebook,
-
 };
-

@@ -43,8 +43,7 @@ class MicrosoftTextAnalyticsKeyPhrase extends base.EngineBase {
                 const TextAnalyticsAPIClient = require("@azure/cognitiveservices-textanalytics");
                 const creds = new CognitiveServicesCredentials.ApiKeyCredentials({ inHeader: { 'Ocp-Apim-Subscription-Key': credentials.credential } });
                 this.client = new TextAnalyticsAPIClient.TextAnalyticsClient(creds, "https://ertextanylitics2.cognitiveservices.azure.com/");
-
-                console.log("https://ertextanylitics2.cognitiveservices.azure.com/");
+                console.log("https://ertextanylitics2.cognitiveservices.azure.com/")
 
             } catch (e){
                 console.log(e);

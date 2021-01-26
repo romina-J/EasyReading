@@ -383,7 +383,7 @@
 	"content_replacement.1.0.content_replacement.source-title": "www.funka.com",
 	"content_replacement.1.0.content_replacement.source-url": "www.funka.com",
 	"content_replacement.1.0.content_replacement.howToUse": "If content in another format is available, a symbol will be embedded. Once clicked on the symbol the content will be replaced",
-	"page_content_replacement_title": "Content replacments",
+	"page_content_replacement_title": "Content replacements",
 	"page_content_replacement_intro_text": "Create easier to understand content for web-pages.",
 	"page_content_replacement_create_new": "Create",
 	"content_replacement_title": "Title",
@@ -729,8 +729,8 @@
 	"caretaker_name_label": "Name",
 	"caretaker_email_label": "Email",
 	"page_client_caretaker_info": "Assistance can help you with the Easy Reading settings.",
-	"Continuous Choice Button": "Continuous Choice Button",
-	"Single Choice Button": "Single Choice Button",
+	"Continuous Choice Button": "Click to select and continue",
+	"Single Choice Button": "Click to select",
 	"Text Selector": "Text Selector",
 	"Simple Button": "Simple Button",
 	"Two state button": "Two state button",
@@ -741,5 +741,12 @@
 	"privacy_policy_easy": "Privacy policy in plain language",
 	"questions_about_project": "If you have any questions, comments, suggestions about the EasyReading project, feel free to contact us",
 	"website_contact": "More information about the project and the consortium can be found on the project website",
-	"leave_site_info_text": "You can leave this page anytime."
+	"leave_site_info_text": "You can leave this page anytime.",
+	"embedded_site_manager_role_text": "Embedded site manager",
+	"content_replacement_creator_role_text": "Content replacement creator",
+	"admin_role_text": "Administrator",
+	"caretaker_role_text": "Caretaker",
+	"anonym_role_text": "anonym_role_text",
+	"[object Object]_role_text": "[object Object]_role_text",
+	"backend_user_role_text": "backend_user_role_text"
 }

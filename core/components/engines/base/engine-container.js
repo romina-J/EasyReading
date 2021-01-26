@@ -19,6 +19,10 @@ class EngineContainer{
         return this.versions.length;
     }
 
+    getLatestVersion(){
+        return this.versions[this.versions.length-1].engine;
+    }
+
 
 
 }

@@ -1,7 +1,20 @@
+/** Express router providing custom functions related routes
+ * @module routers/customFunction
+ * @requires express
+ */
+
 let express = require('express');
 let router = express.Router();
 const core = rootRequire("core/core");
 
+/**
+ * Route serving custom functions.
+ * @name use/
+ * @memberof module:routers/customFunction
+ * @param {Request} req Request object that includes the unique UserId and function
+ * @param {Response} res Response object that is used for storing the custom function content
+ * @param next Returns the response object
+ */
 router.use('/', async function (req, res, next) {
 
     if(!req.isAuthenticated()) {
@@ -15,7 +28,6 @@ router.use('/', async function (req, res, next) {
     let customFunctionsSearchRequestResult = await databaseManager.executeRequest(customFunctionsSearchRequest);
 
     let profile = core.network.getProfileWithID(req.user.id);
-
 
     if (req.method === "POST") {
         let functionID = Object.keys(req.body);
@@ -134,9 +146,6 @@ router.use('/', async function (req, res, next) {
 
     let customFunctions = [];
 
-
-
-
     for (let i = 0; i < customFunctionsSearchRequestResult.result.length; i++) {
 
         let functionActive = false;
@@ -146,7 +155,6 @@ router.use('/', async function (req, res, next) {
                 if(profile.userInterfaces[0].tools[k].function.source.id === customFunctionsSearchRequestResult.result[i].id){
                     functionActive = true;
                 }
-
             }
         }
 
@@ -156,16 +164,11 @@ router.use('/', async function (req, res, next) {
             description: customFunctionsSearchRequestResult.result[i].description,
             active: functionActive,
         });
-
     }
 
     res.locals.cutstomFunctions = customFunctions;
 
-
     return next();
-
-
 });
-
 
 module.exports = router;

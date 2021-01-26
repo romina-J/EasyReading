@@ -40,9 +40,9 @@ class AudioHighlighter extends PresentationBase {
     }
 
     createIconsForSchemaProperties(){
-        this.createIconForSchemaPropertyValue("speed","slow","assets/speed_fast.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("speed","slow","assets/speed_slow.png","radio_button_icon");
         this.createIconForSchemaPropertyValue("speed","normal","assets/speed_normal.png","radio_button_icon");
-        this.createIconForSchemaPropertyValue("speed","fast","assets/speed_slow.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("speed","fast","assets/speed_fast.png","radio_button_icon");
 
     }
 

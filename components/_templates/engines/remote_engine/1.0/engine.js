@@ -39,6 +39,7 @@ class RemoteFunction extends base.EngineBase {
                     "description": "Result",
 
                 }],
+                toolCategory: base.EngineFunction.ToolCategories.Experimental,
                 entryPoint: "remoteFunction",
             }
 
@@ -47,7 +48,8 @@ class RemoteFunction extends base.EngineBase {
 
     remoteFunction(callback, input, config,profile,constants) {
 
-        let result = new ioType.IOTypes.Word("This is soeme replacement");
+        //Return reverse word
+        let result = new ioType.IOTypes.Word(this.reverse(input.word));
 
         callback(result);
 
@@ -55,6 +57,13 @@ class RemoteFunction extends base.EngineBase {
 
 
 
+    }
+    reverse(str){
+        let reversed = "";
+        for (let i = str.length - 1; i >= 0; i--){
+            reversed += str[i];
+        }
+        return reversed;
     }
 
 }

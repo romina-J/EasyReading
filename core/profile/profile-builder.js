@@ -811,8 +811,6 @@ let profileBuilder = {
     },
 
     createDefaultSupportCategories(pid) {
-
-
         let profileSupportCategories = {};
 
         let sc = require("./profile-support-categories");
@@ -837,11 +835,7 @@ let profileBuilder = {
 
                 profileSupportCategories[categoryName][subcategoryName] = defaults(profileUnderstandingSupportSchema);
                 profileSupportCategories[categoryName][subcategoryName].pid = pid;
-
-
             });
-
-
         });
 
        return profileSupportCategories;

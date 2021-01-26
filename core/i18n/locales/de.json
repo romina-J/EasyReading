@@ -748,5 +748,12 @@
 	"privacy_policy_easy": "Datenschutzerklärung in leichter Sprache",
 	"questions_about_project": "Für Fragen, Vorschläge und Kommentare zu dem Projekt kontaktieren Sie bitte",
 	"website_contact": "Zusätzliche Informationen zum Projekt und dem Konsortium können auf der Projektwebseite gefunden werden",
-	"leave_site_info_text": "Sie können diese Seite jederzeit verlassen."
+	"leave_site_info_text": "Sie können diese Seite jederzeit verlassen.",
+	"embedded_site_manager_role_text": "Seiten-Manager",
+	"content_replacement_creator_role_text": "Übersetzer",
+	"admin_role_text": "Administrator",
+	"caretaker_role_text": "Caretaker",
+	"anonym_role_text": "anonym_role_text",
+	"[object Object]_role_text": "[object Object]_role_text",
+	"backend_user_role_text": "backend_user_role_text"
 }

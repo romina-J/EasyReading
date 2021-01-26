@@ -216,9 +216,10 @@
     async function saveUserInterfaceConfig() {
 
         let formData = $('#userInterfaceForm').serializeArray();
-
-        let event = new CustomEvent('easyReadingUpdate');
-        document.dispatchEvent(event);
+        if(window.location.pathname.includes("client")) {
+            let event = new CustomEvent('easyReadingUpdate');
+            document.dispatchEvent(event);
+        }
 
         await fetch('/api/v1/updateUserInterface', {
             method: 'POST',
@@ -467,8 +468,11 @@
 
     async function setConfiguration() {
 
-        let event = new CustomEvent('easyReadingUpdate');
-        document.dispatchEvent(event);
+        if(window.location.pathname.includes("client")){
+            let event = new CustomEvent('easyReadingUpdate');
+            document.dispatchEvent(event);
+        }
+
         {{!-- console.log(document.getElementById('data').value) --}}
 
         let configurationData = JSON.parse(document.getElementById('data').value);

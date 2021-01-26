@@ -1,7 +1,17 @@
+/** Express router providing client related routes
+ * @module clientSetupController
+  */
+
 module.exports = {
+    /**
+     * Loading data to client set ut pages. 
+     * @memberof module:clientSetupController
+     * @param {Request} req Request object that includes the current step
+     * @param {Response} res Response object that is used for storing the content
+     * @param next Not used
+     * @returns {Response} Returns the res object
+     */    
     setupController: async (req, res, next) => {
-
-
         let totalSteps = 8;
         let step = 0;
         if (req.session.step) {
@@ -12,7 +22,6 @@ module.exports = {
                 req.session.setupInformation.push(0);
             }
         }
-
 
         if (!req.session.internalStep) {
             req.session.internalStep = 0;
@@ -331,42 +340,18 @@ module.exports = {
         }
         //   return next();
     }
-
-
 };
 
 let databaseManager = require("../../../core/database/database-manager");
 
-/*
-async function saveSupportData(data,pid) {
-
-
-
-    let keys = [];
-    Object.entries(data).forEach(([key, value]) => {
-        keys.push(key);
-    });
-
-    for(let i=0; i < keys.length; i++){
-
-        //Delete old stuff
-        let deleteOldSupportDataRequest = databaseManager.createRequest("profile_"+keys[i]).where("pid", "=", pid).delete();
-        await databaseManager.executeRequest(deleteOldSupportDataRequest);
-
-
-        data[keys[i]].pid = pid;
-        let insertNewDataRequest = databaseManager.createRequest("profile_"+keys[i]).insert(data[keys[i]]);
-        let insertNewDataRequestResult = await databaseManager.executeRequest(insertNewDataRequest);
-
-    }
-
-};
-*/
-
-
+/**
+* Loading support categories for the current user or default profile
+* @memberof module:clientSetupController
+* @param {Request} req Request object that includes the current step
+* @param {Response} res Response object that is used for storing the content
+* @returns {object} returns the current supportCategories for the user. 
+*/    
 function createSupportCategories(req, res) {
-
-
     let profileBuilder = require("../../../core/profile/profile-builder");
     let supportCategories = profileBuilder.createDefaultSupportCategories(req.user.id);
 
@@ -531,12 +516,14 @@ function createSupportCategories(req, res) {
     }
 
     return supportCategories;
-
-
 }
 
+/**
+* Loading storing user test data for the wizard
+* @memberof module:clientSetupController
+* @param {Request} req Request object that includes setup Information
+*/    
 async function storeUserTestData(req){
-
     let defaultProfile = false;
     if(req.body){
         if(req.body.defaultProfile){

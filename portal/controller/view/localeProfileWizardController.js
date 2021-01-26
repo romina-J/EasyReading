@@ -1,5 +1,17 @@
+/** Localization module
+ * @module locale
+  */
+
 module.exports = {
 
+    /**
+     * Translate the profile wizard texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */   
     translateProfileWizard: async (req, res, next) => {
 
         let loc = {
@@ -19,9 +31,7 @@ module.exports = {
             'create_default_profile_explanation_1': req.__("create_default_profile_explanation_1"),
             'create_default_profile_explanation_2': req.__("create_default_profile_explanation_2"),
 
-
             //Step 1
-
             'step1_heading': req.__("step1_heading"),
             'step_1_tts': req.__("step_1_tts"),
             'text_read_aloud': req.__("text_read_aloud"),
@@ -31,7 +41,6 @@ module.exports = {
             'text_read_aloud_speed_slow': req.__("text_read_aloud_speed_slow"),
             'text_read_aloud_speed_normal': req.__("text_read_aloud_speed_normal"),
             'text_read_aloud_speed_fast': req.__("text_read_aloud_speed_fast"),
-
 
             //Step 1
             'step2_heading': req.__("step2_heading"),
@@ -54,7 +63,6 @@ module.exports = {
             'multimedia_presentation_tooltip_text': req.__("multimedia_presentation_tooltip_text"),
             'multimedia_presentation_top_text': req.__("multimedia_presentation_top_text"),
             'multimedia_presentation_next_text': req.__("multimedia_presentation_next_text"),
-
 
             //Step 4
             'step4_heading': req.__("step4_heading"),
@@ -92,7 +100,6 @@ module.exports = {
             'highlight_links_text': req.__("highlight_links_text"),
             'reading_mode': req.__("reading_mode"),
 
-
             //Step 7
             'step7_heading': req.__("step7_heading"),
             'step7_activate_help': req.__("step7_activate_help"),
@@ -105,8 +112,6 @@ module.exports = {
             'mark_instruction_2': req.__("mark_instruction_2"),
             'mark_instruction_3': req.__("mark_instruction_3"),
 
-
-
             //Step 8
             'profile_wizard_step_8_heading': req.__("profile_wizard_step_8_heading"),
             'setup_complete_title': req.__("setup_complete_title"),
@@ -115,7 +120,6 @@ module.exports = {
             'personal_profile_complete_text': req.__("personal_profile_complete_text"),
             'default_profile_complete_text': req.__("default_profile_complete_text"),
             'finish_label': req.__("finish_label"),
-
 
             //Final Step
             'final_step_heading': req.__("final_step_heading"),
@@ -126,9 +130,6 @@ module.exports = {
             'final_step_goto_config': req.__("final_step_goto_config"),
             'final_step_here_is_help': req.__("final_step_here_is_help"),
             'final_step_goto_settings': req.__("final_step_goto_settings"),
-
-
-
         };
 
         res.locals.context = {

@@ -543,5 +543,3 @@ $.widget("ui.erTabSlideOut", {
         }
     }
 });
-
-console.log('do not delete this comment - workaround to make injected code work properly in firefox'); // injecting the code in firefox will not work, if script returns nothing

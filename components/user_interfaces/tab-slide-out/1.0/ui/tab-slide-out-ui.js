@@ -5,6 +5,7 @@ class TabSlideOutUserInterface extends UserInterfaceBase {
         this.configuration = configuration;
         this.currentToolId = 1;
 
+        console.log(easyReading);
         this.toolsContainers = [];
     }        
 
@@ -123,41 +124,56 @@ class TabSlideOutUserInterface extends UserInterfaceBase {
     }
 
     toolsLoaded() {
-        // if ui is horizontal, add special buttons directly to the slide out grid container
-        if (this.configuration.tabPositioning === "top" || this.configuration.tabPositioning === "bottom") {
-            $("#er-tab-slide-out-grid-container").append(    
-                '<div id="tab-slide-out-container-settings" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' + 
-                    '<button id="er-tab-slide-out-settings-button" class="easy-reading-button" onclick="location.href=\'' + easyReading.uiCollection.serverURL + '/client/welcome\';">' +
-                        '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/settings.png" title="Opens settings">' +
-                    '</button>' + 
-                '</div>' + 
-                '<div id="tab-slide-out-container-feedback" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' + 
-                    '<button id="er-tab-slide-out-feedback_button" class="easy-reading-button" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
-                        '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/feedback.png" title="Opens feedback form">' +
-                    '</button>' + 
-                '</div>');
-        } else {
-            // if not, put them in a separate container
-            $("#er-tab-slide-out").append(
-                '<div id="er-tab-slide-out-special-button-container">' + 
-                    '<div id="tab-slide-out-container-settings" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' + 
-                        '<button id="er-tab-slide-out-settings-button" class="easy-reading-button" onclick="location.href=\'' + easyReading.uiCollection.serverURL + '/client/welcome\';">' +
-                            '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/settings.png" title="Opens settings">' +
-                        '</button>' + 
-                    '</div>' + 
-                    '<div id="tab-slide-out-container-feedback" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' + 
-                        '<button id="er-tab-slide-out-feedback_button" class="easy-reading-button" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
-                            '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/feedback.png" title="Opens feedback form">' +
-                        '</button>' + 
-                    '</div>' +
-                '</div>');
+        let embeddedLogin = false;
+        try{
+
+            if(easyReading.uiCollection.loginType === "Embedded"){
+                embeddedLogin = true;
+            }
+
+        }catch (e) {
+            
         }
+        if(!embeddedLogin){
+            // if ui is horizontal, add special buttons directly to the slide out grid container
+            if (this.configuration.tabPositioning === "top" || this.configuration.tabPositioning === "bottom") {
+                $("#er-tab-slide-out-grid-container").append(
+                    '<div id="tab-slide-out-container-settings" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                    '<button id="er-tab-slide-out-settings-button" class="easy-reading-button" onclick="location.href=\'' + easyReading.uiCollection.serverURL + '/client/welcome\';">' +
+                    '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/settings.png" title="Opens settings">' +
+                    '</button>' +
+                    '</div>' +
+                    '<div id="tab-slide-out-container-feedback" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                    '<button id="er-tab-slide-out-feedback_button" class="easy-reading-button" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                    '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/feedback.png" title="Opens feedback form">' +
+                    '</button>' +
+                    '</div>');
+            } else {
+                // if not, put them in a separate container
+                $("#er-tab-slide-out").append(
+                    '<div id="er-tab-slide-out-special-button-container">' +
+                    '<div id="tab-slide-out-container-settings" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                    '<button id="er-tab-slide-out-settings-button" class="easy-reading-button" onclick="location.href=\'' + easyReading.uiCollection.serverURL + '/client/welcome\';">' +
+                    '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/settings.png" title="Opens settings">' +
+                    '</button>' +
+                    '</div>' +
+                    '<div id="tab-slide-out-container-feedback" class="er-tab-slide-out-grid-item" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                    '<button id="er-tab-slide-out-feedback_button" class="easy-reading-button" style="width: ' + this.configuration.buttonSize + 'px;height: ' + this.configuration.buttonSize + 'px;">' +
+                    '<img src="' + easyReading.uiCollection.serverURL + '/components/user-interface/tab-slide-out/1.0/ui/images/feedback.png" title="Opens feedback form">' +
+                    '</button>' +
+                    '</div>' +
+                    '</div>');
+            }
+
+            $("#er-tab-slide-out-feedback_button").click(function() {
+                feedbackForm.showFeedbackForm();
+            });
+        }
+
 
         $("#er-tab-slide-out-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px"); 
 
-        $("#er-tab-slide-out-feedback_button").click(function() {
-            feedbackForm.showFeedbackForm();
-        });
+
 
         $("#er-tab-slide-out").erTabSlideOut("refresh");
     }

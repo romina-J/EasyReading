@@ -1,5 +1,16 @@
-module.exports = {
+/** Profile functions
+ * @module profile
+ * @requires express
+ */
 
+module.exports = {
+    /**
+    * Updateds tool configuration for a user
+    * @memberof module:profile
+    * @param {Request} req Request object that includes the unique UserId and the updated tools configuration
+    * @param {Response} res Response object that is used for sending respons status to the browser. 
+    * @param next Not used
+    */
     updateUserInterface: async (req, res, next) => {
         try {
 

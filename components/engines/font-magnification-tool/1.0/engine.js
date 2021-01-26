@@ -33,7 +33,7 @@ class FontMagnificationTool extends base.EngineBase{
                 outputTypes: [{
                     "outputType" : ioType.IOTypes.VoidIOType.className,
                 }],
-                javaScripts:['/js/font-magnification-tool.js'],
+                javaScripts:['/js/increaseFont.js'],
                 styleSheets : [],
                 toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "magnifyFont",
@@ -59,7 +59,7 @@ class FontMagnificationTool extends base.EngineBase{
                 outputTypes: [{
                     "outputType": ioType.IOTypes.VoidIOType.className,
                 }],
-                javaScripts:['/js/font-magnification-tool.js'],
+                javaScripts:['/js/decreaseFont.js'],
                 styleSheets : [],
                 toolCategory: base.EngineFunction.ToolCategories.Layout,
                 entryPoint: "shrinkFont",

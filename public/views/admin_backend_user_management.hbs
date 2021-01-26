@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+
+<html lang="{{lang}}">
+
+
+<head>
+    <title>{{page_caretakerlist_title}}</title>
+    {{> head }}
+    <script src="/js/audio.js"></script>
+</head>
+
+<body>
+<div class="row wrapper">
+
+    <div class="medium-3 columns">
+        <nav>
+            {{> nav_backend }}
+            {{> nav_user_info }}
+        </nav>
+        {{> leave_site_info}}
+    </div>
+
+    <div class="medium-9 columns">
+
+        <main>
+
+            <div class="row columns">
+
+
+                <h1>USA MANAGMENT</h1>
+
+                <table>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Roles</th>
+                        <th>Edit</th>
+                    </tr>
+
+                    {{#each profiles}}
+                        <tr>
+                            <td>
+                                {{id}}
+                            </td>
+                            <td>
+                                {{email}}
+                            </td>
+                            <td>
+                                {{roles}}
+                            </td>
+                            <td>
+                                <a href="backend_user_edit?id={{id}}">Edit</a>
+                            </td>
+                        </tr>
+
+                    {{/each}}
+                </table>
+
+            </div>
+
+        </main>
+
+        {{>footer}}
+    </div>
+</div>
+</body>
+</html>

@@ -1,26 +1,53 @@
+/** HandlebarsHelper 
+ * @module handlebars
+ * @requires hbs
+ */
+
 const hbs = require('hbs');
 let speechUtils = require("../../core/util/speech-utils");
 let descriptionManager = require("../../core/components/util/description/descriptionManager");
 const stringHash = require("string-hash");
+
+/**
+ * Helper method that checks if a user is in a role
+ * @memberof module:handlebars
+ * @param {Profile} user The user
+ * @param {string} role The role
+ * @param {object} options Helper options
+ * @returns {bool} 
+ **/
 hbs.registerHelper("hasRole", function (user, role, options) {
     let userHasRole = false;
+
     if (user) {
-
         if (user.roles) {
-
             if (Array.isArray(user.roles)) {
                 if (user.roles.includes(role)) {
                     userHasRole = true;
                 }
             }
-
-
         }
-
     }
 
     return userHasRole ? options.fn(this) : options.inverse(this)
 });
+
+hbs.registerHelper("contains", function (roles, role, options) {
+    let contains = false;
+
+    if (Array.isArray(roles)) {
+        if (roles.includes(role)) {
+            contains = true;
+        }
+    }
+    return contains ? options.fn(this) : options.inverse(this)
+});
+
+/**
+ * Helper method that checks if a the argumens has a value. 
+ * @memberof module:handlebars
+ * @returns {bool} 
+ **/
 hbs.registerHelper('hasValue', function() {
     let args = Array.prototype.slice.call(arguments);
 
@@ -29,11 +56,18 @@ hbs.registerHelper('hasValue', function() {
             return args[args.length-1].inverse(this);
         }
     }
+
     return args[args.length-1].fn(this);
 });
 
-hbs.registerHelper('componentListNeedsToBeRendered', function(componentList,options) {
-
+/**
+ * Helper method that renders a list of components
+ * @memberof module:handlebars
+ * @param {object} componentList List to be renderd.
+ * @param {object} options Helper options
+ * @returns {object} renderd list
+ **/
+hbs.registerHelper('componentListNeedsToBeRendered', function(componentList, options) {
     //If component list is empty. e.g function without presentation.
     if(componentList.length === 0){
         return options.inverse(this);
@@ -56,10 +90,16 @@ hbs.registerHelper('componentListNeedsToBeRendered', function(componentList,opti
     }
 
     return options.inverse(this);
-
 });
 
-hbs.registerHelper('configurationNeedsToBeRendered', function(componentList,options) {
+/**
+ * Helper method that renders a list of configurations for input types
+ * @memberof module:handlebars
+ * @param {object} componentList List to be renderd.
+ * @param {object} options Helper options
+ * @returns {object} renderd list
+ **/
+hbs.registerHelper('configurationNeedsToBeRendered', function(componentList, options) {
     //At least two components;
     if(componentList.length > 1){
         return options.fn(this);
@@ -72,6 +112,11 @@ hbs.registerHelper('configurationNeedsToBeRendered', function(componentList,opti
     return options.inverse(this);
 });
 
+/**
+ * Helper method that combines arguments to one string
+ * @memberof module:handlebars
+ * @returns {string} combind string
+ **/
 hbs.registerHelper('concat', function () {
 
     let result = "";
@@ -84,6 +129,11 @@ hbs.registerHelper('concat', function () {
 
 });
 
+/**
+ * Helper method that chain arguments
+ * @memberof module:handlebars
+ * @returns {object} chained object
+ **/
 hbs.registerHelper('chain', function () {
     let helpers = [];
     let args = Array.prototype.slice.call(arguments);
@@ -109,14 +159,27 @@ hbs.registerHelper('chain', function () {
     return args.shift();
 });
 
-hbs.registerHelper('renderTextualDescription',function (textualDescription,lang,index) {
-
-
-
+/**
+ * Helper method that renders textual description
+ * @memberof module:handlebars
+ * @param {object} textualDescription Text to render
+ * @param {string} lang language to render the text with
+ * @param {number} index current index
+ * @returns {string} renderd HTML
+ **/
+hbs.registerHelper('renderTextualDescription', function (textualDescription, lang, index) {
     return renderTextualDescription(textualDescription,lang,index);
 });
 
-function renderTextualDescription(textualDescription,lang,index){
+/**
+ * Helper method that renders textual description
+ * @memberof module:handlebars
+ * @param {object} textualDescription Text to render
+ * @param {string} lang language to render the text with
+ * @param {number} index current index
+ * @returns {string} renderd HTML
+ **/
+function renderTextualDescription(textualDescription, lang, index){
     let textualDescriptionHTML = "";
     if(textualDescription){
 
@@ -194,23 +257,24 @@ function renderTextualDescription(textualDescription,lang,index){
             lastItemType = textualDescription[i].type;
 
             audioButtonHTML = "";
-
-
         }
-
-
     }
 
     return textualDescriptionHTML;
 
 }
 
-hbs.registerHelper('createTTSButton', function (speechElements,lang) {
+/**
+ * Helper method that creates a text to speach button
+ * @memberof module:handlebars
+ * @param {string} speechElements Element name 
+ * @param {string} lang language to add button for
+ * @returns {string} renderd HTML
+ **/
+hbs.registerHelper('createTTSButton', function (speechElements, lang) {
     let args = Array.prototype.slice.call(arguments);
 
     speechElements = speechElements.replace(" ", "").split(",");
-
-
 
     let audioElements = [];
 
@@ -231,27 +295,44 @@ hbs.registerHelper('createTTSButton', function (speechElements,lang) {
                 elementId: element[0]
             });
         }
-
-
-
     }
-
 
     return createAudioButton(audioElements);
 });
 
+/**
+ * Helper method that creates a audio button
+ * @memberof module:handlebars
+ * @param {string} audioElements Audio name 
+ * @returns {string} renderd HTML
+ **/
 function createAudioButton(audioElements){
     audioElements = btoa(JSON.stringify(audioElements));
     return ' <button type="button" class="er-audio-player" data-audio-elements="'+audioElements+'">' +
         '<img src="/images/setup/text-to-speech.png" alt="play audio">' +
         '</button>';
 }
+
+/**
+ * Helper method that checks if arguments are equal
+ * @memberof module:handlebars
+ * @returns {bool} 
+ **/
 hbs.registerHelper('eq', function () {
     const args = Array.prototype.slice.call(arguments, 0, -1);
     return args.every(function (expression) {
         return args[0] === expression;
     });
 });
+
+/**
+ * Helper method that checks if arguments are equal
+ * @memberof module:handlebars
+ * @param {object} arg1 Argument 1
+ * @param {object} arg2 Argument 2
+ * @param {object} options Helper options 
+ * @returns {bool} 
+ **/
 hbs.registerHelper('ifEquals', function (arg1, arg2, options) {
     if (typeof arg1 === 'undefined' && arg2 === null) {
         return options.fn(this);
@@ -262,6 +343,14 @@ hbs.registerHelper('ifEquals', function (arg1, arg2, options) {
     return (arg1 === arg2) ? options.fn(this) : options.inverse(this);
 });
 
+/**
+ * Helper method that checks if arguments are not equal
+ * @memberof module:handlebars
+ * @param {object} arg1 Argument 1
+ * @param {object} arg2 Argument 2
+ * @param {object} options Helper options 
+ * @returns {bool} 
+ **/
 hbs.registerHelper('ifNotEquals', function (arg1, arg2, options) {
     if (typeof arg1 === 'undefined' && arg2 === null) {
         return options.inverse(this);
@@ -272,18 +361,34 @@ hbs.registerHelper('ifNotEquals', function (arg1, arg2, options) {
     return (arg1 !== arg2) ? options.fn(this) : options.inverse(this);
 });
 
-
-
+/**
+ * Helper method that creates a json string from data
+ * @memberof module:handlebars
+ * @param {object} data Input data
+ * @returns {string} JSON string
+ **/
 hbs.registerHelper('convertToString', function (data) {
     return JSON.stringify(data)
 });
 
+/**
+ * Helper method that converts first char to upper case
+ * @memberof module:handlebars
+ * @param {string} text Input text
+ * @returns {string}
+ **/
 hbs.registerHelper('capitalizeFirst', function (text) {
     return new hbs.SafeString(
         text.charAt(0).toUpperCase() + text.slice(1)
     );
 });
 
+/**
+ * Helper method that converts wordsto upper case
+ * @memberof module:handlebars
+ * @param {string} text Input text
+ * @returns {string}
+ **/
 hbs.registerHelper('capitalizeWords', function (text) {
     return new hbs.SafeString(
         text.replace(/(?:^|\s)\S/g, function (a) {
@@ -292,17 +397,40 @@ hbs.registerHelper('capitalizeWords', function (text) {
     );
 });
 
+/**
+ * Helper method that addes a enable/disable checkbox for the current tool
+ * @memberof module:handlebars
+ * @param {object} tool Current tool
+ * @param {number} index Current index 
+ * @returns {string}
+ **/
 hbs.registerHelper('addEnableCheckBox', function (tool, index) {
     let form = createCheckBox(tool.enable, index)
     return new hbs.SafeString(form)
 });
 
+/**
+ * Helper method that addes a label to the enable/disable checkbox for the current tool
+ * @memberof module:handlebars
+ * @param {string} title Label text
+ * @param {string} icon Icon
+ * @param {number} index current index 
+ * @returns {string}
+ **/
 hbs.registerHelper('addEnableCheckBoxLabel', function (title, icon, index) {
     let form = createCheckBoxLabel(title, icon, index)
     return new hbs.SafeString(form)
 });
 
-hbs.registerHelper('addInputField', function (tool, index,lang) {
+/**
+ * Helper method that addes a a input field for the current tool
+ * @memberof module:handlebars
+ * @param {object} tool Current tool
+ * @param {number} index Current index 
+ * @param {string} lang Current language
+ * @returns {string}
+ **/
+hbs.registerHelper('addInputField', function (tool, index, lang) {
     let form = "";
     if (tool.dataSchema.properties) {
         form += createInputFields(tool, index,lang)
@@ -310,6 +438,14 @@ hbs.registerHelper('addInputField', function (tool, index,lang) {
     return new hbs.SafeString(form)
 });
 
+/**
+ * Helper method that checkes if argument v1 is shorter then argument v2
+ * @memberof module:handlebars
+ * @param {string} v1 Text 1
+ * @param {string} v2 Text 2
+ * @param {object} options Helper options
+ * @returns {bool}
+ **/
 hbs.registerHelper('checklength', function (v1, v2, options) {
     'use strict';
     if (v1.length <= v2) {
@@ -318,8 +454,18 @@ hbs.registerHelper('checklength', function (v1, v2, options) {
     return options.inverse(this);
 });
 
-hbs.registerHelper('createTextualDescriptionForComponentList', function (componentList,functionId,type,activeComponent,lang,index) {
-
+/**
+ * Helper method that renders textual description for a compent list
+ * @memberof module:handlebars
+ * @param {object} componentList Compent list to create textual description for
+ * @param {number} functionId Id
+ * @param {string} type Type
+ * @param {object} activeComponent active compnent to show textual description for
+ * @param {string} lang language to render the textual description for
+ * @param {number} index current index
+ * @returns {string} renderd HTML
+ **/
+hbs.registerHelper('createTextualDescriptionForComponentList', function (componentList, functionId, type, activeComponent, lang, index) {
     if(componentList.length === 1){
 
         return new hbs.SafeString(renderTextualDescription(componentList[0].textualDescription,lang,index));
@@ -342,15 +488,33 @@ hbs.registerHelper('createTextualDescriptionForComponentList', function (compone
 
         return new hbs.SafeString(html);
     }
-
 });
 
+/**
+ * Helper method that creates a textual description identifier
+ * @memberof module:handlebars
+ * @param {object} component Current component
+ * @param {number} functionId Id
+ * @param {string} type Type
+ * @returns {string} Identifier
+ **/
 function createComponentTextualDescriptionIdentifier(component, functionId, type){
     return type+"_"+functionId+"_"+component.id+"_description";
 }
 
-hbs.registerHelper('createConfigFormForComponentList', function (componentList, functionId, type, activeComponent, title,lang,index) {
-
+/**
+ * Helper method that renders a configuration form for every compoent in a component list
+ * @memberof module:handlebars
+ * @param {object} componentList Compent list to render configuration for
+ * @param {number} functionId Id
+ * @param {string} type Type
+ * @param {object} activeComponent active compnent to render configuration for
+ * @param {string} title Fieldset title
+ * @param {string} lang language to render the textual description for
+ * @param {number} index current index (not used)
+ * @returns {string} renderd HTML
+ **/
+hbs.registerHelper('createConfigFormForComponentList', function (componentList, functionId, type, activeComponent, title, lang, index) {
     let html = "";
     //Return if empty component list. e.g engine with void output has 0 presentations
     if (componentList.length === 0) {
@@ -407,6 +571,13 @@ hbs.registerHelper('createConfigFormForComponentList', function (componentList, 
     }
 });
 
+/**
+ * Helper method that loads the current active component or if it doesnt exist, it load the defualt one. 
+ * @memberof module:handlebars
+ * @param {object} component Component to load
+ * @param {number} functionId Id
+ * @param {object} activeComponent active compnent to render configuration for
+ **/
 function prepareComponent(component, functionId, activeComponent) {
     component.componentID = functionId + "_" + component.componentID;
 
@@ -417,11 +588,25 @@ function prepareComponent(component, functionId, activeComponent) {
     }
 }
 
-hbs.registerHelper('createConfigFormForComponent', function (component,lang) {
-    return createConfigFormForComponent(component,lang);
+/**
+ * Helper method that renders a configuration form for the current component
+ * @memberof module:handlebars
+ * @param {object} component Current component to create config form for
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
+hbs.registerHelper('createConfigFormForComponent', function (component, lang) {
+    return createConfigFormForComponent(component, lang);
 });
 
-function createConfigFormForComponent(component,lang) {
+/**
+ * Private method that renders a configuration form for the current component
+ * @memberof module:handlebars
+ * @param {object} component Current component to create config form for
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
+function createConfigFormForComponent(component, lang) {
     let componentID = component.componentID + "_" + component.id;
 
     let html = "";
@@ -455,7 +640,14 @@ function createConfigFormForComponent(component,lang) {
     return new hbs.SafeString(html);
 }
 
-function createInputFieldForSchemaProperty(propertyInfo,lang) {
+/**
+ * Private method that renders a input field for the current input / output type. 
+ * @memberof module:handlebars
+ * @param {object} propertyInfo Current property to create a input field for. 
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
+function createInputFieldForSchemaProperty(propertyInfo, lang) {
 
     switch (propertyInfo.schema.type) {
 
@@ -468,6 +660,13 @@ function createInputFieldForSchemaProperty(propertyInfo,lang) {
     }
 }
 
+/**
+ * Private method that renders a numeric input field for the current input / output type. 
+ * @memberof module:handlebars
+ * @param {object} propertyInfo Current property to create a input field for. 
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
 function createInputFieldForIntegerSchema(propertyInfo,lang) {
 
     let inputID = createInputID(propertyInfo.componentID, propertyInfo.propertyName);
@@ -513,6 +712,13 @@ function createInputFieldForIntegerSchema(propertyInfo,lang) {
     return html + describedByAttributeSpan + '</div>'
 }
 
+/**
+ * Private method that renders a select box (if more then 4 options) or radiobuttons for the current input / output type. 
+ * @memberof module:handlebars
+ * @param {object} propertyInfo Current property to create a select box or radiobuttons for
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
 function createInputFieldForStringProperty(propertyInfo,lang) {
     let inputID = createInputID(propertyInfo.componentID, propertyInfo.propertyName);
 
@@ -633,23 +839,51 @@ function createInputFieldForStringProperty(propertyInfo,lang) {
     }
 }
 
+/**
+ * Private method that an ID
+ * @memberof module:handlebars
+ * @param {object} component Current component
+ * @param {string} propertyName Name of the property
+ * @returns {string} ID
+ **/
 function createInputID(component, propertyName) {
     return component + "_" + propertyName;
-
 }
 
+/**
+ * Private method creats a check box
+ * @memberof module:handlebars
+ * @param {bool} isChecked true if the checkbox 
+ * @param {string} propertyName Name of the property
+ * @returns {string} ID
+ **/
 function createCheckBox(isChecked, index) {
     let checked = isChecked ? 'checked' : '';
     let id = 'enable-' + index;
     return `<input data-control-type="enable" id="${id}" type="checkbox" onclick="prepareUpdate('${index}', false)" ${checked}/>`;
 }
 
+/**
+ * Private method creats a label for a check box
+ * @memberof module:handlebars
+ * @param {string} title Label text
+ * @param {string} icon Icon
+ * @param {number} index current index 
+ * @returns {string} renderd HTML
+ **/
 function createCheckBoxLabel(text, icon, index) {
     let checkboxId = 'enable-' + index;
     let id = checkboxId + '-label';
     return `<label class="tool-card-title-select-name" id="${id}" for="${checkboxId}"><span class="bg-image" style="background-image: url('${icon}')"></span>${text}</label>`;
 }
 
+/**
+ * Private method that renders a input field for current tool. 
+ * @memberof module:handlebars
+ * @param {object} propertyInfo Current property to create a select box or radiobuttons for
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
 function createInputFields(tool, index,lang) {
     let inputFields = ''
     const configurationDataOptions = tool.configurationDataOptions;
@@ -678,27 +912,52 @@ function createInputFields(tool, index,lang) {
     return inputFields
 }
 
+/**
+ * Private method thats get data schema proerty by configurable data option proerty
+ * @memberof module:handlebars
+ * @param {object} propertyMapping Property mapping to get data from
+ * @param {string} configurableDataOptionProerty Property name to map
+ * @returns {object} returns the mapped dataSchemaProerty
+ **/
 function getDataSchemaProertyByConfigurableDataOptionProerty(propertyMapping, configurableDataOptionProerty) {
     const mapping = propertyMapping.filter(map => map.configurableDataOptionProerty === configurableDataOptionProerty);
     return mapping[0].dataSchemaProerty;
 }
 
+/**
+ * Private method that checks if a property is requierd or not for a tool
+ * @memberof module:handlebars
+ * @param {object} tool Current tool
+ * @param {object} configProperties Configuration properties
+ * @returns {bool} 
+ **/
 function isRequired(tool, configProperties) {
-
     let isRequired = false;
+
     if (tool.dataSchema.required && tool.dataSchema.required.length > 0) {
         tool.dataSchema.required.forEach(requiredProperty => {
             const matchedProperty = configProperties.filter(property => {
                 return (property.toLowerCase() === requiredProperty.toLowerCase());
             });
+
             if (matchedProperty.length > 0)
                 isRequired = true;
         });
     }
+
     return isRequired;
 }
 
-function createInputOptionsForColorCombination(configurationDataOption, tool, index,lang) {
+/**
+ * Private method that renders a color selector input for the current tool. 
+ * @memberof module:handlebars
+ * @param {object} configurationDataOption Configuration data option to render a color selector for
+ * @param {object} tool Current tool
+ * @param {number} index current index
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
+function createInputOptionsForColorCombination(configurationDataOption, tool, index, lang) {
 
     let config = tool.config[0];
     const translation = tool.configurationDataOptionTranslations;
@@ -759,7 +1018,16 @@ function createInputOptionsForColorCombination(configurationDataOption, tool, in
     return inputField
 }
 
-function createInputFieldForProperty(dataSchemaProerty, tool, index, type,lang) {
+/**
+ * Private method that renders a input field for the current tool. 
+ * @memberof module:handlebars
+ * @param {object} dataSchemaProerty Data schema property
+ * @param {object} tool Tool to 
+ * @param {number} index current index
+ * @param {string} lang Not used
+ * @returns {string} renderd HTML
+ **/
+function createInputFieldForProperty(dataSchemaProerty, tool, index, type, lang) {
 
     let inputField = '';
     const config = tool.config[0];
@@ -780,32 +1048,58 @@ function createInputFieldForProperty(dataSchemaProerty, tool, index, type,lang) 
     return inputField;
 }
 
-function getIconForProperty(iconsForSchema,property){
+/**
+ * Private method that gets icon for property
+ * @memberof module:handlebars
+ * @param {object} iconsForSchema Icon array
+ * @param {object} property
+ * @returns {object} returns the icon
+ **/
+function getIconForProperty(iconsForSchema, property){
     for(let i=0; i<iconsForSchema.length; i++){
-
         if(iconsForSchema[i].type === "propertyIcon" && iconsForSchema[i].property === property){
             return iconsForSchema[i];
         }
-
     }
 }
 
-function getIconForPropertyValue(iconsForSchema,property,value){
+/**
+ * Private method that gets icon for property where value match the value argument
+ * @memberof module:handlebars
+ * @param {object} iconsForSchema Icon array
+ * @param {object} property
+ * @param {object} value
+ * @returns {object} returns the icon
+ **/
+function getIconForPropertyValue(iconsForSchema, property, value){
     for(let i=0; i<iconsForSchema.length; i++){
-
         if(iconsForSchema[i].type === "propertyValueIcon" && iconsForSchema[i].property === property && iconsForSchema[i].value === value){
             return iconsForSchema[i];
         }
-
     }
 }
 
+/**
+ * Private method that get HTML for icon
+ * @memberof module:handlebars
+ * @param {object} icon Icon object
+ * @returns {string} returns the HTML
+ **/
 function createIconHTML(icon) {
 
     return  '<img src="'+icon.url+'" alt="" class="'+icon.cssClass+'">';;
 }
 
-function createInputFieldForSingleSelectList(configurationDataOption, tool, index,lang) {
+/**
+ * Private method that renders radiobuttons or a select box for the current configuration
+ * @memberof module:handlebars
+ * @param {object} configurationDataOption Configuration data option to render a color selector for
+ * @param {object} tool Current tool
+ * @param {number} index current index
+ * @param {string} lang language to use for translations
+ * @returns {string} renderd HTML
+ **/
+function createInputFieldForSingleSelectList(configurationDataOption, tool, index, lang) {
 
     let widget = "radio";
     if(widget === "radio"){
@@ -816,14 +1110,11 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
 
         if (configurationDataOption.dataSchemaProerty && configurationDataOption.dataSchemaProerty.length > 0) {
             configurationDataOption.dataSchemaProerty.forEach(dataSchemaProerty => {
-
                 const required = (isRequired(tool, [dataSchemaProerty])) ? 'required' : '';
                 const prePopulatedValue = getPrePopulatedValue(tool.dataSchema.properties[dataSchemaProerty], config, dataSchemaProerty);
                 const id = dataSchemaProerty + '-' + index;
                 const translatedLabel = translation[dataSchemaProerty];
                 const translatedOptions = translation[dataSchemaProerty + "Options"];
-
-
 
                 let audioElements =[];
                 let i18nIDForProperty = tool.engineId+"."+tool.engineVersion+"."+tool.id+".data-option.property."+dataSchemaProerty+".label";
@@ -844,12 +1135,8 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
                         });
                     }
                 });
-                //"aws-polly-tts.1.0.tts.data-option.property.language.label"
-                //"aws-polly-tts.1.0.tts.data-option.singleSelectList.optionList.English": "Englisch",
-
 
                 let audioButtonHTML = createAudioButton(audioElements);
-
 
                 inputField += `<fieldset data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'>
                 <legend id="${stringHash(i18nIDForProperty)}">${audioButtonHTML}${translatedLabel}</legend>
@@ -898,9 +1185,6 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
                 const translatedLabel = translation[dataSchemaProerty];
                 const translatedOptions = translation[dataSchemaProerty + "Options"];
 
-
-
-
                 inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><label for='${id}'>${translatedLabel}</label>
             <select id='${id}' class="${configurationDataOption.type}-option-container">`;
                 configurableDataOption.forEach(dataOption => {
@@ -915,8 +1199,6 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
                         const isSelected = (prePopulatedValue.toLowerCase() === dataOption.value.toLowerCase()) ? 'selected' : '';
                         inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' + translatedOptions[dataOption.label] + '</option>';
                     }
-
-
                 });
                 inputField += '</select>' +
                     '</div>';
@@ -928,6 +1210,14 @@ function createInputFieldForSingleSelectList(configurationDataOption, tool, inde
 
 }
 
+/**
+ * Private method that renders radiobuttons for the current configuration
+ * @memberof module:handlebars
+ * @param {object} configurationDataOption Configuration data option to render a color selector for
+ * @param {object} tool Current tool
+ * @param {number} index current index
+ * @returns {string} renderd HTML
+ **/
 function createInputFieldForRadioSelection(configurationDataOption, tool, index) {
 
     let inputField = '';
@@ -944,25 +1234,18 @@ function createInputFieldForRadioSelection(configurationDataOption, tool, index)
             const labelTranslaoin = translation[dataSchemaProerty];
             const optionsTranslaoin = translation[dataSchemaProerty + "Options"];
 
-
-
-
             inputField += `<div data-option-type='${configurationDataOption.type}' class='config-data-option-${configurationDataOption.type}'><label for='${id}'>${labelTranslaoin}</label><select id='${id}' class="${configurationDataOption.type}-option-container">`;
             configurableDataOption.forEach(dataOption => {
 
                 if (typeof prePopulatedValue === "boolean") {
-
                     const isSelected = (prePopulatedValue === dataOption.value) ? 'selected' : '';
                     inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' + optionsTranslaoin[dataOption.label] + '</option>';
-
-
                 } else {
                     const isSelected = (prePopulatedValue.toLowerCase() === dataOption.value.toLowerCase()) ? 'selected' : '';
                     inputField += '<option value="' + dataOption.value + '" ' + isSelected + '>' + optionsTranslaoin[dataOption.label] + '</option>';
                 }
-
-
             });
+            
             inputField += '</select></div>';
         });
     }
@@ -970,7 +1253,14 @@ function createInputFieldForRadioSelection(configurationDataOption, tool, index)
     return inputField;
 }
 
-
+/**
+ * Get default value for property
+ * @memberof module:handlebars
+ * @param {object} property Current property
+ * @param {object} config Current configuration
+ * @param {string} key Key to get value for
+ * @returns {object} Default value
+ **/
 function getPrePopulatedValue(property, config, key) {
     if (config) {
         let value = config[key]
@@ -987,6 +1277,7 @@ function getPrePopulatedValue(property, config, key) {
             return value
         }
     }
+
     return property.default
 }
 

@@ -1,9 +1,21 @@
+/** Express router providing client caretaker register route
+ * @module routers/clientCaretakerRegister
+ * @requires express
+ */
+
 let express = require('express');
 let router = express.Router();
 const core = rootRequire("core/core");
 
+/**
+ * Route serving caretaker register page.
+ * @name use/
+ * @memberof module:routers/clientCaretakerRegister
+ * @param {Request} req Request object that includes the unique UserId, it can also can include email body
+ * @param {Response} res Response object that is used for storing the content
+ * @param next Returns the response object
+ */
 router.use('/', async function (req, res, next) {
-
     let errorMessages = [];
     if (req.method === "POST") {
 
@@ -20,8 +32,6 @@ router.use('/', async function (req, res, next) {
                         let databaseManager = require("../../../core/database/database-manager");
 
                         let loadExistingClientCarerRelationRequest = databaseManager.createRequest("client_carer_relation").where("carer_id", "=", account.id).where("client_id","=",req.user.id);
-
-
                         let loadExistingClientCarerRelationResult = await databaseManager.executeRequest(loadExistingClientCarerRelationRequest);
 
                         if(loadExistingClientCarerRelationResult.result.length === 0){
@@ -29,7 +39,6 @@ router.use('/', async function (req, res, next) {
                                 client_id: req.user.id,
                                 carer_id: account.id,
                             };
-
 
                             let storeClientCaretakerRelationRequest = databaseManager.createRequest("client_carer_relation").insert(newRelation);
                             await databaseManager.executeRequest(storeClientCaretakerRelationRequest);
@@ -55,10 +64,6 @@ router.use('/', async function (req, res, next) {
                         additionalInfo: account.email,
                     })
                 }
-
-
-
-
             }else{
                 errorMessages.push({
                     message: "user_not_found",
@@ -66,13 +71,9 @@ router.use('/', async function (req, res, next) {
                 });
             }
         }
-
-
     }
 
     res.locals.errorMessages = errorMessages;
-
-
 
     return next();
 });

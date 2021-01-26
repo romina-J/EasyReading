@@ -690,5 +690,12 @@
 	"privacy_policy_easy": "privacy_policy_easy",
 	"questions_about_project": "questions_about_project",
 	"website_contact": "website_contact",
-	"leave_site_info_text": "leave_site_info_text"
+	"leave_site_info_text": "leave_site_info_text",
+	"embedded_site_manager_role_text": "Embedded site manager",
+	"content_replacement_creator_role_text": "Content replacement creator",
+	"admin_role_text": "admin_role_text",
+	"caretaker_role_text": "caretaker_role_text",
+	"anonym_role_text": "anonym_role_text",
+	"[object Object]_role_text": "[object Object]_role_text",
+	"backend_user_role_text": "backend_user_role_text"
 }

@@ -1,10 +1,19 @@
+/** Localization module
+ * @module locale
+ * @requires express
+ */
+
 const profileRepo = require("../../repository/profileRepo");
 
 module.exports = {
     /**
-     * Locale middleware: Try to fetch locale from URI param. If not available, fetch locale from user profile.
-     * Otherwise, defaults to English.
-     */
+    * Try to fetch locale from URI param. If not available, fetch locale from user profile.* Otherwise, defaults to English.
+     * @memberof module:locale
+     * @param {Request} req Request object that includes language url or user session with user id. 
+     * @param {Response} res Response object that is used for storing the user language.
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */    
     setLocale: async (req, res, next) => {
         let loc = 'en';
         let localeInURL = false;
@@ -31,16 +40,21 @@ module.exports = {
             }
         }
 
-        res.locals.lang  =loc;
+        res.locals.lang = loc;
 
         return next();
     },
 
-
+    /**
+     * Translate the main texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */    
     translateMain: async (req, res, next) => {
-
         let loc = {
-
             'logout_text': req.__("logout_text"),
             'login_text': req.__("login_text"),
             'anonymous_user': req.__("anonymous_user"),
@@ -50,10 +64,14 @@ module.exports = {
             'account_label': req.__("account_label"),
             'leave_site_info_text': req.__("leave_site_info_text"),
 
-
-
             'healthcareworker_role_text': req.__("healthcareworker_role_text"),
             'client_role_text': req.__("client_role_text"),
+            'embedded_site_manager_role_text': req.__("embedded_site_manager_role_text"),
+            'content_replacement_creator_role_text': req.__("content_replacement_creator_role_text"),
+            'admin_role_text': req.__("admin_role_text"),
+
+
+
 
             'menu_home_text': req.__("menu_home_text"),
             'menu_welcome_text': req.__("menu_welcome_text"),
@@ -67,7 +85,7 @@ module.exports = {
             'imprint': req.__("imprint"),
             'privacy_policy': req.__("privacy_policy"),
             'privacy_policy_easy': req.__("privacy_policy_easy"),
-
+            'leave_site_info_text': req.__("leave_site_info_text"),
 
             'Save': req.__("Save"),
             'Saved': req.__("Saved"),
@@ -82,6 +100,15 @@ module.exports = {
 
         return next();
     },
+
+     /**
+     * Translate the imprint texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */    
     translateImprint: async (req, res, next) => {
         let loc = {
             'questions_about_project': req.__("questions_about_project"),
@@ -95,6 +122,15 @@ module.exports = {
 
         return next();
     },
+
+    /**
+     * Translate the backend texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateBackEnd: async (req, res, next) => {
 
         let loc = {
@@ -113,8 +149,6 @@ module.exports = {
             'easy_reading_login': req.__("easy_reading_login"),
             'login_or_register_with': req.__("login_or_register_with"),
             'back': req.__("back"),
-
-
         };
 
         res.locals.context = {
@@ -125,6 +159,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the tool configuration texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */    
     translateConfigure: async (req, res, next) => {
         let loc = {
             'page_configure_title': req.__("page_configure_title"),
@@ -164,6 +206,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the content replacement texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateContentReplacements: async (req, res, next) => {
         let loc = {
             'page_content_replacement_title': req.__("page_content_replacement_title"),
@@ -196,6 +246,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the client welcome texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateClientWelcome: async (req, res, next) => {
 
         let loc = {
@@ -220,6 +278,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the basic settings texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateBasicSetting: async (req, res, next) => {
 
         let loc = {
@@ -256,6 +322,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the client caretaker register texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateClientCaretakerRegister: async (req, res, next) => {
 
         let loc = {
@@ -280,6 +354,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the caretaker texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateCaretaker: async (req, res, next) => {
 
         let loc = {
@@ -296,6 +378,14 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the caretaker list texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateCaretakerList: async (req, res, next) => {
 
         let loc = {
@@ -317,16 +407,20 @@ module.exports = {
         return next();
     },
 
+    /**
+     * Translate the client list texts
+     * @memberof module:locale
+     * @param {Request} req Request object that includes what to translate
+     * @param {Response} res Response object that is used for storing the translated content
+     * @param {object} next Returns the response object
+     * @returns Returns the next object
+     */        
     translateClientList: async (req, res, next) => {
-
         let loc = {
             'page_clientlist_title': req.__("page_clientlist_title"),
             'page_clinetlist_edit': req.__("page_clinetlist_edit"),
             'page_clinetlist_clients': req.__("page_clinetlist_clients"),
             'page_clientlist_clients_empty': req.__("page_clientlist_clients_empty"),
-
-
-
         };
 
         res.locals.context = {
@@ -336,5 +430,4 @@ module.exports = {
 
         return next();
     }
-
 };

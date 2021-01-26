@@ -1,3 +1,8 @@
+/** Engine functions
+ * @module engine
+ * @requires express
+ */
+
 const core = rootRequire("core/core");
 const databaseManager = core.databaseManager;
 const profileBuilder = rootRequire("core/profile/profile-builder");
@@ -5,6 +10,12 @@ const profileRepo = require("../../repository/profileRepo");
 const widgets = [...rootRequire("core/core").widgets];
 const presentations = [...rootRequire("core/core").presentations];
 
+/**
+* Loads tool configuration for a user configuration
+* @memberof module:engine
+* @param {object} userInterfaceConfig User interface config that holds the id and that is filled up with settings from database. 
+* @param {object} engineFunctionConfigObjects Holds all engine functions that should be filled up in userInterfaceConfig
+*/    
 function loadFunctions(userInterfaceConfig, engineFunctionConfigObjects) {
     for (const engineFunction of engineFunctionConfigObjects) {
         const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(engineFunction.engineId, engineFunction.engineVersion, core.getUserInterface(userInterfaceConfig.source.id));
@@ -56,11 +67,16 @@ function loadFunctions(userInterfaceConfig, engineFunctionConfigObjects) {
 }
 
 module.exports = {
+/**
+ * Updateds tool configuration for a user
+ * @memberof module:engine
+ * @param {Request} req Request object that includes the unique UserId and the updated tools configuration
+ * @param {Response} res Response object that is used for sending respons status to the browser. 
+ */    
     updateEngineConfiguratoin: async (req, res) => {
         if (!req.body || (!req.body.id && !req.user.id) || !req.body.engineFunctions) {
             return res.sendStatus(401).end()
         }
-
 
         try {
             let id = req.user.id;
@@ -92,27 +108,22 @@ module.exports = {
                 await profileBuilder.loadActiveUserInterfaces(profile);
 
                 // reset userInterfaces tools
-
                 for (let i = 0; i < profile.userInterfaces.length; i++) {
                     profile.userInterfaces[i].tools = [];
                 }
 
-                //Hack!
                 if (profile.userInterfaces.length > 1) {
                     console.log("This should never happen...")
                     profile.userInterfaces.length = 1;
                 }
-
-
+                
                 const engineFunctionConfigObjs = JSON.parse(req.body.engineFunctions);
                 const enabledEngineFunctionConfigObjs = engineFunctionConfigObjs.filter(config => config.enable);
-
 
                 profile.debugMode = core.debugMode;
                 profile.userLoaded = true;
 
                 loadFunctions(profile.userInterfaces[0], enabledEngineFunctionConfigObjs);
-                // loadProfileWithNewEngineConfig(enabledEngineFunctionConfigObjs, profile);
 
                 await profileBuilder.saveUserInterfaceConfiguration(profile, true);
 

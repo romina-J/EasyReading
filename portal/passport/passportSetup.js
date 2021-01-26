@@ -1,12 +1,26 @@
+/** Passport setup 
+ * @module routers/passport/setup
+ * @requires passport
+ */
+
 const passport = require("passport");
 const googleStrategy = require("passport-google-oauth20");
 const AnonymIdStrategy = require('passport-anonym-uuid').Strategy;
 const profleRepo = require("../repository/profileRepo");
 const config = require("../config/config");
 let passportLogin = require("./passportLogin");
-passport.use(new AnonymIdStrategy(async (req, uuid, done) => {
 
+/**
+ * Login anonymous through passport
+ * @name get/
+ * @memberof module:routers/passport/setup
+ * @param {Request} req Request object that is used for session values for passport authenticate
+ * @param {object} done Object that is used for returning the reuslt
+ * @returns {object} The done object
+ */
+passport.use(new AnonymIdStrategy(async (req, uuid, done) => {
     let loginInfo = await passportLogin.createLoginInfoAnonym(req, uuid);
+
     await passportLogin.userLogin(req, loginInfo, function (profile, error) {
 
         if(!profile){
@@ -17,11 +31,25 @@ passport.use(new AnonymIdStrategy(async (req, uuid, done) => {
             //Delete old setup sessions which could be there due to a websocket disconnect ...
             delete req.session.setupInformation;
             delete req.session.step;
+
             req.session.returnTo = "/client/setup";
         }
+        
         return done(null, profile);
     });
 }));
+
+/**
+ * Login with Google through passport
+ * @name get/
+ * @memberof module:routers/passport/setup
+ * @param {Request} req Request object that is used for session values for passport authenticate
+ * @param {object} accessToken Not used
+ * @param {object} refreshToken Not used
+ * @param {object} profile Holds the user profile
+ * @param {object} done Object that is used for returning the reuslt
+ * @returns {object} The done object
+ */
 passport.use(
     new googleStrategy({
         callbackURL: config.google.callbackURL,
@@ -30,30 +58,36 @@ passport.use(
         scope: config.google.scope,
         passReqToCallback: true,
     }, async (req, accessToken, refreshToken, profile, done) => {
-
         try {
-
             let loginInfo = await passportLogin.createLoginInfoGoogle(req, profile);
-            await passportLogin.userLogin(req, loginInfo, function (profile, error) {
 
+            await passportLogin.userLogin(req, loginInfo, function (profile, error) {
                 if(profile.isNewProfile){
                     //Delete old setup sessions which could be there due to a websocket disconnect ...
                     delete req.session.setupInformation;
                     delete req.session.step;
+
                     req.session.returnTo = "/client/setup";
                 }
                 return done(null, profile);
             });
         } catch (err) {
-
             console.log("error");
-
         }
-
     })
 );
 
-
+/**
+ * Login with Facebook through passport
+ * @name get/
+ * @memberof module:routers/passport/setup
+ * @param {Request} req Request object that is used for session values for passport authenticate
+ * @param {object} accessToken Not used
+ * @param {object} refreshToken Not used
+ * @param {object} profile Holds the user profile
+ * @param {object} done Object that is used for returning the reuslt
+ * @returns {object} The done object
+ */
 let FacebookStrategy = require('passport-facebook').Strategy;
 let serverURL = "";
 if(process.env.SERVER_URL){
@@ -68,10 +102,9 @@ passport.use(new FacebookStrategy({
         auth_type: "reauthenticate"
     },
     async function (req, accessToken, refreshToken, profile, done) {
-
         try {
-
             let loginInfo = await passportLogin.createLoginInfoFacebook(req, profile);
+
             await passportLogin.userLogin(req, loginInfo, function (profile, error) {
 
                 if(profile.isNewProfile){
@@ -80,26 +113,37 @@ passport.use(new FacebookStrategy({
                     delete req.session.step;
                     req.session.returnTo = "/client/setup";
                 }
+
                 return done(null, profile);
             });
 
 
         } catch (err) {
-
             console.log("error");
-
         }
-
     }
 ));
 
+/**
+ * Serialize from the user object
+ * @memberof module:routers/passport/setup
+ * @param {object} user User object
+ * @param {object} done Object that is used for returning the reuslt
+ * @returns {object} The done object
+ */
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
 
+/**
+ * Deserialize to the user object
+ * @memberof module:routers/passport/setup
+ * @param {object} user User object
+ * @param {object} done Object that is used for returning the reuslt
+ * @returns {object} The done object
+ */
 passport.deserializeUser(function (user, done) {
     done(null, user);
 });
 
 module.exports = passport;
-

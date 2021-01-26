@@ -1,7 +1,20 @@
+/** Express router providing client and its caretaker route
+ * @module routers/clientCaretakerOverview
+ * @requires express
+ */
+
 let express = require('express');
 let router = express.Router();
 const core = rootRequire("core/core");
 
+/**
+ * Route serving client and its caretaker overview page.
+ * @name use/
+ * @memberof module:routers/clientCaretakerOverview
+ * @param {Request} req Request object that includes the unique UserId, it can also can include email body
+ * @param {Response} res Response object that is used for storing the content
+ * @param next Returns the response object
+ */
 router.use('/', async function (req, res, next) {
     let databaseManager = require("../../../core/database/database-manager");
     let errorMessages = [];
@@ -62,10 +75,6 @@ router.use('/', async function (req, res, next) {
                         additionalInfo: account.email,
                     })
                 }
-
-
-
-
             }else{
                 errorMessages.push({
                     message: "user_not_found",
@@ -83,9 +92,6 @@ router.use('/', async function (req, res, next) {
 
             }
         }
-
-
-
     }
 
     let loadExistingClientCarerRelationsRequest = databaseManager.createRequest("client_carer_relation").where("client_id","=",req.user.id);
