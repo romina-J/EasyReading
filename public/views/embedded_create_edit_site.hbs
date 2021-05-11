@@ -6,6 +6,7 @@
 <head>
     <title>{{page_content_replacement_title}}</title>
     {{> head }}
+    <script src="/js/upload.js"></script>
 </head>
 <style>
     table {
@@ -15,10 +16,12 @@
     table, th, td {
         border: 1px solid black;
     }
-    th, td{
+
+    th, td {
         padding: 3px;
     }
 </style>
+
 
 <body>
 <div class="row wrapper">
@@ -52,12 +55,39 @@
 
                         {{/each}}
                     </select>
+
+                    <div id="current_logo">
+                        {{#if logo}}
+
+                            <img src="data:image/png;base64, {{logo}}" alt="Preview picture"/>
+                        {{else}}
+                            No logo uploaded!
+                        {{/if}}
+                    </div>
+
+                    <input id="file_upload" type="file" onchange="loadFile()"><br>
+                    <button id="upload" onclick="uploadFile()" style="display: none" type="button">Upload..</button>
+
+
+                    {{#if logo}}
+
+                        <button id="clear" onclick="clearFile()" type="button">Clear</button>
+                    {{else}}
+                        <button id="clear" onclick="clearFile()" type="button" style="display: none">Clear</button>
+                    {{/if}}
+                    <input type="hidden" id="logo" name="logo" value=""><br>
+
+
                     <input type="hidden" name="esm_id" value="{{esm_id}}">
                     <input type="hidden" name="id" value="{{id}}">
                     <input type="submit" value="save"/>
                 </form>
+
+
             </div>
         </main>
+
+
     </div>
 </div>
 </body>

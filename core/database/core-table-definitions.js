@@ -434,6 +434,12 @@ let embeddedSite = {
             "title": "Site URL",
             "description": "URL of the embedded website",
         },
+        "logo": {
+            "$id": "/properties/logo",
+            "type": "string",
+            "title": "Logo",
+            "description": "Logo of the embedded website",
+        },
         "esm_id": {
             "$id": "/properties/eid",
             "type": "integer",

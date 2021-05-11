@@ -55,11 +55,36 @@ class Dictionary extends base.EngineBase {
 
         if(loadActiveDOMHelperResult.result.length > 0){
             let result = new ioType.IOTypes.ContentReplacement();
+            let replacementsFound = false;
             for(let i=0; i < loadActiveDOMHelperResult.result.length; i++){
+
+                if(loadActiveDOMHelperResult.result[i].active === 0){
+                    continue;
+                }
+
+                if(loadActiveDOMHelperResult.result[i].scope === "clients"){
+                    let clientCarerRelationship = databaseManager.createRequest("client_carer_relation").where("client_id", "=", profile.id).where("carer_id", "=", loadActiveDOMHelperResult.result[i].pid);
+                    let clientCarerRelationshipResult = await databaseManager.executeRequest(clientCarerRelationship);
+
+                    if(clientCarerRelationshipResult.result.length === 0){
+
+                        continue;
+                    }
+
+
+                }
                 result.addReplacement("content_replacement",loadActiveDOMHelperResult.result[i]);
+                replacementsFound= true;
             }
 
-            callback(result);
+            if(replacementsFound){
+                callback(result);
+
+            }else{
+                callback(new ioType.IOTypes.NoResult("No content replacements found on this page."));
+            }
+
+
         }else{
             callback(new ioType.IOTypes.NoResult("No content replacements found on this page."));
         }

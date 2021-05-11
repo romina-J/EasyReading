@@ -178,6 +178,10 @@ class WebSocketConnection {
                             currentProfile.email = profileRequestResult.result[0].email;
                             currentProfile.locale = localeService.getSupportedLanguage("de");
                             currentProfile.loginType = "Embedded";
+                            currentProfile.logo = null;
+                            if(embeddedSite.result[0].logo !== ""){
+                                currentProfile.logo = embeddedSite.result[0].logo;
+                            }
                             await currentProfile.loginEmbedded( currentProfile.email, this);
                             this.setProfile(currentProfile);
                             let loginResult = {

@@ -1,5 +1,6 @@
 <h1>
-    <a href="/client/welcome"><img  id="er-logo" src="../images/logo.png" alt="{{menu_home_text}}" title="{{menu_home_text}}"></a>
+    <a href="/client/welcome"><img id="er-logo" src="../images/logo.png" alt="{{menu_home_text}}"
+                                   title="{{menu_home_text}}"></a>
 </h1>
 <nav>
     <ul class="no-bullet">
@@ -7,9 +8,7 @@
         {{#hasRole user "client"}}
             <li><a href="/client/configure?id={{user.id}}">{{menu_config_your_toolbar_text}}</a></li>
             <li><a href="/client/basic-settings">{{ menu_basic_setting_text }}</a></li>
-            {{#if activateMeLaterAgainWhenPrivacyPolicyAllowsIt}}
-                <li><a href="/client/caretakers">{{ menu_caretaker_list_text }}</a></li>
-            {{/if}}
+            <li><a href="/client/caretakers">{{ menu_caretaker_list_text }}</a></li>
 
 
         {{/hasRole}}

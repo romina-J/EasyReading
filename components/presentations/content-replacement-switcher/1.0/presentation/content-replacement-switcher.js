@@ -57,6 +57,9 @@ class ContentReplacementSwitcher extends Presentation {
                                 combinedStyles += rules[i].style.cssText;
                             }
 
+                            //Todo ... looki into this again
+                            combinedStyles = "";
+
                             let html = '<span class="er-content-replacement er-content-replacement-ui"><span><span class="er-toggle-button  ' + replacementID + ' role="button" tabindex="0" aria-pressed="false" aria-label="Switch to simple version" >\n' +
                                 '    <span class="er-toggle-button-inner">\n' +
                                 '        <span class="er-toggle-button-front">\n' +

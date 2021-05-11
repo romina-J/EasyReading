@@ -9,7 +9,6 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const MySQLStore = require('express-mysql-session')(session);
 let databaseManager = require("../core/database/database-manager");
-
 let activeConnection = databaseManager.getConnection();
 
 let sessionStore = new MySQLStore({}/* session store options */, activeConnection.connection);
@@ -18,6 +17,10 @@ const localeService = require("./../core/i18n/locale-service");
 
 // create a new express server
 const app = express();
+
+const multer = require('multer');
+const upload = multer();
+
 
 // Ensure express is looking at our views directory for templates
 app.set('views', path.join(__dirname, '..', 'public', 'views'))
@@ -100,6 +103,7 @@ const adminBackendUserManagementController = require("./controller/view/adminBac
 const adminClientManagementController = require("./controller/view/adminClientManagementController");
 const adminEmbeddedSiteController = require("./controller/view/adminEmbeddedSiteController");
 const embeddedOverviewController = require("./controller/view/embeddedOverviewController");
+const uploadFileController = require("./controller/api/uploadFileController");
 
 // Authentication routes
 //Caretaker
@@ -162,6 +166,7 @@ app.use('/embedded/createEditEmbeddedProfile', authentication.isAuthenticated, u
 app.post('/embedded/deleteProfile', authentication.isAuthenticated, embeddedOverviewController.deleteProfile);
 app.post('/embedded/deleteEmbeddedSite', authentication.isAuthenticated, embeddedOverviewController.deleteSite);
 app.get('/embedded/embedded-configure', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateConfigure, patientController.getEngineConfigByuserId, (_, res) => res.render('caretaker_client_configure', res.locals.context));
+app.post('/post_image/', authentication.isAuthenticated, upload.any(),  uploadFileController.uploadSiteLogo);
 
 // Client
 app.use('/client/welcome', authentication.isAuthenticated, userController.setUser, localeController.setLocale, localeController.translateMain, localeController.translateClientWelcome, clientWelcomeController, (_, res) => res.render('client_welcome', res.locals.context));
