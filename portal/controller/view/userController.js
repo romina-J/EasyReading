@@ -38,7 +38,7 @@ module.exports = {
 
 
             }
-            if(req.user.email === "peter.heumader@gmail.com"){
+            if(req.user.email === "peter.heumader@gmail.com" || req.user.email==="susanne.dirks@tu-dortmund.de"){
                 res.locals.roles.push("admin");
             }
 

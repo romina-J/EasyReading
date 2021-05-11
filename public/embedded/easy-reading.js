@@ -51558,15 +51558,20 @@ $.widget("ui.erTabSlideOut", {
 
         console.log(easyReading);
         this.toolsContainers = [];
-    }        
+    }
 
     initUI(){
         let userInterface = this;
         $("body").append(
             '<div id="er-tab-slide-out" class="easy-reading-interface draggable ui-widget-content" style="z-index: 99999">' +
-                '<div id="er-tab-slide-out-handle" class="handle" tabindex="0" style="width: ' + (this.configuration.buttonSize) + 'px;height: ' + (this.configuration.buttonSize) + 'px;"></div>' +
-                '<div id="er-tab-slide-out-grid-container"></div>' +
+            '<div id="er-tab-slide-out-handle" class="handle" tabindex="0" style="width: ' + (this.configuration.buttonSize) + 'px;height: ' + (this.configuration.buttonSize) + 'px;"></div>' +
+            '<div id="er-tab-slide-out-grid-container"></div>' +
             '</div>');
+
+        if(easyReading.uiCollection.logo && easyReading.uiCollection.logo  !== ""){
+
+            $('#er-tab-slide-out-handle').css('background', 'url(data:image/png;base64,' + easyReading.uiCollection.logo + ') no-repeat center');
+        }
         let panVis = false;
         let panPos = {top: 200, left: 200};
         let hanPos = {top: 0, left: 0};
@@ -51683,7 +51688,7 @@ $.widget("ui.erTabSlideOut", {
             }
 
         }catch (e) {
-            
+
         }
         if(!embeddedLogin){
             // if ui is horizontal, add special buttons directly to the slide out grid container
@@ -51722,7 +51727,7 @@ $.widget("ui.erTabSlideOut", {
         }
 
 
-        $("#er-tab-slide-out-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px"); 
+        $("#er-tab-slide-out-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px");
 
 
 
@@ -51744,7 +51749,7 @@ $.widget("ui.erTabSlideOut", {
             $(".er-tab-slide-out-grid-item").removeClass("tab-slide-out-animated");
         }, 1000);
 
-        $("#er-tab-slide-out-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px"); 
+        $("#er-tab-slide-out-special-button-container").css("grid-template-columns", this.configuration.buttonSize + "px " + this.configuration.buttonSize + "px");
     }
 
 
@@ -53453,6 +53458,9 @@ class ContentReplacementSwitcher extends Presentation {
                             for (let i = 0; i < rules.length; i++) {
                                 combinedStyles += rules[i].style.cssText;
                             }
+
+                            //Todo ... looki into this again
+                            combinedStyles = "";
 
                             let html = '<span class="er-content-replacement er-content-replacement-ui"><span><span class="er-toggle-button  ' + replacementID + ' role="button" tabindex="0" aria-pressed="false" aria-label="Switch to simple version" >\n' +
                                 '    <span class="er-toggle-button-inner">\n' +

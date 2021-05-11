@@ -23,7 +23,7 @@ let util = {
             roles.push(roleRequestResult.result[i].role);
         }
 
-        if(profile.email === "peter.heumader@gmail.com"){
+        if(profile.email === "peter.heumader@gmail.com" || profile.email === "susanne.dirks@tu-dortmund.de"){
             roles.push("admin");
         }
 

@@ -284,6 +284,7 @@ class AWSPollyTextToSpeech extends base.EngineBase {
 
     getVoiceID(config, websiteLanguage) {
 
+        websiteLanguage = websiteLanguage.split('-')[0];
         let languageToUse = websiteLanguage;
 
         if (config.language !== "language_of_website") {

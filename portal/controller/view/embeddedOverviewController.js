@@ -62,6 +62,11 @@ module.exports = {
                 res.locals.esm_id  = embeddedSiteRequestResult.result[0].esm_id;
                 res.locals.pid  = embeddedSiteRequestResult.result[0].pid;
 
+                if(embeddedSiteRequestResult.result[0].logo !== ""){
+                    res.locals.logo  = embeddedSiteRequestResult.result[0].logo;
+                }
+
+
             }
 
         }
@@ -80,6 +85,7 @@ module.exports = {
                 url: req.body.url,
                 pid: req.body.profile,
                 esm_id: req.session.user.id,
+                logo: req.body.logo,
             };
 
             if(req.body.id){

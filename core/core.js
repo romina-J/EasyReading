@@ -872,7 +872,7 @@ function createEmbeddedJS(core) {
     allScripts+=classMapping+"\n";
 
 
-   let embeddedWebsocketJS =  fs.readFileSync("core/embedded/embeddedWebsocket.js") + "\n";
+    let embeddedWebsocketJS =  fs.readFileSync("core/embedded/embeddedWebsocket.js") + "\n";
     embeddedWebsocketJS =embeddedWebsocketJS.replace("easy_reading_current_endpoint_url",serverURL);
     allScripts+=embeddedWebsocketJS;
     allScripts += fs.readFileSync("core/embedded/embeddedContentScript.js") + "\n";
