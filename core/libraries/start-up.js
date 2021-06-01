@@ -22,7 +22,7 @@ var easyReading = {
             return;
         }
 
-        
+
         let updated = easyReading.uiUpdated;
         this.init();
         easyReading.started = true;
@@ -101,6 +101,13 @@ var easyReading = {
             for (let i = 0; i < easyReading.userInterfaces.length; i++) {
                 easyReading.userInterfaces[i].uiUpdated();
             }
+        }
+
+
+
+        if(uiCollection.hiddenOnPageLoad){
+
+            $(".easy-reading-interface").hide();
         }
 
         console.log("startup - complete");
@@ -359,6 +366,18 @@ var easyReading = {
 
         return JSON.stringify(conf1) === JSON.stringify(conf2)
 
+
+    },
+
+    show: function (){
+        $(".easy-reading-interface").show();
+    },
+
+    hide:function (){
+        $(".easy-reading-interface").hide();
+    },
+    isVisible:function (){
+        return $(".easy-reading-interface").is(":visible");
 
     }
 

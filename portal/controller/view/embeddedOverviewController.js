@@ -61,6 +61,7 @@ module.exports = {
                 res.locals.url  = embeddedSiteRequestResult.result[0].url;
                 res.locals.esm_id  = embeddedSiteRequestResult.result[0].esm_id;
                 res.locals.pid  = embeddedSiteRequestResult.result[0].pid;
+                res.locals.hiddenOnPageLoad = embeddedSiteRequestResult.result[0].hiddenOnPageLoad;
 
                 if(embeddedSiteRequestResult.result[0].logo !== ""){
                     res.locals.logo  = embeddedSiteRequestResult.result[0].logo;
@@ -86,8 +87,12 @@ module.exports = {
                 pid: req.body.profile,
                 esm_id: req.session.user.id,
                 logo: req.body.logo,
+                hiddenOnPageLoad: false,
             };
 
+            if(req.body.hidden_on_page_load === "hidden"){
+                data.hiddenOnPageLoad = true;
+            }
             if(req.body.id){
                 data.id = req.body.id;
                 data.esm_id = req.body.esm_id;
@@ -121,6 +126,7 @@ module.exports = {
                 res.locals.title  = embeddedSiteProfileRequestResult.result[0].title;
                 res.locals.esm_id  = embeddedSiteProfileRequestResult.result[0].esm_id;
                 res.locals.pid  = embeddedSiteProfileRequestResult.result[0].pid;
+
             }
 
 
@@ -157,6 +163,7 @@ module.exports = {
                 title: req.body.title,
                 pid: pid,
                 esm_id: req.session.user.id,
+
             };
             if(req.body.id){
                 data.esm_id = req.body.esm_id;

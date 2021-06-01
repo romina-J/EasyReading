@@ -453,6 +453,15 @@ let embeddedSite = {
             "description": "The profile ID of the user who created the replacement",
         },
 
+        "hiddenOnPageLoad": {
+            "$id": "/properties/visibleOnPageLoad",
+            "type": "boolean",
+            "title": "Hidden on page load",
+            "description": "Check this if Easy Reading should be hidden when page loads",
+            "default": false,
+
+        },
+
     }
 };
 
