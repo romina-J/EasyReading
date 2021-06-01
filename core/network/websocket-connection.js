@@ -182,6 +182,8 @@ class WebSocketConnection {
                             if(embeddedSite.result[0].logo !== ""){
                                 currentProfile.logo = embeddedSite.result[0].logo;
                             }
+                            currentProfile.hiddenOnPageLoad = embeddedSite.result[0].hiddenOnPageLoad;
+
                             await currentProfile.loginEmbedded( currentProfile.email, this);
                             this.setProfile(currentProfile);
                             let loginResult = {

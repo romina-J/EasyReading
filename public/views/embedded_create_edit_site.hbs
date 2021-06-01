@@ -77,9 +77,15 @@
                     {{/if}}
                     <input type="hidden" id="logo" name="logo" value=""><br>
 
+                    <label for="hidden_on_page_load">Hidden on page load:</label>
+                    <input type="checkbox" id="hidden_on_page_load" value="hidden" name="hidden_on_page_load"  {{#if
+                            hiddenOnPageLoad}} checked{{/if}} >
+
 
                     <input type="hidden" name="esm_id" value="{{esm_id}}">
                     <input type="hidden" name="id" value="{{id}}">
+
+
                     <input type="submit" value="save"/>
                 </form>
 
