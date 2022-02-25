@@ -66,7 +66,8 @@ module.exports = {
                     return next();
                 }
 
-                if(req.user.email === "peter.heumader@gmail.com" || req.user.email === "susanne.dirks@tu-dortmund.de"){
+                if(req.user.email === "peter.heumader@gmail.com" || req.user.email === "susanne.dirks@tu-dortmund.de"
+                    || req.user.email === "tomurillo@gmail.com"){
                     return next();
                 }
 
