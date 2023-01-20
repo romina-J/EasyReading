@@ -54,6 +54,29 @@ class AWSTextAnalysis extends base.EngineBase {
                 }],
                 toolCategory: base.EngineFunction.ToolCategories.Other,
                 entryPoint: "getPosTags",
+            },
+            {
+                id: "aws-keyword",
+                name: "Keyword detector",
+                description: "Detects keywords found in the text",
+                defaultIcon: "assets/key.png",
+                includeInDefaultProfile: false,
+                supportedLanguages: ["en","de","sv"],
+                visibleInConfiguration: false,
+                type: base.EngineFunction.FuntionType.REMOTE,
+                category: base.EngineFunction.FunctionCategory.NLP,
+                inputTypes: [{
+                    "inputType": ioType.IOTypes.Paragraph.className,
+                    "name": "Input paragraph",
+                    "description": "Paragraph to process",
+                }],
+                outputTypes: [{
+                    "outputType": ioType.IOTypes.ParsedLanguageType.className,
+                    "name": "Output paragraph",
+                    "description": "Keywords found in input paragraph",
+                }],
+                toolCategory: base.EngineFunction.ToolCategories.Other,
+                entryPoint: "detectKeywords",
             }
 
         ];
@@ -86,7 +109,6 @@ class AWSTextAnalysis extends base.EngineBase {
                     //Error:
                     callback(new ioType.IOTypes.Error("Error comprehend"));
                     console.log(err);
-
                 }
                 else if ('SyntaxTokens' in data) {
                     let t_open = '<span class="easy-reading-highlight">(';
@@ -96,7 +118,7 @@ class AWSTextAnalysis extends base.EngineBase {
                         new_paragraph += data.SyntaxTokens[i].Text + t_open + data.SyntaxTokens[i].PartOfSpeech.Tag + t_close;
                     }
                     parsed_sentences_buffer[i] = new_paragraph;
-                    if(Object.keys(parsed_sentences_buffer).length == sentences.length) {
+                    if(Object.keys(parsed_sentences_buffer).length === sentences.length) {
                         let parsed_paragraph = '';
                         Object.keys(parsed_sentences_buffer).sort().forEach(function(j) {
                             parsed_paragraph += parsed_sentences_buffer[j];
@@ -114,6 +136,207 @@ class AWSTextAnalysis extends base.EngineBase {
         });
     }
 
+    /**
+     * Utility method for getting the PoS tags of the sentences of a given paragraph
+     * @param paragraph string: input paragraph
+     * @param lang string: language code for the input paragraph
+     * @param preserveWhitespace boolean: whether returned tokens keep any trailing whitespace
+     */
+    async getSentencesWithTags(paragraph, lang, preserveWhitespace=false, callback) {
+        if (!lang) {
+            lang = 'en';
+            console.log('getSentencesWithTags: no language given, defaulting to en.')
+        }
+        let sentences = this.getSentences(paragraph);
+        let parsed_sentences = {
+            'original_paragraph': paragraph,
+            'lang': lang,
+            'parsed_sentences': []
+        };
+        let sentenceBeginOffset = 0;
+        let n_processed = 0;
+        for (const sentence of sentences) {
+            const i = sentences.indexOf(sentence);
+            let parsed_data = {};
+            parsed_data[i] = {};
+            parsed_data[i]['sentence'] = sentence;
+            let params = {
+                LanguageCode: lang,
+                Text: sentence,
+            };
+            try {
+                this.comprehend.detectSyntax(params, function (err, data) {
+                    if (data && 'SyntaxTokens' in data) {
+                        parsed_data[i]['tokens'] = [];
+                        for (let j=0; j<data.SyntaxTokens.length; j++) {
+                            let tokenBeginOffset = sentenceBeginOffset + data.SyntaxTokens[j].BeginOffset;
+                            let tokenEndOffset = sentenceBeginOffset + data.SyntaxTokens[j].EndOffset;
+                            let whitespace = "";
+                            if (preserveWhitespace) {
+                                let k = -1;
+                                while (tokenBeginOffset+k+1 < paragraph.length) {
+                                    k++;
+                                    if (data.SyntaxTokens[j].Text[k] === paragraph[tokenBeginOffset+k]) {
+                                        continue;
+                                    }
+                                    if (j === data.SyntaxTokens.length - 1) {
+                                        while (paragraph[tokenBeginOffset+k].trim() === "") {
+                                            whitespace += paragraph[tokenBeginOffset+k];
+                                            k++;
+                                        }
+                                        break;
+                                    }
+                                    if (paragraph[tokenBeginOffset+k] !== data.SyntaxTokens[j+1].Text[0]) {
+                                        whitespace += paragraph[tokenBeginOffset+k];
+                                    } else {
+                                        break;
+                                    }
+                                }
+                            }
+                            parsed_data[i]['tokens'].push({
+                                'token': data.SyntaxTokens[j].Text,
+                                'text': data.SyntaxTokens[j].Text + whitespace,
+                                'posTag': data.SyntaxTokens[j].PartOfSpeech.Tag,
+                                'BeginOffset': tokenBeginOffset,
+                                'EndOffset': tokenEndOffset
+                            })
+                            // Add start and end offsets of sentence within paragraph
+                            if (j === data.SyntaxTokens.length - 1) {
+                                parsed_data[i]['BeginOffset'] = sentenceBeginOffset;
+                                parsed_data[i]['EndOffset'] = sentenceBeginOffset + data.SyntaxTokens[j].EndOffset;
+                                sentenceBeginOffset += data.SyntaxTokens[j].EndOffset + 1;
+                            }
+                            n_processed ++;
+                        }
+                        parsed_sentences['parsed_sentences'].push(parsed_data);
+                    } else {
+                        const msg = 'getPosTags: SyntaxTokens attribute not found in request';
+                        console.log(msg);
+                        callback(new ioType.IOTypes.Error(msg));
+                    }
+                    if (n_processed >= sentences.length) {
+                        callback(parsed_sentences);
+                    }
+                });
+            } catch (error) {
+                console.log(error);
+                callback(new ioType.IOTypes.Error(error));
+            }
+        }
+    }
+
+    /**
+     * Return key phrases found in the input paragraph
+     * @param callback: callback function that will be called with the result
+     * @param input
+     * @param config
+     * @param profile
+     * @param constants
+     */
+    async detectKeyPhrases(callback, input, config, profile, constants) {
+        let params = {
+            LanguageCode: input.lang,
+            Text: input.paragraph,
+        };
+        try {
+            this.comprehend.detectKeyPhrases(params,
+                function(err, data) {
+                    if (err) {
+                        callback(new ioType.IOTypes.Error("Error comprehend"));
+                        console.log(err);
+                    }
+                    if (data && 'KeyPhrases' in data) {
+                        callback(new ioType.IOTypes.TaggedText(input.paragraph, data['KeyPhrases']));
+                    } else {
+                        console.log('detectKeyPhrases: no data returned!');
+                        callback(new ioType.IOTypes.Error("Text could not be analyzed"));
+                    }
+                });
+        } catch (error) {
+            console.log(error);
+            if (error.message) {
+                callback(new ioType.IOTypes.Error("Error:" + error.message));
+            } else {
+                callback(new ioType.IOTypes.Error("Error in comprehend"));
+            }
+        }
+    }
+
+    /**
+     * Return keywords found in the input paragraph. Keywords are considered following two simple heuristics:
+     * 1. They appear in a keyphrase as returned by the detectKeyPhrases method with a very high confidence score
+     * 2. They have a meaningful POS tag (i.e. not a symbol or punctuation)
+     * @param callback
+     * @param input
+     * @param config
+     * @param profile
+     * @param constants
+     */
+    async detectKeywords(callback, input, config, profile, constants) {
+        const importanceThreshold = 0.99;
+        const ignoredPOSTags = ['AUX', 'O', 'PART', 'PUNCT', 'SYM'];
+        await this.getSentencesWithTags(input.paragraph, input.lang, true,
+            function (result) {
+                if (result && !('parsed_sentences' in result)) {
+                    callback(new ioType.IOTypes.Error("No sentences found!"));
+                }
+                const sentencesWithTags = result['parsed_sentences'];
+                let params = {
+                    LanguageCode: input.lang,
+                    Text: input.paragraph,
+                };
+                try {
+                    this.comprehend.detectKeyPhrases(params,
+                        function(err, data) {
+                            if (data && 'KeyPhrases' in data) {
+                                let tokensInfo = [];
+                                const keyPhrases = data['KeyPhrases'];
+                                let n_keywords = 0;
+                                let currentOffset = 0;
+                                for (const sentenceInfo of sentencesWithTags) {
+                                    let pos = Object.keys(sentenceInfo)[0];
+                                    let sentenceOffset = sentenceInfo[pos]['BeginOffset'];
+                                    let sentenceEndOffset = sentenceInfo[pos]['EndOffset'];
+                                    for (const token of sentenceInfo[pos]['tokens']) {
+                                        let tokenTags = [token.posTag];
+                                        for (const keyPhrase of keyPhrases) {
+                                            if (keyPhrase['BeginOffset'] >= sentenceOffset && keyPhrase['EndOffset'] <= sentenceEndOffset && keyPhrase['Score'] >= importanceThreshold) {
+                                                if (token['BeginOffset'] >= keyPhrase['BeginOffset'] && token['EndOffset'] <= keyPhrase['EndOffset'] && !ignoredPOSTags.includes(token['posTag'])) {
+                                                    tokenTags.push("keyword");
+                                                    n_keywords++;
+                                                }
+                                            }
+                                        }
+                                        if (token['EndOffset'] > currentOffset) {
+                                            currentOffset = token['EndOffset'];
+                                            tokensInfo.push(ioType.IOTypes.TaggedText.createTag(
+                                                token.text, tokenTags, token.token, token.BeginOffset, token.EndOffset
+                                            ));
+                                        }
+                                    }
+                                }
+                                if (tokensInfo.length > 0 && n_keywords > 0) {
+                                    const annotatedParagraph = new ioType.IOTypes.TaggedText(input.paragraph, tokensInfo);
+                                    callback(annotatedParagraph);
+                                } else {
+                                    callback(new ioType.IOTypes.Error("Text could not be analyzed"));
+                                }
+                            } else {
+                                console.log('detectKeyPhrases: no data returned!');
+                                callback(new ioType.IOTypes.Error("Text could not be analyzed"));
+                            }
+                        }
+                    );
+                } catch (error) {
+                    console.log(error);
+                    if (error.message) {
+                        callback(new ioType.IOTypes.Error("Error:" + error.message));
+                    } else {
+                        callback(new ioType.IOTypes.Error("Text could not be analyzed"));
+                    }
+                }
+            });
+    }
 }
 
 

@@ -54,17 +54,14 @@ class EasyReadingAAC extends base.EngineBase {
 
         let core = require("../../../../core/core");
 
-        let keyPhraseDetector = core.getEngine("mircrosoft-textanalytics-key-phrase");
-        let thPicturedDictionary = core.getEngine("texthelp-pictured-dictionary");
+        let keywordDetector = core.getEngine("aws-text-analysis");
+        // let pictureDictionaryEngine = core.getEngine("aarasac-pictured-dictionary");
 
-        keyPhraseDetector.detectKeyPhrases(
+        keywordDetector.detectKeywords(
             function (result) {
-
                 let runningRequests = 0;
                 for (let i = 0; i < result.taggedText.length; i++) {
-
                     if (result.taggedText[i].tags) {
-
                         result.taggedText[i].text = result.taggedText[i].text.split(" ");
                         for (let j = 0; j < result.taggedText[i].text.length; j++) {
                             runningRequests++;
@@ -73,7 +70,6 @@ class EasyReadingAAC extends base.EngineBase {
                         result.taggedText[i].text = [result.taggedText[i].text];
                     }
                 }
-
                 if (!result.taggedText.length) {
                     let noResults = new ioType.IOTypes.NoResult("No result found!");
                     callback(noResults);
