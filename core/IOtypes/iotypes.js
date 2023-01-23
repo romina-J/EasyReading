@@ -352,39 +352,31 @@ class ContentReplacement extends IOType{
     }
 }
 
-class TaggedText extends IOType{
-    constructor(originalText,taggedText = null,lang="en", description="") {
+class TaggedText extends IOType {
+    constructor(originalText, taggedText = null,lang="en", description="") {
         super("TaggedText", description);
         this.originalText = originalText;
-
-        if(taggedText){
+        if (taggedText) {
             this.taggedText = taggedText;
-        }else{
-            this.taggedText = [TaggedText.createPOSTag(this.originalText)];
+        } else {
+            this.taggedText = [TaggedText.createTag(this.originalText)];
         }
-
         this.lang = lang;
         this._isText = true;
     }
+
     static get className() {
         return 'TaggedText';
     }
 
-    static createPOSTag(text,tags=null){
-
-
-        return {
-            text: text,
-            tags : tags,
-        }
-
+    static createTag(text, tags=null, token=null, beginOffset=null, endOffset=null) {
+        return { text, tags, token, beginOffset, endOffset }
     }
 
-    getText(){
+    getText() {
         let text = "";
-        for(let i=0; i < this.taggedText.length; i++){
-
-            text+=this.taggedText[i].text;
+        for (let i=0; i < this.taggedText.length; i++) {
+            text += this.taggedText[i].text;
         }
         return text;
     }

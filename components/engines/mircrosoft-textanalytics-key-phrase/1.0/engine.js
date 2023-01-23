@@ -131,7 +131,7 @@ class MicrosoftTextAnalyticsKeyPhrase extends base.EngineBase {
 
 
                                 let currentSentenceTags = [];
-                                currentSentenceTags.push(ioType.IOTypes.TaggedText.createPOSTag(keyPhraseInput.documents[j].text));
+                                currentSentenceTags.push(ioType.IOTypes.TaggedText.createTag(keyPhraseInput.documents[j].text));
 
 
 
@@ -151,12 +151,12 @@ class MicrosoftTextAnalyticsKeyPhrase extends base.EngineBase {
 
                                                 if(sentenceParts[l]=== ""){
 
-                                                    newPosTags.push(ioType.IOTypes.TaggedText.createPOSTag(currentKeyPhrase,["keyword"]));
+                                                    newPosTags.push(ioType.IOTypes.TaggedText.createTag(currentKeyPhrase,["keyword"]));
                                                 }else{
-                                                    newPosTags.push(ioType.IOTypes.TaggedText.createPOSTag(sentenceParts[l]));
+                                                    newPosTags.push(ioType.IOTypes.TaggedText.createTag(sentenceParts[l]));
 
                                                     if(l !== sentenceParts.length-1){
-                                                        newPosTags.push(ioType.IOTypes.TaggedText.createPOSTag(currentKeyPhrase,["keyword"]));
+                                                        newPosTags.push(ioType.IOTypes.TaggedText.createTag(currentKeyPhrase,["keyword"]));
                                                     }
                                                 }
 
