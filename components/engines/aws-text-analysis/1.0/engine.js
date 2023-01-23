@@ -148,18 +148,20 @@ class AWSTextAnalysis extends base.EngineBase {
             console.log('getSentencesWithTags: no language given, defaulting to en.')
         }
         let sentences = this.getSentences(paragraph);
+        let syntaxTokens = {};
         let parsed_sentences = {
             'original_paragraph': paragraph,
             'lang': lang,
             'parsed_sentences': []
         };
-        let sentenceBeginOffset = 0;
         let n_processed = 0;
+        let parsed_data = {};
+        for (let i=0; i<sentences.length; i++) {
+            parsed_data[i] = {};
+            parsed_data[i]['sentence'] = sentences[i];
+        }
         for (const sentence of sentences) {
             const i = sentences.indexOf(sentence);
-            let parsed_data = {};
-            parsed_data[i] = {};
-            parsed_data[i]['sentence'] = sentence;
             let params = {
                 LanguageCode: lang,
                 Text: sentence,
@@ -167,55 +169,55 @@ class AWSTextAnalysis extends base.EngineBase {
             try {
                 this.comprehend.detectSyntax(params, function (err, data) {
                     if (data && 'SyntaxTokens' in data) {
-                        parsed_data[i]['tokens'] = [];
-                        for (let j=0; j<data.SyntaxTokens.length; j++) {
-                            let tokenBeginOffset = sentenceBeginOffset + data.SyntaxTokens[j].BeginOffset;
-                            let tokenEndOffset = sentenceBeginOffset + data.SyntaxTokens[j].EndOffset;
-                            let whitespace = "";
-                            if (preserveWhitespace) {
-                                let k = -1;
-                                while (tokenBeginOffset+k+1 < paragraph.length) {
-                                    k++;
-                                    if (data.SyntaxTokens[j].Text[k] === paragraph[tokenBeginOffset+k]) {
-                                        continue;
-                                    }
-                                    if (j === data.SyntaxTokens.length - 1) {
-                                        while (paragraph[tokenBeginOffset+k].trim() === "") {
-                                            whitespace += paragraph[tokenBeginOffset+k];
+                        syntaxTokens[i] = data.SyntaxTokens;
+                        n_processed ++;
+                        if (n_processed === sentences.length) {
+                            let sentenceBeginOffset = 0;
+                            for (let s=0; s<sentences.length; s++) {
+                                parsed_data[s]['tokens'] = [];
+                                for (let j=0; j<syntaxTokens[s].length; j++) {
+                                    let tokenBeginOffset = sentenceBeginOffset + syntaxTokens[s][j].BeginOffset;
+                                    let tokenEndOffset = sentenceBeginOffset + syntaxTokens[s][j].EndOffset;
+                                    let whitespace = "";
+                                    if (preserveWhitespace) {
+                                        let k = -1;
+                                        while (tokenBeginOffset+k+1 < paragraph.length) {
                                             k++;
+                                            if (syntaxTokens[s][j].Text[k] === paragraph[tokenBeginOffset+k]) {
+                                                continue;
+                                            }
+                                            if (j === syntaxTokens[s].length - 1) {
+                                                while (paragraph[tokenBeginOffset+k].trim() === "") {
+                                                    whitespace += paragraph[tokenBeginOffset+k];
+                                                    k++;
+                                                }
+                                                break;
+                                            }
+                                            if (paragraph[tokenBeginOffset+k] !== syntaxTokens[s][j+1].Text[0]) {
+                                                whitespace += paragraph[tokenBeginOffset+k];
+                                            } else {
+                                                break;
+                                            }
                                         }
-                                        break;
                                     }
-                                    if (paragraph[tokenBeginOffset+k] !== data.SyntaxTokens[j+1].Text[0]) {
-                                        whitespace += paragraph[tokenBeginOffset+k];
-                                    } else {
-                                        break;
+                                    parsed_data[s]['tokens'].push({
+                                        'token': syntaxTokens[s][j].Text,
+                                        'text': syntaxTokens[s][j].Text + whitespace,
+                                        'posTag': syntaxTokens[s][j].PartOfSpeech.Tag,
+                                        'BeginOffset': tokenBeginOffset,
+                                        'EndOffset': tokenEndOffset
+                                    })
+                                    // Add start and end offsets of sentence within paragraph
+                                    if (j === syntaxTokens[s].length - 1) {
+                                        parsed_data[s]['BeginOffset'] = sentenceBeginOffset;
+                                        parsed_data[s]['EndOffset'] = sentenceBeginOffset + syntaxTokens[s][j].EndOffset;
+                                        sentenceBeginOffset += syntaxTokens[s][j].EndOffset + 1;
                                     }
                                 }
                             }
-                            parsed_data[i]['tokens'].push({
-                                'token': data.SyntaxTokens[j].Text,
-                                'text': data.SyntaxTokens[j].Text + whitespace,
-                                'posTag': data.SyntaxTokens[j].PartOfSpeech.Tag,
-                                'BeginOffset': tokenBeginOffset,
-                                'EndOffset': tokenEndOffset
-                            })
-                            // Add start and end offsets of sentence within paragraph
-                            if (j === data.SyntaxTokens.length - 1) {
-                                parsed_data[i]['BeginOffset'] = sentenceBeginOffset;
-                                parsed_data[i]['EndOffset'] = sentenceBeginOffset + data.SyntaxTokens[j].EndOffset;
-                                sentenceBeginOffset += data.SyntaxTokens[j].EndOffset + 1;
-                            }
-                            n_processed ++;
+                            parsed_sentences['parsed_sentences'] = parsed_data;
+                            callback(parsed_sentences);
                         }
-                        parsed_sentences['parsed_sentences'].push(parsed_data);
-                    } else {
-                        const msg = 'getPosTags: SyntaxTokens attribute not found in request';
-                        console.log(msg);
-                        callback(new ioType.IOTypes.Error(msg));
-                    }
-                    if (n_processed >= sentences.length) {
-                        callback(parsed_sentences);
                     }
                 });
             } catch (error) {
@@ -276,7 +278,7 @@ class AWSTextAnalysis extends base.EngineBase {
         const importanceThreshold = 0.99;
         const ignoredPOSTags = ['AUX', 'O', 'PART', 'PUNCT', 'SYM'];
         await this.getSentencesWithTags(input.paragraph, input.lang, true,
-            function (result) {
+            async function (result) {
                 if (result && !('parsed_sentences' in result)) {
                     callback(new ioType.IOTypes.Error("No sentences found!"));
                 }
@@ -286,7 +288,7 @@ class AWSTextAnalysis extends base.EngineBase {
                     Text: input.paragraph,
                 };
                 try {
-                    this.comprehend.detectKeyPhrases(params,
+                    await this.comprehend.detectKeyPhrases(params,
                         function(err, data) {
                             if (data && 'KeyPhrases' in data) {
                                 let tokensInfo = [];
