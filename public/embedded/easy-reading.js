@@ -10239,7 +10239,7 @@ class TaggedText extends IOType{
         if(taggedText){
             this.taggedText = taggedText;
         }else{
-            this.taggedText = [TaggedText.createPOSTag(this.originalText)];
+            this.taggedText = [TaggedText.createTag(this.originalText)];
         }
 
         this.lang = lang;
@@ -10249,7 +10249,7 @@ class TaggedText extends IOType{
         return 'TaggedText';
     }
 
-    static createPOSTag(text,tags=null){
+    static createTag(text,tags=null){
 
 
         return {

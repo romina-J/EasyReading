@@ -219,7 +219,9 @@ class AWSTextAnalysis extends base.EngineBase {
                                     }
                                 }
                             }
-                            parsed_sentences['parsed_sentences'] = parsed_data;
+                            for (let s=0; s<sentences.length; s++) {
+                                parsed_sentences['parsed_sentences'].push(parsed_data[s]);
+                            }
                             callback(parsed_sentences);
                         }
                     }
@@ -281,6 +283,7 @@ class AWSTextAnalysis extends base.EngineBase {
     async detectKeywords(callback, input, config, profile, constants) {
         const importanceThreshold = 0.99;
         const ignoredPOSTags = ['AUX', 'O', 'PART', 'PUNCT', 'SYM'];
+        const comprehendClient = this.comprehend;
         await this.getSentencesWithTags(input.paragraph, input.lang, true,
             async function (result) {
                 if (result instanceof ioType.IOTypes.Error) {
@@ -297,7 +300,7 @@ class AWSTextAnalysis extends base.EngineBase {
                     Text: input.paragraph,
                 };
                 try {
-                    await this.comprehend.detectKeyPhrases(params,
+                    await comprehendClient.detectKeyPhrases(params,
                         function(err, data) {
                             if (data && 'KeyPhrases' in data) {
                                 let tokensInfo = [];
@@ -305,10 +308,9 @@ class AWSTextAnalysis extends base.EngineBase {
                                 let n_keywords = 0;
                                 let currentOffset = 0;
                                 for (const sentenceInfo of sentencesWithTags) {
-                                    let pos = Object.keys(sentenceInfo)[0];
-                                    let sentenceOffset = sentenceInfo[pos]['BeginOffset'];
-                                    let sentenceEndOffset = sentenceInfo[pos]['EndOffset'];
-                                    for (const token of sentenceInfo[pos]['tokens']) {
+                                    let sentenceOffset = sentenceInfo['BeginOffset'];
+                                    let sentenceEndOffset = sentenceInfo['EndOffset'];
+                                    for (const token of sentenceInfo['tokens']) {
                                         let tokenTags = [token.posTag];
                                         for (const keyPhrase of keyPhrases) {
                                             if (keyPhrase['BeginOffset'] >= sentenceOffset && keyPhrase['EndOffset'] <= sentenceEndOffset && keyPhrase['Score'] >= importanceThreshold) {
@@ -339,12 +341,12 @@ class AWSTextAnalysis extends base.EngineBase {
                         }
                     );
                 } catch (error) {
-                    console.log(error);
                     if (error.message) {
-                        callback(new ioType.IOTypes.Error("Error:" + error.message));
+                        console.log(error.message);
                     } else {
-                        callback(new ioType.IOTypes.Error("Text could not be analyzed"));
+                        console.log(error);
                     }
+                    callback(new ioType.IOTypes.Error("Text could not be analyzed"));
                 }
             });
     }
