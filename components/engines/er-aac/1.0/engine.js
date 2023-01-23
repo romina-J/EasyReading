@@ -59,6 +59,10 @@ class EasyReadingAAC extends base.EngineBase {
 
         keywordDetector.detectKeywords(
             function (result) {
+                if (result instanceof ioType.IOTypes.Error) {
+                    callback(result);
+                    return;
+                }
                 let runningRequests = 0;
                 for (let i = 0; i < result.taggedText.length; i++) {
                     if (result.taggedText[i].tags) {
