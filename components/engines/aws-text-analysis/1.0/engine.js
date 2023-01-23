@@ -143,6 +143,10 @@ class AWSTextAnalysis extends base.EngineBase {
      * @param preserveWhitespace boolean: whether returned tokens keep any trailing whitespace
      */
     async getSentencesWithTags(paragraph, lang, preserveWhitespace=false, callback) {
+        setTimeout(() => {
+            console.log('getSentencesWithTags timeout');
+            callback(new ioType.IOTypes.Error('Text processing took too long.'));
+        }, 30000);
         if (!lang) {
             lang = 'en';
             console.log('getSentencesWithTags: no language given, defaulting to en.')
@@ -279,8 +283,13 @@ class AWSTextAnalysis extends base.EngineBase {
         const ignoredPOSTags = ['AUX', 'O', 'PART', 'PUNCT', 'SYM'];
         await this.getSentencesWithTags(input.paragraph, input.lang, true,
             async function (result) {
+                if (result instanceof ioType.IOTypes.Error) {
+                    callback(result);
+                    return;
+                }
                 if (result && !('parsed_sentences' in result)) {
                     callback(new ioType.IOTypes.Error("No sentences found!"));
+                    return;
                 }
                 const sentencesWithTags = result['parsed_sentences'];
                 let params = {
