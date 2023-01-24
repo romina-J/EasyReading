@@ -748,5 +748,12 @@
 	"caretaker_role_text": "Caretaker",
 	"anonym_role_text": "anonym_role_text",
 	"[object Object]_role_text": "[object Object]_role_text",
-	"backend_user_role_text": "backend_user_role_text"
+	"backend_user_role_text": "Backend user role",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Picture Dictionary (ARASAAC)",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "Shows a relevant symbol above the chosen word",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac.org",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "https://arasaac.org/pictograms",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "Click on the word whose symbol you want to see.",
+	"Arasaac Picture Dictionary": "Arasaac Picture Dictionary",
+	"Arasaac picture dictionary": "Arasaac picture dictionary"
 }

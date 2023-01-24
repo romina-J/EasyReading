@@ -697,5 +697,12 @@
 	"caretaker_role_text": "caretaker_role_text",
 	"anonym_role_text": "anonym_role_text",
 	"[object Object]_role_text": "[object Object]_role_text",
-	"backend_user_role_text": "backend_user_role_text"
+	"backend_user_role_text": "backend_user_role_text",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse",
+	"Arasaac Picture Dictionary": "Arasaac Picture Dictionary",
+	"Arasaac picture dictionary": "Arasaac picture dictionary"
 }

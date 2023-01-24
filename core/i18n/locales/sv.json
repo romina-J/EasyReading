@@ -614,5 +614,12 @@
 	"caretaker_role_text": "caretaker_role_text",
 	"anonym_role_text": "anonym_role_text",
 	"[object Object]_role_text": "[object Object]_role_text",
-	"backend_user_role_text": "backend_user_role_text"
+	"backend_user_role_text": "Användarroll i backend",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Bildordbok",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "Visar en relevant symbol ovanför det valda ordet",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac.org",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "https://arasaac.org/pictograms",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "Klicka på det ord vars symbol du vill se.",
+	"Arasaac Picture Dictionary": "Arasaac Bildordbok",
+	"Arasaac picture dictionary": "Arasaac bildordbok"
 }
