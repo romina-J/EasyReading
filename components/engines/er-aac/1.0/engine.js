@@ -50,92 +50,57 @@ class EasyReadingAAC extends base.EngineBase {
         ];
     }
 
-    createAAC(callback, input, config, profile, constants) {
+    async createAAC(callback, input, config, profile, constants) {
 
-        let core = require("../../../../core/core");
+        const core = require("../../../../core/core");
+        const keywordDetector = core.getEngine("aws-text-analysis");
+        const picDictEngine = core.getEngine("arasaac-picture-dictionary");
 
-        let keywordDetector = core.getEngine("aws-text-analysis");
-        // let pictureDictionaryEngine = core.getEngine("aarasac-pictured-dictionary");
-
-        keywordDetector.detectKeywords(
+        await keywordDetector.detectKeywords(
             function (result) {
-                if (result instanceof ioType.IOTypes.Error) {
-                    callback(result);
+                const noResults = new ioType.IOTypes.NoResult("No result found!");
+                if (!('taggedText' in result) || !result.taggedText.length) {
+                    callback(noResults);
                     return;
                 }
                 let runningRequests = 0;
                 for (let i = 0; i < result.taggedText.length; i++) {
-                    if (result.taggedText[i].tags) {
-                        result.taggedText[i].text = result.taggedText[i].text.split(" ");
-                        for (let j = 0; j < result.taggedText[i].text.length; j++) {
-                            runningRequests++;
-                        }
-                    } else {
-                        result.taggedText[i].text = [result.taggedText[i].text];
+                    if (result.taggedText[i].tags.includes('keyword')) {
+                        runningRequests++;
                     }
                 }
-                if (!result.taggedText.length) {
-                    let noResults = new ioType.IOTypes.NoResult("No result found!");
+                if (runningRequests === 0) {
                     callback(noResults);
-
                     return;
-
                 }
-
                 for (let i = 0; i < result.taggedText.length; i++) {
-
-                    if (result.taggedText[i].tags) {
-                        for (let j = 0; j < result.taggedText[i].text.length; j++) {
-
-                            thPicturedDictionary.picturedDictionary(function (pictureResult) {
-                                runningRequests--;
-
-                                if (pictureResult.name === "ImageIOType") {
-                                    let spacing = "";
-                                    if (j > 0) {
-                                        spacing = " ";
-                                    }
-
-                                    let replacement = '<span style="display:inline-block; line-height:0.8; ">\n' +
-                                        '    <span style="display:block;">\n' +
-                                        '        <img src="' + pictureResult.url + '" style="width: 50px; height: 50px;">\n' +
-                                        '    </span>\n' +
-                                        '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text[j] + spacing + '&nbsp;</span>\n' +
-                                        '</span>';
-
-                                    result.taggedText[i].text[j] = replacement;
-                                }else if(pictureResult.name === "Error"){
-
-                                    callback(pictureResult);
-                                    return;
+                    if (result.taggedText[i].tags.includes('keyword')) {
+                        picDictEngine.pictureDictionary(function (pictureResult) {
+                            runningRequests--;
+                            if (pictureResult.name === "ImageIOType") {
+                                let aacImage = '<span style="display:inline-block; line-height:0.8; ">\n' +
+                                    '    <span style="display:block;">\n' +
+                                    '        <img src="' + pictureResult.url + '" style="width: 50px; height: 50px;">\n' +
+                                    '    </span>\n' +
+                                    '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text + '&nbsp;</span>\n' +
+                                    '</span>';
+                                result.taggedText[i].text = aacImage;
+                            } else if(pictureResult.name === "Error") {
+                                callback(pictureResult);
+                                return;
+                            }
+                            if (runningRequests === 0) {
+                                let finalText = "";
+                                for (let i = 0; i < result.taggedText.length; i++) {
+                                    finalText += result.taggedText[i].text;
                                 }
-
-
-                                if (runningRequests === 0) {
-                                    let finalText = "";
-                                    for (let i = 0; i < result.taggedText.length; i++) {
-                                        for (let j = 0; j < result.taggedText[i].text.length; j++) {
-                                            finalText += result.taggedText[i].text[j];
-
-                                            //Add empty spaces again that were removed when splitting key phrases
-                                            if (j > 0) {
-                                                finalText += " ";
-                                            }
-                                        }
-                                    }
-                                    let theResult = new ioType.IOTypes.Paragraph(finalText);
-                                    callback(theResult);
-                                }
-
-                            }, new ioType.IOTypes.Word(result.taggedText[i].text[j], input.lang), config, profile, constants);
-                        }
+                                callback(new ioType.IOTypes.Paragraph(finalText));
+                            }
+                        }, new ioType.IOTypes.Word(result.taggedText[i].token, input.lang), config, profile, constants);
                     }
-
-
                 }
             }, input, config, profile, constants
         );
-
     }
 
 }
