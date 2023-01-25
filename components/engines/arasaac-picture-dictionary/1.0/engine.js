@@ -43,18 +43,23 @@ class ArasaacPictureDictionary extends base.EngineBase {
     }
 
     pictureDictionary(callback, input, config, profile, constants) {
+        const supportedLanguages = ['en', 'de', 'es'];  // Languages supported by the ARASAAC API.
         let pictureDictionary = this;
         let core = require("../../../../core/core");
         let translate = core.getEngine("translate");
-        translate.translateWord(
-            function (result) {
-                if (result.name === "Error") {
-                    callback(result);
-                } else {
-                    pictureDictionary.createPictureRequest(callback, result, config, profile, constants);
-                }
-            }, input, config, profile, constants
-        );
+        if (supportedLanguages.indexOf(input.lang) > -1) {
+            pictureDictionary.createPictureRequest(callback, input, config, profile, constants);
+        } else {
+            translate.translateWord(
+                function (result) {
+                    if (result.name === "Error") {
+                        callback(result);
+                    } else {
+                        pictureDictionary.createPictureRequest(callback, result, config, profile, constants);
+                    }
+                }, input, config, profile, constants
+            );
+        }
     }
 
     createPictureRequest(callback, input, config, profile, constants) {
