@@ -65,17 +65,26 @@ class EasyReadingAAC extends base.EngineBase {
                     callback(noResults);
                     return;
                 }
+                const noSearchTags = ['O', 'PART', 'SYM'];
                 let runningRequests = 0;
                 for (let i = 0; i < result.taggedText.length; i++) {
-                    if (result.taggedText[i].tags.includes('keyword')) {
-                        runningRequests++;
+                    if (result.taggedText[i].token && result.taggedText[i].tags.includes('keyword')) {
+                        let consider = true;
+                        for (let j=0; j<noSearchTags.length; j++) {
+                            if (result.taggedText[i].tags.indexOf(noSearchTags[j]) > -1) {
+                                consider = false;
+                                break;
+                            }
+                        }
+                        if (consider) {
+                            runningRequests++;
+                        }
                     }
                 }
                 if (runningRequests === 0) {
                     callback(noResults);
                     return;
                 }
-                const noSearchTags = ['O', 'PART', 'SYM'];
                 const noStemTags = ['PROPN', 'AUX', 'CONJ', 'CCONJ', 'PUNCT', 'SYM'];
                 for (let i = 0; i < result.taggedText.length; i++) {
                     const text = result.taggedText[i];
