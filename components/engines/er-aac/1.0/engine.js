@@ -116,8 +116,8 @@ class EasyReadingAAC extends base.EngineBase {
                                             '    </span>\n' +
                                             '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text + '&nbsp;</span>\n' +
                                             '</span>';
+                                        break;
                                     }
-                                    break;
                                 }
                             } else if(pictureResult.name === "Error") {
                                 callback(pictureResult);
