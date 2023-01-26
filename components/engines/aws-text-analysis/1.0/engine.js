@@ -143,7 +143,7 @@ class AWSTextAnalysis extends base.EngineBase {
      * @param preserveWhitespace boolean: whether returned tokens keep any trailing whitespace
      */
     async getSentencesWithTags(paragraph, lang, preserveWhitespace=false, callback) {
-        setTimeout(() => {
+        let timer = setTimeout(() => {
             console.log('getSentencesWithTags timeout');
             callback(new ioType.IOTypes.Error('Text processing took too long.'));
         }, 30000);
@@ -222,12 +222,18 @@ class AWSTextAnalysis extends base.EngineBase {
                             for (let s=0; s<sentences.length; s++) {
                                 parsed_sentences['parsed_sentences'].push(parsed_data[s]);
                             }
+                            if (timer) {
+                                clearTimeout(timer);
+                            }
                             callback(parsed_sentences);
                         }
                     }
                 });
             } catch (error) {
                 console.log(error);
+                if (timer) {
+                    clearTimeout(timer);
+                }
                 callback(new ioType.IOTypes.Error(error));
             }
         }
