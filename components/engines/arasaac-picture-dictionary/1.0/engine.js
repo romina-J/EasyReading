@@ -1,5 +1,6 @@
-let base = rootRequire("core/components/engines/base/engine-base");
-let ioType = rootRequire("core/IOtypes/iotypes");
+const core = require("../../../../core/core");
+const base = rootRequire("core/components/engines/base/engine-base");
+const ioType = rootRequire("core/IOtypes/iotypes");
 
 class ArasaacPictureDictionary extends base.EngineBase {
     constructor() {
@@ -44,12 +45,11 @@ class ArasaacPictureDictionary extends base.EngineBase {
 
     pictureDictionary(callback, input, config, profile, constants) {
         const supportedLanguages = ['en', 'de', 'es'];  // Languages supported by the ARASAAC API.
-        let pictureDictionary = this;
-        let core = require("../../../../core/core");
-        let translate = core.getEngine("translate");
+        const pictureDictionary = this;
         if (supportedLanguages.indexOf(input.lang) > -1) {
             pictureDictionary.createPictureRequest(callback, input, config, profile, constants);
         } else {
+            const translate = core.getEngine("translate");
             translate.translateWord(
                 function (result) {
                     if (result.name === "Error") {
@@ -82,11 +82,12 @@ class ArasaacPictureDictionary extends base.EngineBase {
                             url: 'https://api.arasaac.org/api/pictograms/' + imageId + '?url=true&download=false',
                             method: 'GET',
                         };
+                        let keywords = response[0].keywords.map(k => k.keyword);
                         request(imageOptions, function (err, res, body) {
                             try {
                                 let imageResponse = JSON.parse(body);
                                 let imageURL = imageResponse.image;
-                                let result = new ioType.IOTypes.ImageIOType(imageURL, input.word, input.word);
+                                let result = new ioType.IOTypes.ImageIOType(imageURL, keywords, input.word);
                                 callback(result);
                             } catch (error) {
                                 callback(new ioType.IOTypes.Error("Error processing request"));

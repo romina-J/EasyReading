@@ -1,5 +1,5 @@
-var base = rootRequire("core/components/engines/base/engine-base");
-let ioType = rootRequire("core/IOtypes/iotypes");
+const base = rootRequire("core/components/engines/base/engine-base");
+const ioType = rootRequire("core/IOtypes/iotypes");
 
 class EasyReadingAAC extends base.EngineBase {
 
@@ -10,9 +10,7 @@ class EasyReadingAAC extends base.EngineBase {
         this.description = "Creates AAC Annotations";
         this.version = "1.0";
         this.versionDescription = "Initial Version";
-
     }
-
 
     getFunctions() {
         return [
@@ -51,7 +49,11 @@ class EasyReadingAAC extends base.EngineBase {
     }
 
     async createAAC(callback, input, config, profile, constants) {
-
+        let stem;
+        if (input.lang === 'de') {
+            const { StemmerDe } = require('@nlpjs/lang-de');
+            stem = new StemmerDe();
+        }
         const core = require("../../../../core/core");
         const keywordDetector = core.getEngine("aws-text-analysis");
         const picDictEngine = core.getEngine("arasaac-picture-dictionary");
@@ -73,18 +75,50 @@ class EasyReadingAAC extends base.EngineBase {
                     callback(noResults);
                     return;
                 }
+                const noSearchTags = ['O', 'PART', 'SYM'];
+                const noStemTags = ['PROPN', 'AUX', 'CONJ', 'CCONJ', 'PUNCT', 'SYM'];
                 for (let i = 0; i < result.taggedText.length; i++) {
-                    if (result.taggedText[i].tags.includes('keyword')) {
-                        picDictEngine.pictureDictionary(function (pictureResult) {
+                    const text = result.taggedText[i];
+                    let fetchPicture = false;
+                    let token = text.token;
+                    if (token && text.tags.includes('keyword')) {
+                        // token = token.toLowerCase();
+                        fetchPicture = true
+                        for (let j=0; j<noSearchTags.length; j++) {
+                            if (text.tags.indexOf(noSearchTags[j]) > -1) {
+                                fetchPicture = false;
+                                break;
+                            }
+                        }
+                        if (fetchPicture && input.lang === 'de' && stem) {
+                            let stemWord = true;
+                            for (let j=0; j<noStemTags.length; j++) {
+                                if (text.tags.indexOf(noStemTags[j]) > -1) {
+                                    stemWord = false;
+                                    break;
+                                }
+                            }
+                            if (stemWord) {
+                                token = stem.stemWord(token);
+                            }
+                        }
+                    }
+                    if (fetchPicture) {
+                        const pictureCallback = pictureResult => {
                             runningRequests--;
                             if (pictureResult.name === "ImageIOType") {
-                                let aacImage = '<span style="display:inline-block; line-height:0.8; ">\n' +
-                                    '    <span style="display:block;">\n' +
-                                    '        <img src="' + pictureResult.url + '" style="width: 50px; height: 50px;">\n' +
-                                    '    </span>\n' +
-                                    '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text + '&nbsp;</span>\n' +
-                                    '</span>';
-                                result.taggedText[i].text = aacImage;
+                                for (let kw of pictureResult.alt) {
+                                    if (kw === token) {
+                                        result.taggedText[i].text = '<span style="display:inline-block; line-height:0.8; ">\n' +
+                                            '    <span style="display:block;">\n' +
+                                            '        <img src="' + pictureResult.url + '" alt="' + pictureResult.title +
+                                            '" style="width: 50px; height: 50px;">\n' +
+                                            '    </span>\n' +
+                                            '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text + '&nbsp;</span>\n' +
+                                            '</span>';
+                                    }
+                                    break;
+                                }
                             } else if(pictureResult.name === "Error") {
                                 callback(pictureResult);
                                 return;
@@ -96,7 +130,14 @@ class EasyReadingAAC extends base.EngineBase {
                                 }
                                 callback(new ioType.IOTypes.Paragraph(finalText));
                             }
-                        }, new ioType.IOTypes.Word(result.taggedText[i].token, input.lang), config, profile, constants);
+                        };
+                        picDictEngine.pictureDictionary(
+                            pictureCallback,
+                            new ioType.IOTypes.Word(token, input.lang, "", "", "", text.tags),
+                            config,
+                            profile,
+                            constants
+                        );
                     }
                 }
             }, input, config, profile, constants
