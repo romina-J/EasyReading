@@ -40,12 +40,23 @@ class VoidIOType extends IOType {
 }
 
 class Word extends IOType {
-    constructor(word,lang="en", sentenceStart = "", sentenceEnd="", description="") {
+    constructor(word,lang="en", sentenceStart = "", sentenceEnd="", description="", posTag="") {
         super("Word", description);
         this.word = word;
         this.lang = lang;
         this.sentenceStart = sentenceStart;
         this.sentenceEnd = sentenceEnd;
+        this.posTag = "";
+        if (posTag.constructor === Array) {
+            for (let tag of posTag) {
+                if (tag !== 'keyword') {
+                    this.posTag = tag;
+                    break;
+                }
+            }
+        } else if (posTag) {
+            this.posTag = posTag;
+        }
         this._isText = true;
     }
 
@@ -58,6 +69,10 @@ class Word extends IOType {
 
     getValue(){
         return this.word;
+    }
+
+    getPosTag() {
+        return this.posTag;
     }
 
     getSentence(){
@@ -251,8 +266,20 @@ class ImageIOType extends IOType {
         }
     }
 
-    getValue(){
+    getValue() {
         return this.url;
+    }
+
+    getAlt() {
+        let altText = "";
+        if (this.alt) {
+            if (this.alt.constructor === Array) {
+                altText = this.alt.join(", ");
+            } else {
+                altText = this.alt;
+            }
+        }
+        return altText;
     }
 
     static get className() {
