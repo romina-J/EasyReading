@@ -287,7 +287,7 @@ class AWSTextAnalysis extends base.EngineBase {
      * @param constants
      */
     async detectKeywords(callback, input, config, profile, constants) {
-        const importanceThreshold = 0.99;
+        const importanceThreshold = 0.01;
         const ignoredPOSTags = ['AUX', 'O', 'PART', 'PUNCT', 'SYM'];
         const comprehendClient = this.comprehend;
         await this.getSentencesWithTags(input.paragraph, input.lang, true,
