@@ -44,7 +44,7 @@ class ArasaacPictureDictionary extends base.EngineBase {
     }
 
     pictureDictionary(callback, input, config, profile, constants) {
-        const supportedLanguages = ['en', 'de', 'es'];  // Languages supported by the ARASAAC API.
+        const supportedLanguages = ['en'];  // Languages supported by the ARASAAC API.
         const pictureDictionary = this;
         if (supportedLanguages.indexOf(input.lang) > -1) {
             pictureDictionary.createPictureRequest(callback, input, config, profile, constants);

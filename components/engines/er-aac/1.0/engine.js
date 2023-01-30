@@ -50,10 +50,10 @@ class EasyReadingAAC extends base.EngineBase {
 
     async createAAC(callback, input, config, profile, constants) {
         let stem;
-        if (input.lang === 'de') {
+/*        if (input.lang === 'de') {
             const { StemmerDe } = require('@nlpjs/lang-de');
             stem = new StemmerDe();
-        }
+        }*/
         const core = require("../../../../core/core");
         const keywordDetector = core.getEngine("aws-text-analysis");
         const picDictEngine = core.getEngine("arasaac-picture-dictionary");
@@ -116,18 +116,13 @@ class EasyReadingAAC extends base.EngineBase {
                         const pictureCallback = pictureResult => {
                             runningRequests--;
                             if (pictureResult.name === "ImageIOType") {
-                                for (let kw of pictureResult.alt) {
-                                    if (kw === token) {
-                                        result.taggedText[i].text = '<span style="display:inline-block; line-height:0.8; ">\n' +
-                                            '    <span style="display:block;">\n' +
-                                            '        <img src="' + pictureResult.url + '" alt="' + pictureResult.title +
-                                            '" style="width: 50px; height: 50px;">\n' +
-                                            '    </span>\n' +
-                                            '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text + '&nbsp;</span>\n' +
-                                            '</span>';
-                                        break;
-                                    }
-                                }
+                                result.taggedText[i].text = '<span style="display:inline-block; line-height:0.8; ">\n' +
+                                    '    <span style="display:block;">\n' +
+                                    '        <img src="' + pictureResult.url + '" alt="' + pictureResult.title +
+                                    '" style="width: 50px; height: 50px;">\n' +
+                                    '    </span>\n' +
+                                    '    <span style="display:block; text-align:center">&nbsp;' + result.taggedText[i].text + '&nbsp;</span>\n' +
+                                    '</span>';
                             } else if(pictureResult.name === "Error") {
                                 callback(pictureResult);
                                 return;
