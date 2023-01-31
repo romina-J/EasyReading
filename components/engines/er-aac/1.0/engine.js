@@ -31,14 +31,14 @@ class EasyReadingAAC extends base.EngineBase {
                     {
                         "inputType": ioType.IOTypes.Paragraph.className,
                         "name": "Input paragraph",
-                        "description": "Paragraph to detect key phrases",
+                        "description": "Paragraph to process",
                     }
                 ],
                 outputTypes: [
                     {
                         "outputType": ioType.IOTypes.Paragraph.className,
-                        "name": "Paragraph word",
-                        "description": "Translated paragraph",
+                        "name": "Output paragraph",
+                        "description": "Original paragraph with added AAC symbols",
                     }
                 ],
                 toolCategory: base.EngineFunction.ToolCategories.Explanation,
