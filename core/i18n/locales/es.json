@@ -704,5 +704,11 @@
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse",
 	"Arasaac Picture Dictionary": "Arasaac Picture Dictionary",
-	"Arasaac picture dictionary": "Arasaac picture dictionary"
+	"Arasaac picture dictionary": "Arasaac picture dictionary",
+	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Turkish": "Turco",
+	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Russian": "Ruso",
+	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Ukrainian": "Ucraniano",
+	"tr": "tr",
+	"ru": "ru",
+	"uk": "uk"
 }
