@@ -1,5 +1,5 @@
-var base = rootRequire("core/components/engines/base/engine-base");
-let ioType = rootRequire("core/IOtypes/iotypes");
+const base = rootRequire("core/components/engines/base/engine-base");
+const ioType = rootRequire("core/IOtypes/iotypes");
 
 class Translate extends base.EngineBase {
 
@@ -22,8 +22,8 @@ class Translate extends base.EngineBase {
                 signatureVersion: 'v4',
                 region: 'eu-central-1'
             });
-        } catch (exeption){
-            console.log(exeption);
+        } catch (exception){
+            console.log(exception);
             this.translate = null;
         }
     }
@@ -44,6 +44,9 @@ class Translate extends base.EngineBase {
                         "de",
                         "es",
                         "sv",
+                        "tr",
+                        "ru",
+                        "uk"
                     ],
                 }
             },
@@ -63,7 +66,10 @@ class Translate extends base.EngineBase {
                 {"label": "French", "value": "fr"},
                 {"label": "German", "value": "de"},
                 {"label": "Spanish", "value": "es"},
-                {"label": "Swedish", "value": "sv"}
+                {"label": "Swedish", "value": "sv"},
+                {"label": "Turkish", "value": "tr"},
+                {"label": "Russian", "value": "ru"},
+                {"label": "Ukrainian", "value": "uk"},
             ]
         }]
     }
@@ -75,7 +81,9 @@ class Translate extends base.EngineBase {
         this.createIconForSchemaPropertyValue("language","de","assets/de_icon.png","radio_button_icon");
         this.createIconForSchemaPropertyValue("language","es","assets/es_icon.png","radio_button_icon");
         this.createIconForSchemaPropertyValue("language","sv","assets/sv_icon.png","radio_button_icon");
-
+        this.createIconForSchemaPropertyValue("language","tr","assets/tr_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","uk","assets/uk_icon.png","radio_button_icon");
+        this.createIconForSchemaPropertyValue("language","ru","assets/ru_icon.png","radio_button_icon");
     }
 
 
@@ -92,7 +100,6 @@ class Translate extends base.EngineBase {
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.DICTIONARY,
                 supportCategories: [
-
                     base.functionSupportCategories.text_support.translation,
                 ],
                 inputTypes: [
@@ -125,8 +132,8 @@ class Translate extends base.EngineBase {
                 inputTypes: [
                     {
                         "inputType": ioType.IOTypes.Word.className,
-                        "name": "Input paragraph",
-                        "description": "Paragraph to translate",
+                        "name": "Input word",
+                        "description": "Word to translate",
                     }
                 ],
                 outputTypes: [
@@ -151,9 +158,6 @@ class Translate extends base.EngineBase {
             target_lang = config.language;
         }
 
-
-
-
         if (source_lang && target_lang && source_lang !== target_lang) {
             let params = {
                 'Text': input.paragraph,
@@ -167,16 +171,13 @@ class Translate extends base.EngineBase {
                     error = true;
                     console.log(err.code)
                 } else if (data && data.TranslatedText) {
-                    error = false;
                     let result = new ioType.IOTypes.Paragraph(data.TranslatedText);
-
                     callback(result);
                 } else {
                     error = true;
                     console.log('Translate: no error but not data in response.')
                 }
                 if (error) {
-
                     //Error:
                     callback(new ioType.IOTypes.Error("The chosen text could not be translated."));
                     console.log(err);
@@ -191,7 +192,10 @@ class Translate extends base.EngineBase {
     translateWord(callback, input, config,profile,constants) {
 
         let source_lang = input.lang;
-        let target_lang = "en";
+        let target_lang = profile.locale;
+        if (config.language !== "profile") {
+            target_lang = config.language;
+        }
 
         if (source_lang && target_lang && source_lang !== target_lang) {
             let params = {
@@ -202,10 +206,9 @@ class Translate extends base.EngineBase {
 
             this.translate.translateText(params, function (err, data) {
                 if (err) {
-                    if(err.message){
+                    if(err.message) {
                         callback(new ioType.IOTypes.Error("Error:"+err.message));
-                    }else{
-
+                    } else {
                         callback(new ioType.IOTypes.Error("Error processing request"));
                     }
                 } else if (data && data.TranslatedText) {
