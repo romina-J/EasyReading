@@ -621,5 +621,11 @@
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "https://arasaac.org/pictograms",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "Klicka på det ord vars symbol du vill se.",
 	"Arasaac Picture Dictionary": "Arasaac Bildordbok",
-	"Arasaac picture dictionary": "Arasaac bildordbok"
+	"Arasaac picture dictionary": "Arasaac bildordbok",
+	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Turkish": "Turkiska",
+	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Russian": "Ryska",
+	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Ukrainian": "Ukrainska",
+	"tr": "tr",
+	"ru": "ru",
+	"uk": "uk"
 }
