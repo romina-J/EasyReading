@@ -1,18 +1,14 @@
 let helperFunctions = {
-
     //Not tested
     isExternalUrl:function (url,location) {
         let match = url.match(/^([^:\/?#]+:)?(?:\/\/([^\/?#]*))?([^?#]+)?(\?[^#]*)?(#.*)?/);
-        if (typeof match[1] === "string" && match[1].length > 0 && match[1].toLowerCase() !== locationl) {
-
+        if (typeof match[1] === "string" && match[1].length > 0 && match[1].toLowerCase() !== location) {
             return true;
         }
-
-        if (typeof match[2] === "string" && match[2].length > 0 && match[2].replace(new RegExp(":("+{"http:":80,"https:":443}[location]+")?$"), "") !== location) {
+        if (typeof match[2] === "string" && match[2].length > 0 &&
+                match[2].replace(new RegExp(":("+{"http:":80,"https:":443}[location]+")?$"), "") !== location) {
             return true;
-
         }
-
         return false;
     },
 
