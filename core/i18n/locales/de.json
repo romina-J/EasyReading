@@ -697,7 +697,7 @@
 	"widget_continuous-choice-button_instruction_4": "Die Hilfe wird für den Rest der Seite ausgeführt.",
 	"widget_single-choice-button_instruction_4": "Die Hilfe wird nur auf der Stelle ausgeführt.",
 	"engine_content_replacement_intro_text": "Anleitung",
-	"engine_content_replacement_instruction_1": "Das Symbol für die Textersetzung wird auf der Seite für den Bereich<br>eingeblendet, für den ein Ersatztext vorhanden ist.",
+	"engine_content_replacement_instruction_1": "Das Symbol für die Textersetzung wird auf der Seite für den Bereich eingeblendet, für den ein Ersatztext vorhanden ist.",
 	"engine_content_replacement_instruction_2": "Mit einem Klick auf das Symbol wird die Inhaltsersetzung angezeigt.<br>Mit einem zweiten Klick wird der <b>Original-Text</b> wieder angezeigt.",
 	"engine_readability_intro_text": "Anleitung",
 	"engine_readability_instruction_1": "Schalten Sie die <strong>Leseansicht</strong> an",
