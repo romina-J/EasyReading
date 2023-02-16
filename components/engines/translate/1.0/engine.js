@@ -154,7 +154,7 @@ class Translate extends base.EngineBase {
         let source_lang = input.lang;
 
         let target_lang = profile.locale;
-        if(config.language !== "profile"){
+        if(config && config.language !== "profile"){
             target_lang = config.language;
         }
 
@@ -193,7 +193,7 @@ class Translate extends base.EngineBase {
 
         let source_lang = input.lang;
         let target_lang = profile.locale;
-        if (config.language !== "profile") {
+        if (config && config.language !== "profile") {
             target_lang = config.language;
         }
 
