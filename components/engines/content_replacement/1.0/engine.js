@@ -48,50 +48,38 @@ class Dictionary extends base.EngineBase {
         ];
     }
     async contentReplacement(callback, input, config,profile,constants) {
-
-
         let loadActiveDOMHelperRequest = databaseManager.createRequest("content_replacement").where("url", "LIKE", input.url+"%");
         let loadActiveDOMHelperResult = await databaseManager.executeRequest(loadActiveDOMHelperRequest);
-
-        if(loadActiveDOMHelperResult.result.length > 0){
+        let replacementsFound = false;
+        if (loadActiveDOMHelperResult.result.length > 0) {
             let result = new ioType.IOTypes.ContentReplacement();
-            let replacementsFound = false;
-            for(let i=0; i < loadActiveDOMHelperResult.result.length; i++){
-
-                if(loadActiveDOMHelperResult.result[i].active === 0){
+            for (let i=0; i < loadActiveDOMHelperResult.result.length; i++) {
+                if (loadActiveDOMHelperResult.result[i].active === 0) {
                     continue;
                 }
-
-                if(loadActiveDOMHelperResult.result[i].scope === "clients"){
+                if (loadActiveDOMHelperResult.result[i].scope === "clients") {
                     let clientCarerRelationship = databaseManager.createRequest("client_carer_relation").where("client_id", "=", profile.id).where("carer_id", "=", loadActiveDOMHelperResult.result[i].pid);
                     let clientCarerRelationshipResult = await databaseManager.executeRequest(clientCarerRelationship);
-
-                    if(clientCarerRelationshipResult.result.length === 0){
-
+                    if (clientCarerRelationshipResult.result.length === 0) {
                         continue;
                     }
-
-
                 }
                 result.addReplacement("content_replacement",loadActiveDOMHelperResult.result[i]);
                 replacementsFound= true;
             }
-
-            if(replacementsFound){
+            if (replacementsFound) {
                 callback(result);
-
-            }else{
-                callback(new ioType.IOTypes.NoResult("No content replacements found on this page."));
             }
-
-
-        }else{
-            callback(new ioType.IOTypes.NoResult("No content replacements found on this page."));
         }
-
-
+        if (!replacementsFound) {
+            const localeService = require("../../../../core/i18n/locale-service");
+            const message = localeService.translateToLanguage(
+                "No content replacements found on this page.", profile.locale);
+            callback(new ioType.IOTypes.NoResult(message));
+        }
     }
-    createTextualDescription(){
+
+    createTextualDescription() {
 
         this.textualDescription = [
             {

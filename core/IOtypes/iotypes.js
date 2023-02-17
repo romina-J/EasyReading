@@ -409,8 +409,8 @@ class TaggedText extends IOType {
     }
 }
 
-class Error extends IOType{
-    constructor(errorMessage,errorType="Error",description=""){
+class Error extends IOType {
+    constructor(errorMessage,errorType="Error",description="") {
         super("Error", description);
         this.message = errorMessage;
         this.type = errorType;
@@ -425,8 +425,8 @@ class Error extends IOType{
     }
 }
 
-class NoResult extends IOType{
-    constructor(message,description=""){
+class NoResult extends IOType {
+    constructor(message,description="") {
         super("NoResult", description);
         this.message = message;
     }
