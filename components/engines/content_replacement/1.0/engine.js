@@ -1,6 +1,7 @@
 var base = rootRequire("core/components/engines/base/engine-base");
 let ioType = rootRequire("core/IOtypes/iotypes");
 let databaseManager = require("../../../../core/database/database-manager");
+const localeService = require("../../../../core/i18n/locale-service");
 class Dictionary extends base.EngineBase {
     constructor() {
         super();
@@ -51,8 +52,9 @@ class Dictionary extends base.EngineBase {
         let loadActiveDOMHelperRequest = databaseManager.createRequest("content_replacement").where("url", "LIKE", input.url+"%");
         let loadActiveDOMHelperResult = await databaseManager.executeRequest(loadActiveDOMHelperRequest);
         let replacementsFound = false;
+        let result;
         if (loadActiveDOMHelperResult.result.length > 0) {
-            let result = new ioType.IOTypes.ContentReplacement();
+            result = new ioType.IOTypes.ContentReplacement();
             for (let i=0; i < loadActiveDOMHelperResult.result.length; i++) {
                 if (loadActiveDOMHelperResult.result[i].active === 0) {
                     continue;
@@ -67,11 +69,10 @@ class Dictionary extends base.EngineBase {
                 result.addReplacement("content_replacement",loadActiveDOMHelperResult.result[i]);
                 replacementsFound= true;
             }
-            if (replacementsFound) {
-                callback(result);
-            }
         }
-        if (!replacementsFound) {
+        if (replacementsFound) {
+            callback(result);
+        } else {
             const localeService = require("../../../../core/i18n/locale-service");
             const message = localeService.translateToLanguage(
                 "No content replacements found on this page.", profile.locale);
