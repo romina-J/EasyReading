@@ -21,8 +21,8 @@ let network = {
             };
 
             this.server = https.createServer(options, app);
+            // this.server = http.createServer(app);
             this.server.listen(8080);
-
 
         } else {
 

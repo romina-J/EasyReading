@@ -39,55 +39,45 @@
                     <div class="medium-12 columns">
                         <div class="row-header">
                             <div class="er-audio-player-float">
-                                {{{createTTSButton "step2_translations,text_conversion_options_additional_text" lang}}}
+                                {{{createTTSButton "step2_translations" lang}}}
                             </div>
-
                             <div>
-
                                 <h2  id="step2_translations" class="heading1">{{{step2_translations}}}</h2>
-                                <div>
-                                    <span id="text_conversion_options_additional_text">{{{text_conversion_options_additional_text}}}</span>
-
-                                </div>
                                 <br>
                             </div>
-
                         </div>
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row radio-button-container" aria-labelledby="step2_translations" data-name="translation">
 
                     <div class="columns small-4 large-4">
-                        <div class="checkbox widget widget_large {{#ifEquals setupInformation.[1].easytext
-                                                                             "true"}} checked {{/ifEquals}}" data-name="easytext">
-                            <img src="/images/setup/step3/{{lang}}/easy-language.png" alt="">
+                        <div class="radio-button widget widget_large {{#ifEquals setupInformation.[1].translation
+                                                                             "yes"}} checked {{/ifEquals}}" data-value="yes" aria-labelledby="text_read_aloud_yes">
+                            <img src="/images/setup/step3/{{lang}}/language.png" alt="">
                         </div>
 
-
                         <div class="row">
-
                             <div class="columns small-12 text-center">
-                                <span id="plain_language" class="container-info">{{{plain_language}}}</span>
+                                <span id="language_translation" class="container-info">{{{language_translation}}}</span>
                                 <br>
-
-                                {{{createTTSButton "plain_language" lang}}}
+                                {{{createTTSButton "language_translation" lang}}}
                             </div>
 
                         </div>
                     </div>
 
                     <div class="columns small-4 large-4">
-                        <div class="checkbox  widget widget_large{{#ifEquals setupInformation.[1].translation
-                                                                             "true"}} checked {{/ifEquals}}" data-name="translation">
-                            <img src="/images/setup/step3/{{lang}}/language.png" alt="">
+                        <div class="radio-button widget widget_large{{#ifEquals setupInformation.[1].translation
+                                                                             "no"}} checked {{/ifEquals}}" data-value="no" aria-labelledby="text_read_aloud_yes">
+                            <img src="/images/setup/step2/no.png" alt="">
                         </div>
                         <div class="row">
 
                             <div class="columns small-12 text-center">
-                                <span id="language_translation" class="container-info">{{{language_translation}}}</span>
+                                <span id="text_read_aloud_no" class="container-info">{{{text_read_aloud_no}}}</span>
                                 <br>
-                                {{{createTTSButton "language_translation" lang}}}
+                                {{{createTTSButton "text_read_aloud_no" lang}}}
                             </div>
                         </div>
                     </div>
