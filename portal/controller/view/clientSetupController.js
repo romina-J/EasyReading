@@ -98,7 +98,6 @@ module.exports = {
                     if (req.session.internalStep === 0) {
                         req.session.setupInformation[3] = {
                             symbol_support: req.body.symbol_support,
-                            preferred_symbol: req.body.preferred_symbol,
                         };
                     } else {
 
@@ -395,7 +394,7 @@ function createSupportCategories(req, res) {
                 if (setupInformation[3].preferred_symbol) {
                     supportCategories.symbol_support.aac.preferred_library = setupInformation[3].preferred_symbol;
                 } else {
-                    supportCategories.symbol_support.aac.preferred_library = "widgit";
+                    supportCategories.symbol_support.aac.preferred_library = "arasaac";
                 }
 
 
