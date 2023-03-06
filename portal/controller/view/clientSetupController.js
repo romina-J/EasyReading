@@ -55,9 +55,7 @@ module.exports = {
                 case 2:
 
                     req.session.setupInformation[1] = {
-                        easytext: req.body.easytext,
                         translation: req.body.translation,
-
                     };
 
                     /*
@@ -371,17 +369,9 @@ function createSupportCategories(req, res) {
             supportCategories.reading_support.tts.preference = 0;
         }
 
-        //Understanding Support
-        if (setupInformation[1].easytext) {
-            if (setupInformation[1].easytext === "true") {
-                supportCategories.text_support.simplified_language.preference = 50;
-            } else {
-                supportCategories.text_support.simplified_language.preference = 0;
-            }
-        }
-
+        //Translations Support
         if (setupInformation[1].translation) {
-            if (setupInformation[1].translation === "true") {
+            if (setupInformation[1].translation === "yes") {
                 supportCategories.text_support.translation.preference = 50;
             } else {
                 supportCategories.text_support.translation.preference = 0;
