@@ -98,7 +98,9 @@ module.exports = {
             'structure_help_heading_text': req.__("structure_help_heading_text"),
             'remove_adds_text': req.__("remove_adds_text"),
             'highlight_links_text': req.__("highlight_links_text"),
-            'reading_mode': req.__("reading_mode"),
+            'step6_reading_mode': req.__("step6_reading_mode"),
+            'use_reading_yes': req.__("use_reading_yes"),
+            'use_reading_no': req.__("use_reading_no"),
 
             //Step 7
             'step7_heading': req.__("step7_heading"),
