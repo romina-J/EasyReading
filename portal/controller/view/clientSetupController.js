@@ -446,7 +446,7 @@ function createSupportCategories(req, res) {
         }
 
         if (setupInformation[5].reading) {
-            if (setupInformation[5].reading === "true") {
+            if (setupInformation[5].reading === "yes") {
                 supportCategories.layout_support.layout_support.preference = 50;
             } else {
                 supportCategories.layout_support.layout_support.preference = 0;
