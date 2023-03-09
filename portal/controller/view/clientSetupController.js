@@ -453,7 +453,6 @@ function createSupportCategories(req, res) {
             }
         }
 
-
         //Input Support
         if (setupInformation[6].text_selection !== "") {
 

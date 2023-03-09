@@ -22,7 +22,7 @@ class Readability extends base.EngineBase{
                 description : "Gets Main Content",
                 defaultIcon : "assets/readability.png",
                 states: 2,
-                includeInDefaultProfile: true,
+                includeInDefaultProfile: false,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.LOCAL,

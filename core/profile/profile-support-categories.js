@@ -36,7 +36,7 @@ let profileSupportCategories = {
                 default_value: 50,
             },
             layout_support:{
-                default_value: 50,
+                default_value: 0,
             },
             link_support:{
                 default_value: 0,
