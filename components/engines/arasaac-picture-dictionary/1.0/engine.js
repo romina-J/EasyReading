@@ -16,7 +16,7 @@ class ArasaacPictureDictionary extends base.EngineBase {
                 id: "arasaac_picture_dictionary",
                 name: "Arasaac Picture Dictionary",
                 description: "Arasaac picture dictionary",
-                defaultIcon: "assets/texthelp-picture-dictionary.png",
+                defaultIcon: "assets/picture-dictionary.png",
                 includeInDefaultProfile: false,
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
