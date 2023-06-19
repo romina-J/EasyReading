@@ -1,19 +1,33 @@
 let localeService = require("../../../core/i18n/locale-service");
 let databaseManager = require("../../../core/database/database-manager");
+
 let util = {
 
     getProfile:async function(pid){
         let profileRequest = databaseManager.createRequest("profile").where("id","=",pid);
         let profileRequestResult = await databaseManager.executeRequest(profileRequest);
 
-        if(profileRequestResult.result.length){
-
-
+        if (profileRequestResult.result.length){
             return profileRequestResult.result[0]
-
         }
-
     },
+
+    isEmailAdmin: function (email) {
+        if (!email || typeof email !== 'string') {
+            return false;
+        }
+        const admins = [
+            "peter.heumader@gmail.com",
+            "tomurillo@gmail.com",
+            "susanne.dirks@tu-dortmund.de",
+            "miriam.wuest@tu-dortmund.de",
+            "nele.maskut@tu-dortmund.de",
+            "leevke.wilkens@tu.dortmund.de",
+            "vanessa.heitplatz@tu-dortmund.de"
+        ];
+        return admins.includes(email.toLowerCase());
+    },
+
     getRolesOfProfile: async function(profile){
         let roleRequest = databaseManager.createRequest("role").where("user_id","=",profile.id);
         let roleRequestResult = await databaseManager.executeRequest(roleRequest);
@@ -23,13 +37,11 @@ let util = {
             roles.push(roleRequestResult.result[i].role);
         }
 
-        if(profile.email === "peter.heumader@gmail.com" || profile.email === "susanne.dirks@tu-dortmund.de"
-          || profile.email === "tomurillo@gmail.com"){
+        if (this.isEmailAdmin(profile.email)) {
             roles.push("admin");
         }
 
         return roles;
-
     },
 
 
@@ -82,10 +94,8 @@ let util = {
     },
 
     deleteClient: async function(id){
-
         let profileBuilder = require("../../../core/profile/profile-builder");
         await profileBuilder.deleteProfile({id:id});
-
     }
 
 

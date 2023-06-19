@@ -5,6 +5,8 @@ let localeService = require("../../../core/i18n/locale-service");
  * @requires express
  */
 
+const util = require('../util/util');
+
 module.exports = {
     /**
      * Sets the user roles 
@@ -38,11 +40,10 @@ module.exports = {
 
 
             }
-            if(req.user.email === "peter.heumader@gmail.com" || req.user.email==="susanne.dirks@tu-dortmund.de"
-                || req.user.email === "tomurillo@gmail.com"){
+
+            if (util.isEmailAdmin(req.user.email)) {
                 res.locals.roles.push("admin");
             }
-
 
             let translatedRoles = [];
             for(let i=0; i < res.locals.roles.length; i++){
