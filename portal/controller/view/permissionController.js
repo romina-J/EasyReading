@@ -3,6 +3,8 @@
  * @requires express
  */
 
+const util = require('../util/util');
+
 module.exports = {
     /**
      * Checks if the current user is logged in as client
@@ -66,8 +68,7 @@ module.exports = {
                     return next();
                 }
 
-                if(req.user.email === "peter.heumader@gmail.com" || req.user.email === "susanne.dirks@tu-dortmund.de"
-                    || req.user.email === "tomurillo@gmail.com"){
+                if (util.isEmailAdmin(req.user.email)) {
                     return next();
                 }
 
