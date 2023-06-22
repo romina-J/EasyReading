@@ -58,6 +58,8 @@ class EasyReadingAAC extends base.EngineBase {
         const keywordDetector = core.getEngine("aws-text-analysis");
         const picDictEngine = core.getEngine("arasaac-picture-dictionary");
 
+        console.log('argh Version: ' + process.version);
+
         await keywordDetector.detectKeywords(
             function (result) {
                 const noResults = new ioType.IOTypes.NoResult("No result found!");
