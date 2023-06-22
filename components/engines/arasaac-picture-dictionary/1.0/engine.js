@@ -44,7 +44,7 @@ class ArasaacPictureDictionary extends base.EngineBase {
     }
 
     pictureDictionary(callback, input, config, profile, constants) {
-        const supportedLanguages = ['en'];  // Languages supported by the ARASAAC API.
+        const supportedLanguages = ['en', 'de'];  // Languages supported by the ARASAAC API.
         const pictureDictionary = this;
         if (supportedLanguages.indexOf(input.lang) > -1) {
             pictureDictionary.createPictureRequest(callback, input, config, profile, constants);
@@ -73,6 +73,11 @@ class ArasaacPictureDictionary extends base.EngineBase {
         };
         let request = require('request');
         request(options, function (err, res, body) {
+            if (err) {
+                callback(new ioType.IOTypes.Error("Error processing request"));
+                console.log(err);
+                return;
+            }
             try {
                 let response = JSON.parse(body);
                 if (Array.isArray(response)) {
