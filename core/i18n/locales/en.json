@@ -507,7 +507,7 @@
 	"page_basic_setting_language_description": "Your can change your language here.",
 	"page_basic_setting_adaptable_title": "User Interface Mode",
 	"page_basic_setting_adaptable_description": "Chose whether you want to have an adaptable or an adaptive user interface.",
-	"page_basic_setting_language_label": "You can chose",
+	"page_basic_setting_language_label": "You can choose",
 	"page_basic_setting_adaptable_label": "No, I do not want suggestions",
 	"language_label_en": "English",
 	"language_label_es": "Spanish",
@@ -765,5 +765,7 @@
 	"tr": "tr",
 	"ru": "ru",
 	"uk": "uk",
-	"No content replacements found on this page.": "No content replacements found on this page."
+	"No content replacements found on this page.": "No content replacements found on this page.",
+	"Keyword detector": "Keyword detector",
+	"Detects keywords found in the text": "Detects keywords found in the text"
 }

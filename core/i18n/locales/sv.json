@@ -631,5 +631,16 @@
 	"tr": "tr",
 	"ru": "ru",
 	"uk": "uk",
-	"No content replacements found on this page.": "Inga innehållsersättningar hittades på denna sida."
+	"No content replacements found on this page.": "Inga innehållsersättningar hittades på denna sida.",
+	"AWS PoS Tagger": "AWS PoS Tagger",
+	"A simple part-of-speech tagger": "A simple part-of-speech tagger",
+	"Keyword detector": "Keyword detector",
+	"Detects keywords found in the text": "Detects keywords found in the text",
+	"Dictionary": "Dictionary",
+	"Word definitions from Wiktionary": "Word definitions from Wiktionary",
+	"A dictionary using globse.com": "A dictionary using globse.com",
+	"MS: Key Phrase Detection": "MS: Key Phrase Detection",
+	"Detects key phrases in a given text.": "Detects key phrases in a given text.",
+	"Stanford PoS Tagger": "Stanford PoS Tagger",
+	"A part-of-speech tagger": "A part-of-speech tagger"
 }
