@@ -3,9 +3,13 @@ class TwoStateButton extends WidgetBase{
     constructor(functionInfo, userInterface,targetID, configuration){
         super(functionInfo,userInterface,targetID,configuration);
 
-        console.log(this.widgetID );
+        console.log(this.widgetID);
         this.widgetID = 'er_button_'+this.widgetID;
-        $("#"+targetID).append("<button id='"+this.widgetID+"' class='easy-reading-two-state-button'><img src='"+functionInfo.source.defaultIconURL+"' title='"+functionInfo.source.name+": "+functionInfo.source.description+"'> </button>");
+
+        const title = functionInfo.source.name;
+        const desc = functionInfo.source.description;
+
+        $("#"+targetID).append("<button id='"+this.widgetID+"' class='easy-reading-two-state-button'><img src='"+functionInfo.source.defaultIconURL+"' title='"+title+": "+desc+"'> </button>");
         this.enable();
         this.pressed = false;
     }

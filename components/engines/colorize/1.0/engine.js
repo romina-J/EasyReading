@@ -10,7 +10,6 @@ class Colorize extends base.EngineBase{
         this.version = "1.0";
         this.debugMode = false;
         this.versionDescription = "Initial version";
-
     }
 
     getConfigurationDataOptions() {

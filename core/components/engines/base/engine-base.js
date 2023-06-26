@@ -2,6 +2,7 @@
 
 let engineFunction = require("./engine-function");
 let engineContainer = require("./engine-container");
+const localeService = require("../../../i18n/locale-service");
 
 class EngineBase {
     constructor() {
@@ -12,19 +13,16 @@ class EngineBase {
         this.versionDescription = "Initial Version";
         this.debugMode = false;
         this.functions = [];
+        this.localizedFunctionAttributes = {};
         this.supportCategories = [];
         this.textualDescription = [];
         this.iconsForSchemaProperties = [];
         this.descriptionManager = require("../../util/description/descriptionManager");
-
     }
 
     getDataSchema(){
         return {};
     }
-
-
-
 
     getDefaultData(){
         let defaults = require('json-schema-defaults');
@@ -32,14 +30,12 @@ class EngineBase {
     }
 
     createIconForSchemaProperty(schemaProperty,iconPath,cssClass = null) {
-
         this.iconsForSchemaProperties.push({
             type:"propertyIcon",
             property: schemaProperty,
             url: this.copyFileToWeb(iconPath),
             cssClass:cssClass,
         })
-
     }
 
     createIconForSchemaPropertyValue(schemaProperty,value,iconPath,cssClass = null) {
@@ -52,41 +48,54 @@ class EngineBase {
         })
     }
 
-    createIconsForSchemaProperties(){
-
+    createIconsForSchemaProperties() {
     }
 
     getFunctions(){
         return {};
     }
 
-    getEngineIdentifier(){
+    initLocalizedFunctionAttributes() {
+        if (this.functions.length === 0) {
+            return;
+        }
+        const localeService = require("../../../i18n/locale-service");
+        const languages = localeService.getLocales();
+        let name = '';
+        let desc = '';
+        for (let i=0; i<this.functions.length; i++) {
+            this.localizedFunctionAttributes[this.functions[i].id] = {};
+            for (let j=0; j<languages.length; j++) {
+                this.localizedFunctionAttributes[this.functions[i].id][languages[j]] = {};
+                name = localeService.translateToLanguage(this.functions[i].name, languages[j]);
+                desc = localeService.translateToLanguage(this.functions[i].description, languages[j]);
+                this.localizedFunctionAttributes[this.functions[i].id][languages[j]]['name'] = name;
+                this.localizedFunctionAttributes[this.functions[i].id][languages[j]]['description'] = desc;
+            }
+        }
+    }
 
+    getEngineIdentifier(){
         return {
             "id" : this.id,
             "version": this.version,
             "debugMode" : this.debugMode,
-
         }
     }
 
     createFunctions(engineDir){
-
         this.baseDir = engineDir;
         let Ajv = require('ajv');
         let ajv = new Ajv();
 
         let functions = this.getFunctions();
-
-
         for (let i = 0; i < functions.length; i++) {
 
             let bundle = null;
             if ('bundle' in functions[i]) {
                 bundle = functions[i].bundle;
             }
-
-            if(functions[i].type === engineFunction.FuntionType.REMOTE){
+            if (functions[i].type === engineFunction.FuntionType.REMOTE){
 
                 let valid = ajv.validate(engineFunction.RemoteFunctionSchema, functions[i]);
                 if (!valid){
@@ -97,34 +106,25 @@ class EngineBase {
                             return this.name + ": " + this.message;
                         }
                     };
-
-                }else{
-
+                } else {
                     let remoteFunction = new engineFunction.RemoteFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].entryPoint, functions[i].toolCategory,bundle);
                     remoteFunction.validateProperties();
                     this.functions.push(remoteFunction);
                 }
-
-            }else if(functions[i].type === engineFunction.FuntionType.LOCAL){
-
+            } else if(functions[i].type === engineFunction.FuntionType.LOCAL) {
                 let valid = ajv.validate(engineFunction.LocalFunctionSchema, functions[i]);
                 if (!valid){
                     console.log(ajv.errorsText());
-                }else{
-
+                } else {
                     let localFunction = new engineFunction.LocalFunction(this,functions[i].id,functions[i].name,functions[i].description,functions[i].inputTypes,functions[i].outputTypes,functions[i].defaultIcon,functions[i].javaScripts,functions[i].styleSheets,functions[i].entryPoint,functions[i].toolCategory, bundle);
                     localFunction.validateProperties();
                     this.functions.push(localFunction);
                 }
-            }else{
-
+            } else {
                 console.log("Function with type:"+functions[i].type+" is not valid!");
             }
-
-
-
-
         }
+        this.initLocalizedFunctionAttributes();
     }
 
     getFunction(id){
@@ -138,8 +138,7 @@ class EngineBase {
     async createConfigTable(tableName){
 
         let errorMsg = null;
-
-        try{
+        try {
             let schema = this.getDataSchema();
             if(Object.keys(schema).length !== 0 && schema.constructor === Object){
                 let databaseManager = require("../../../database/database-manager");
