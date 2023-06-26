@@ -13,7 +13,6 @@ class EngineBase {
         this.versionDescription = "Initial Version";
         this.debugMode = false;
         this.functions = [];
-        this.localizedFunctionAttributes = {};
         this.supportCategories = [];
         this.textualDescription = [];
         this.iconsForSchemaProperties = [];
@@ -53,26 +52,6 @@ class EngineBase {
 
     getFunctions(){
         return {};
-    }
-
-    initLocalizedFunctionAttributes() {
-        if (this.functions.length === 0) {
-            return;
-        }
-        const localeService = require("../../../i18n/locale-service");
-        const languages = localeService.getLocales();
-        let name = '';
-        let desc = '';
-        for (let i=0; i<this.functions.length; i++) {
-            this.localizedFunctionAttributes[this.functions[i].id] = {};
-            for (let j=0; j<languages.length; j++) {
-                this.localizedFunctionAttributes[this.functions[i].id][languages[j]] = {};
-                name = localeService.translateToLanguage(this.functions[i].name, languages[j]);
-                desc = localeService.translateToLanguage(this.functions[i].description, languages[j]);
-                this.localizedFunctionAttributes[this.functions[i].id][languages[j]]['name'] = name;
-                this.localizedFunctionAttributes[this.functions[i].id][languages[j]]['description'] = desc;
-            }
-        }
     }
 
     getEngineIdentifier(){
@@ -124,7 +103,6 @@ class EngineBase {
                 console.log("Function with type:"+functions[i].type+" is not valid!");
             }
         }
-        this.initLocalizedFunctionAttributes();
     }
 
     getFunction(id){
@@ -136,21 +114,16 @@ class EngineBase {
     }
 
     async createConfigTable(tableName){
-
         let errorMsg = null;
         try {
             let schema = this.getDataSchema();
-            if(Object.keys(schema).length !== 0 && schema.constructor === Object){
+            if (Object.keys(schema).length !== 0 && schema.constructor === Object){
                 let databaseManager = require("../../../database/database-manager");
                 await databaseManager.createOrSyncTablesFromSchema(schema,tableName);
-
             }
-        }catch (error){
+        } catch (error){
             errorMsg = error;
         }
-
-
-
 
         return new Promise(function (resolve, reject) {
             if (errorMsg) {
