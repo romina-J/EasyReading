@@ -1,4 +1,5 @@
 const core = require("../../../../core/core");
+const request = require("request");
 const base = rootRequire("core/components/engines/base/engine-base");
 const ioType = rootRequire("core/IOtypes/iotypes");
 
@@ -46,6 +47,10 @@ class ArasaacPictureDictionary extends base.EngineBase {
     pictureDictionary(callback, input, config, profile, constants) {
         const supportedLanguages = ['en', 'de'];  // Languages supported by the ARASAAC API.
         const pictureDictionary = this;
+        if (config == null) {
+            config = {};
+        }
+        config['exact-match'] = true;
         if (supportedLanguages.indexOf(input.lang) > -1) {
             pictureDictionary.createPictureRequest(callback, input, config, profile, constants);
         } else {
@@ -63,15 +68,13 @@ class ArasaacPictureDictionary extends base.EngineBase {
     }
 
     createPictureRequest(callback, input, config, profile, constants) {
-
-        let keyword = input.word;
-        keyword = encodeURIComponent(keyword);
-
-        let options = {
-            url: `https://api.arasaac.org/api/pictograms/${input.lang}/search/${keyword}`,
+        const keyword = input.word;
+        const options = {
+            url: `https://api.arasaac.org/api/pictograms/${input.lang}/search/${encodeURIComponent(keyword)}`,
             method: 'GET',
         };
-        let request = require('request');
+
+        const request = require('request');
         request(options, function (err, res, body) {
             if (err) {
                 callback(new ioType.IOTypes.Error("Error processing request"));
@@ -80,11 +83,29 @@ class ArasaacPictureDictionary extends base.EngineBase {
             }
             try {
                 let response = JSON.parse(body);
-                if (Array.isArray(response)) {
-                    if (response.length > 0) {
-                        let imageId = response[0]._id;
+                if (Array.isArray(response) && response.length > 0) {
+                    const imageInfo = response[0];
+                    let fetch = true;
+                    if ('exact-match' in config && config['exact-match']) {
+                        fetch = false;
+                        for (const k of response[0].keywords) {
+                            let k1, k2;
+                            if (input.lang === 'de') {
+                                k1 = k.keyword;
+                                k2 = keyword;
+                            } else {
+                                k1 = k.keyword.toLowerCase();
+                                k2 = keyword.toLowerCase();
+                            }
+                            if (k1 === k2) {
+                                fetch = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (fetch) {
                         let imageOptions = {
-                            url: 'https://api.arasaac.org/api/pictograms/' + imageId + '?url=true&download=false',
+                            url: 'https://api.arasaac.org/api/pictograms/' + imageInfo._id + '?url=true&download=false',
                             method: 'GET',
                         };
                         let keywords = response[0].keywords.map(k => k.keyword);
