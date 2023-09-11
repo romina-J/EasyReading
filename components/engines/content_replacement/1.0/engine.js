@@ -23,7 +23,7 @@ class Dictionary extends base.EngineBase {
                 name: "Content",
                 description: "Content Replacement",
                 defaultIcon: "assets/content_replacement.png",
-                includeInDefaultProfile: true,
+                includeInDefaultProfile: false,
                 supportedLanguages: [],
                 visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
@@ -42,7 +42,7 @@ class Dictionary extends base.EngineBase {
                     "description": "Content replacements",
 
                 }],
-                toolCategory: base.EngineFunction.ToolCategories.Reading,
+                toolCategory: base.EngineFunction.ToolCategories.Explanation,
                 entryPoint: "contentReplacement",
             }
 
