@@ -319,7 +319,7 @@
 	"Easy Reading AAC": "Easy Reading AAC",
 	"Creates an AAC version": "Creates an AAC version",
 	"er-aac.1.0.er_aac.title": "Symbol support",
-	"er-aac.1.0.er_aac.description": "Adds symbols to a paragraph. At the moment only widgit symbols are supported.",
+	"er-aac.1.0.er_aac.description": "Adds symbols to a paragraph. At the moment only ARASAAC symbols are supported.",
 	"er-aac.1.0.er_aac.source-title": "www.funka.com",
 	"er-aac.1.0.er_aac.source-url": "www.funka.com",
 	"er-aac.1.0.er_aac.howToUse": "",
