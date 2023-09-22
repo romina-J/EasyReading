@@ -124,7 +124,7 @@ module.exports = {
 
                         for(let i=0; i< recommendation.functions.length; i++){
                             let userInterface = core.getUserInterface(profile.userInterfaces[0].source.id,profile.userInterfaces[0].source.version);
-                            let tool = core.createDefaultConfigurationFoFunctionWithID(recommendation.functions[i].engine.id,recommendation.functions[i].engine.version,recommendation.functions[i].id,userInterface,profile.supportCategories);
+                            let tool = core.createDefaultConfigurationFoFunctionWithID(recommendation.functions[i].engine.id,recommendation.functions[i].engine.version,recommendation.functions[i].id,userInterface,profile.supportCategories, profile.locale);
                             if(tool){
                                 let toolInserted = false;
                                 for(let j=0; j< profile.userInterfaces[0].tools.length; j++){

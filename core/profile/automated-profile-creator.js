@@ -96,7 +96,7 @@ let automatedProfileCreator = {
 
                 for(let i=0; i < toolEntries.length; i++){
 
-                    let tool = core.createDefaultConfigurationFoFunctionWithID(toolEntries[i].functionID.engineID,toolEntries[i].functionID.versionID,toolEntries[i].functionID.functionID,userInterface,supportCategories);
+                    let tool = core.createDefaultConfigurationFoFunctionWithID(toolEntries[i].functionID.engineID,toolEntries[i].functionID.versionID,toolEntries[i].functionID.functionID,userInterface,supportCategories, profile.locale);
                     if(tool){
                         profile.userInterfaces[0].tools.push(tool);
                     }

@@ -13,12 +13,13 @@ const presentations = [...rootRequire("core/core").presentations];
 /**
 * Loads tool configuration for a user configuration
 * @memberof module:engine
-* @param {object} userInterfaceConfig User interface config that holds the id and that is filled up with settings from database. 
+* @param {object} profile Loaded user profile
 * @param {object} engineFunctionConfigObjects Holds all engine functions that should be filled up in userInterfaceConfig
 */    
-function loadFunctions(userInterfaceConfig, engineFunctionConfigObjects) {
+function loadFunctions(profile, engineFunctionConfigObjects) {
+    const userInterfaceConfig = profile.userInterfaces[0];
     for (const engineFunction of engineFunctionConfigObjects) {
-        const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(engineFunction.engineId, engineFunction.engineVersion, core.getUserInterface(userInterfaceConfig.source.id));
+        const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(engineFunction.engineId, engineFunction.engineVersion, core.getUserInterface(userInterfaceConfig.source.id), null, profile.locale);
         const defaultConfigurationForEngineFunction = defaultConfigurationForEngineFunctions.filter(func => func.function.source.id === engineFunction.id);
 
         if (defaultConfigurationForEngineFunction.length > 0 && defaultConfigurationForEngineFunction[0].function.configuration) {
@@ -123,7 +124,7 @@ module.exports = {
                 profile.debugMode = core.debugMode;
                 profile.userLoaded = true;
 
-                loadFunctions(profile.userInterfaces[0], enabledEngineFunctionConfigObjs);
+                loadFunctions(profile, enabledEngineFunctionConfigObjs);
 
                 await profileBuilder.saveUserInterfaceConfiguration(profile, true);
 
