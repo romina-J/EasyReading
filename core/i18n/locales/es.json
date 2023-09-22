@@ -701,11 +701,11 @@
 	"anonym_role_text": "anonym_role_text",
 	"[object Object]_role_text": "[object Object]_role_text",
 	"backend_user_role_text": "backend_user_role_text",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Buscador de símbolos",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "Búsqueda de símbolos ARASAAC",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac.org",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "https://arasaac.org/pictograms",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "Haz clic en cualquier palabra para ver su símbolo.",
 	"Arasaac Picture Dictionary": "Arasaac Picture Dictionary",
 	"Arasaac picture dictionary": "Arasaac picture dictionary",
 	"translate.1.0.aws_tr.data-option.singleSelectList.optionList.Turkish": "Turco",
@@ -716,5 +716,8 @@
 	"uk": "uk",
 	"No content replacements found on this page.": "No existen contenidos alternativos para esta página.",
 	"Keyword detector": "Keyword detector",
-	"Detects keywords found in the text": "Detects keywords found in the text"
+	"Detects keywords found in the text": "Detects keywords found in the text",
+	"Symbol Search": "Buscador de símbolos",
+	"Symbol Search with ARASAAC": "Búsqueda de símbolos ARASAAC",
+	"No images found." : "No se han encontrado imágenes."
 }

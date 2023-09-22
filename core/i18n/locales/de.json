@@ -759,7 +759,7 @@
 	"anonym_role_text": "anonym_role_text",
 	"[object Object]_role_text": "[object Object]_role_text",
 	"backend_user_role_text": "Backend-Benutzerrolle",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Bildwörterbuch (ARASAAC)",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Symbolsuche",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "Zeigt ein entsprechendes Symbol über dem gewählten Wort an",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac.org",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "https://arasaac.org/pictograms",
@@ -774,5 +774,8 @@
 	"uk": "uk",
 	"No content replacements found on this page.": "Für diese Seite wurden keine Inhaltsersetzungen gefunden.",
 	"Keyword detector": "Keyword detector",
-	"Detects keywords found in the text": "Detects keywords found in the text"
+	"Detects keywords found in the text": "Detects keywords found in the text",
+	"Symbol Search": "Symbolsuche",
+	"Symbol Search with ARASAAC": "Symbolsuche mit ARASAAC",
+	"No images found." : "Keine Bilder gefunden."
 }
