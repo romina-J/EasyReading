@@ -1,13 +1,14 @@
 const core = require("../../../../core/core");
 const request = require("request");
+const localeService = require("../../../../core/i18n/locale-service");
 const base = rootRequire("core/components/engines/base/engine-base");
 const ioType = rootRequire("core/IOtypes/iotypes");
 
 class ArasaacPictureDictionary extends base.EngineBase {
     constructor() {
         super();
-        this.name = "Arasaac Pictue Dictionary";
-        this.description = "Arasaac Picture dictionary";
+        this.name = "Symbol Search";
+        this.description = "Symbol Search with ARASAAC";
         this.versionDescription = "Initial Version";
     }
 
@@ -15,11 +16,11 @@ class ArasaacPictureDictionary extends base.EngineBase {
         return [
             {
                 id: "arasaac_picture_dictionary",
-                name: "Arasaac Picture Dictionary",
-                description: "Arasaac picture dictionary",
+                name: "Symbol Search",
+                description: "Symbol Search with ARASAAC",
                 defaultIcon: "assets/picture-dictionary.png",
                 includeInDefaultProfile: false,
-                visibleInConfiguration: false,
+                visibleInConfiguration: true,
                 type: base.EngineFunction.FuntionType.REMOTE,
                 category: base.EngineFunction.FunctionCategory.TOOLS,
                 supportCategories: [
@@ -83,6 +84,7 @@ class ArasaacPictureDictionary extends base.EngineBase {
             }
             try {
                 let response = JSON.parse(body);
+                let imageFound = true;
                 if (Array.isArray(response) && response.length > 0) {
                     const imageInfo = response[0];
                     let fetch = true;
@@ -120,10 +122,16 @@ class ArasaacPictureDictionary extends base.EngineBase {
                             }
                         });
                     } else {
-                        callback(new ioType.IOTypes.NoResult("No images found"));
+                        imageFound = false;
                     }
                 } else {
-                    callback(new ioType.IOTypes.NoResult("No images found"));
+                    imageFound = false;
+                }
+                if (!imageFound) {
+                    const localeService = require("../../../../core/i18n/locale-service");
+                    const message = localeService.translateToLanguage(
+                        "No images found.", profile.locale);
+                    callback(new ioType.IOTypes.NoResult(message));
                 }
             } catch (err) {
                 callback(new ioType.IOTypes.Error("Error processing request"));

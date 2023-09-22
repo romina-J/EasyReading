@@ -345,7 +345,7 @@
 	"tab-slide-out.1.0.tab-slide-out.howToUse": "tab-slide-out.1.0.tab-slide-out.howToUse",
 	"Readability": "Readability",
 	"Gets Main Content": "Gets Main Content",
-	"readability.1.0.readability.title": "Readingmode",
+	"readability.1.0.readability.title": "Reading mode",
 	"readability.1.0.readability.description": "Shows only the content of the page using a simple layout",
 	"readability.1.0.readability.source-title": "www.funka.com",
 	"readability.1.0.readability.source-url": "www.funka.com",
@@ -752,8 +752,8 @@
 	"anonym_role_text": "anonym_role_text",
 	"[object Object]_role_text": "[object Object]_role_text",
 	"backend_user_role_text": "Backend user role",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Picture Dictionary (ARASAAC)",
-	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "Shows a relevant symbol above the chosen word",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.title": "Symbol Search",
+	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.description": "Symbol Search with ARASAAC",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-title": "arasaac.org",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.source-url": "https://arasaac.org/pictograms",
 	"arasaac-picture-dictionary.1.0.arasaac_picture_dictionary.howToUse": "Click on the word whose symbol you want to see.",
@@ -767,5 +767,8 @@
 	"uk": "uk",
 	"No content replacements found on this page.": "No content replacements found on this page.",
 	"Keyword detector": "Keyword detector",
-	"Detects keywords found in the text": "Detects keywords found in the text"
+	"Detects keywords found in the text": "Detects keywords found in the text",
+	"Symbol Search": "Symbol Search",
+	"Symbol Search with ARASAAC": "Symbol Search with ARASAAC",
+	"No images found." : "No images found."
 }
