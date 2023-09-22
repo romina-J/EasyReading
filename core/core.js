@@ -243,13 +243,13 @@ let core = {
         }
     }
     ,
-    createDefaultConfigurationForEngine(engineID, version, userInterface, supportCategories) {
+    createDefaultConfigurationForEngine(engineID, version, userInterface, supportCategories, locale='en') {
         let engine = this.getEngine(engineID, version);
         //   let functions = engine.getFunctions();
         let functionConfiguration = [];
         for (let i = 0; i < engine.functions.length; i++) {
 
-            let currentConfiguration = this.createDefaultConfigurationFoFunctionWithID(engine.id, engine.version, engine.functions[i].id, userInterface, supportCategories);
+            let currentConfiguration = this.createDefaultConfigurationFoFunctionWithID(engine.id, engine.version, engine.functions[i].id, userInterface, supportCategories, locale);
 
             functionConfiguration.push(currentConfiguration);
 
@@ -259,7 +259,7 @@ let core = {
         return functionConfiguration;
 
     },
-    createDefaultConfigurationFoFunctionWithID(engineID, versionID, functionID, userInterface, supportCategories) {
+    createDefaultConfigurationFoFunctionWithID(engineID, versionID, functionID, userInterface, supportCategories, locale) {
         let engine = this.getEngine(engineID, versionID);
         for (let i = 0; i < engine.functions.length; i++) {
 
@@ -268,7 +268,7 @@ let core = {
                 let functionDescription = engine.getFunctions()[i];
                 let currentConfiguration = {
                     function: {
-                        source: engine.functions[i].getFunctionInformation(),
+                        source: engine.functions[i].getFunctionInformation(locale),
                         configuration: engine.getDefaultData(),
                     },
                     layout: userInterface.getDefaultToolLayoutConfiguration(),
@@ -276,7 +276,6 @@ let core = {
                     presentation: this.getDefaultDisplayForFunction(functionDescription, supportCategories),
 
                 };
-
                 return currentConfiguration;
             }
         }

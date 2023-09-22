@@ -1,4 +1,4 @@
-const loadDefaultEngineFunctions = (panel, panelConfig, core) => {
+const loadDefaultEngineFunctions = (panel, panelConfig, core, locale='en') => {
 
     const engines = core.engines;
     for (const engine of engines) {
@@ -8,7 +8,7 @@ const loadDefaultEngineFunctions = (panel, panelConfig, core) => {
                 if (engineFunction.includeInDefaultProfile !== true)
                     break;
 
-                const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(version.engine.id, version.engine.version, panel);
+                const defaultConfigurationForEngineFunctions = core.createDefaultConfigurationForEngine(version.engine.id, version.engine.version, panel, null, locale);
                 const defaultConfigurationForEngineFunction = defaultConfigurationForEngineFunctions.filter(function (func) {
                     return (func.function.source.id === this.engineFunction.id)
                 }, {engineFunction});
@@ -52,7 +52,7 @@ let profileBuilder = {
 
         let tabSlideOut = core.getUserInterface("tab-slide-out", "1.0");
         let tabSlideOutConfig = tabSlideOut.getDefaultConfiguration();
-        tabSlideOutConfig = loadDefaultEngineFunctions(tabSlideOut, tabSlideOutConfig, core);
+        tabSlideOutConfig = loadDefaultEngineFunctions(tabSlideOut, tabSlideOutConfig, core, profile.locale);
         //tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("colorize", "1.0", tabSlideOut));
         //    tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("dictionary", "1.0", tabSlideOut));
         //    tabSlideOutConfig.tools = tabSlideOutConfig.tools.concat(core.createDefaultConfigurationForEngine("personalization", "1.0", tabSlideOut));

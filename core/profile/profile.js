@@ -4,7 +4,7 @@ class Profile {
         this.id = 0;
         this.googleID = "";
         this.email = "";
-        this.locale = "";
+        this.locale = "en";
         this.type = 1;
         this.ui_mode = "adaptable";
         this.userLoaded = false;
