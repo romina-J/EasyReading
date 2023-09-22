@@ -47,8 +47,8 @@
 	"Creates a screenruler for better reading": "Creates a screenruler for better reading",
 	"PoS Tagger": "PoS Tagger",
 	"A part-of-speech tagger": "A part-of-speech tagger",
-	"Image Search": "Image Search",
-	"Simple image search using Google Image Search": "Simple image search using Google Image Search",
+	"Image Search": "Búsqueda de Imágenes",
+	"Simple image search using Google Image Search": "Búsqueda simple de imágenes en Google",
 	"A simple part-of-speech tagger": "A simple part-of-speech tagger",
 	"___page_client_welcome___comments___": "**************** here goes client welcome page specific text ****************",
 	"page_client_welcome_title": "Bienvenido a la página de configuración de lectura fácil!",
@@ -719,5 +719,5 @@
 	"Detects keywords found in the text": "Detects keywords found in the text",
 	"Symbol Search": "Buscador de símbolos",
 	"Symbol Search with ARASAAC": "Búsqueda de símbolos ARASAAC",
-	"No images found." : "No se han encontrado imágenes."
+	"No images found.": "Imagen no encontrada."
 }
