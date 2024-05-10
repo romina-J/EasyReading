@@ -1,10 +1,12 @@
+@import "../global.css";
+
 #customBtn {
     display: inline-block;
-    background: white;
-    color: rgb(0,57,94);
+    background: var(--color-light);
+    color: var(--color-primary-dark);
     width: 130px;
-    border-radius: 8px;
-    border: thin solid rgb(0,57,94);
+    border-radius: var(--border-radius-m);
+    border: thin solid var(--color-primary-dark);
     /* box-shadow: 1px 1px 1px grey; */
     white-space: nowrap;
     text-decoration: none;
@@ -26,7 +28,7 @@ span.icon {
 span.buttonText {
     display: inline-block;
     vertical-align: middle;
-    font-size: 14px;
+    font-size: var(--font-size-s);
     font-weight: bold;
     /* Use the Roboto font that is loaded in the <head> */
     font-family: 'Roboto', sans-serif;

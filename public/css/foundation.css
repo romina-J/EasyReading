@@ -1,4 +1,6 @@
-﻿.inputField .inputField {
+﻿@import "./global.css";
+
+.inputField .inputField {
     padding-left: 18px;
 }
 
@@ -104,7 +106,7 @@ main {
 pre {
   font-family: monospace, monospace;
   /* 1 */
-  font-size: 13px;
+  font-size: var(--font-size-xs);
   /* 2 */
   line-height: 1.4; }
 
@@ -178,8 +180,8 @@ dfn {
      * Add the correct background and color in IE 9-.
      */
 mark {
-  background-color: #ff0;
-  color: #000; }
+  background-color: var(--color-highlight);
+  color: var(--color-black); }
 
 /**
      * Add the correct font size in all browsers.
@@ -349,7 +351,7 @@ input {
      * Change the border, margin, and padding in all browsers (opinionated).
      */
 fieldset {
-  border: 1px solid #c0c0c0;
+  border: 1px solid var(--color-gray);
   margin: 0 2px;
   padding: 0.35em 0.625em 0.75em; }
 
@@ -436,7 +438,7 @@ template {
 
 html {
   box-sizing: border-box;
-  font-size: 16px; }
+  font-size: var(--font-size-m); }
 
 *,
 *::before,
@@ -446,11 +448,11 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background: #F8F9FA;
+  background: var(--color-body-bg);
   font-family: "Segoe UI", "Open Sans", Helvetica, Arial, sans-serif;
   font-weight: normal;
   line-height: 1.5;
-  color: #111111;
+  color: var(--color-black-secondary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
@@ -464,12 +466,12 @@ img {
 textarea {
   height: auto;
   min-height: 50px;
-  border-radius: 4px; }
+  border-radius: var(--border-radius-sxs); }
 
 select {
   box-sizing: border-box;
   width: 100%;
-  border-radius: 4px; }
+  border-radius: var(--border-radius-sxs); }
 
 .map_canvas img,
 .map_canvas embed,
@@ -483,7 +485,7 @@ button {
   padding: 0;
   appearance: none;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--border-radius-sxs);
   background: transparent;
   line-height: 1;
   cursor: auto; }
@@ -1621,11 +1623,11 @@ h6, .h6 {
 
 a {
   line-height: inherit;
-  color: #0e6489;
+  color: var(--color-active-primary);
   text-decoration: underline;
   cursor: pointer; }
   a:hover, a:focus {
-    color: #0c5676;
+    color: var(--color-active-hover);
     text-decoration: none; }
   a img {
     border: 0; }
@@ -1673,17 +1675,17 @@ blockquote {
   border-left: 0; }
   blockquote, blockquote p {
     line-height: 1.35;
-    color: #432f3b; }
+    color: var(--color-light-purple); }
 
 cite {
   display: block;
   font-size: 0.8125rem;
-  color: #618285; }
+  color: var(--color-light-blue-secondary); }
   cite:before {
     content: "— "; }
 
 abbr, abbr[title] {
-  border-bottom: 1px dotted #000;
+  border-bottom: 1px dotted var(--color-black);
   cursor: help;
   text-decoration: none; }
 
@@ -1692,26 +1694,26 @@ figure {
 
 code {
   padding: 0.125rem 0.3125rem 0.0625rem;
-  border: 1px solid #cacaca;
-  background-color: #e6e6e6;
+  border: 1px solid var(--color-white-100);
+  background-color: var(--color-white-200);
   font-family: Consolas, "Liberation Mono", Courier, monospace;
   font-weight: normal;
-  color: #000; }
+  color: var(--color-black); }
 
 kbd {
   margin: 0;
   padding: 0.125rem 0.25rem 0;
-  background-color: #e6e6e6;
+  background-color: var(--color-white-200);
   font-family: Consolas, "Liberation Mono", Courier, monospace;
-  color: #000;
-  border-radius: 4px; }
+  color: var(--color-black);
+  border-radius: var(--border-radius-sxs); }
 
 .subheader {
   margin-top: 0;
   margin-bottom: 0.5rem;
   font-weight: normal;
   line-height: 1.4;
-  color: #000; }
+  color: var(--color-black); }
 
 .lead {
   font-size: 20px;
@@ -1776,7 +1778,7 @@ ul.no-bullet, ol.no-bullet {
   * {
     background: transparent !important;
     box-shadow: none !important;
-    color: black !important;
+    color: var(--color-black) !important;
     text-shadow: none !important; }
   .show-for-print {
     display: block !important; }
@@ -1805,7 +1807,7 @@ ul.no-bullet, ol.no-bullet {
     content: " (" attr(title) ")"; }
   pre,
   blockquote {
-    border: 1px solid #618285;
+    border: 1px solid var(--color-light-blue-secondary);
     page-break-inside: avoid; }
   thead {
     display: table-header-group; }
@@ -1852,21 +1854,21 @@ textarea {
   height: 3rem;
   margin: 0 0 1rem 0;
   padding: 0.5rem 0.47059rem;
-  border: 1px solid #618285;
+  border: 1px solid var(--color-light-blue-secondary);
   border-radius: 4px;
-  background-color: #fff;
+  background-color: var(--color-light);
   box-shadow: none;
   font-family: inherit;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1.5;
-  color: #000;
+  color: var(--color-black);
   transition: box-shadow 0.5s, border-color 0.25s ease-in-out;
   appearance: none; }
   [type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus,
   textarea:focus {
-    border: 1px solid #618285;
-    background-color: #fff;
+    border: 1px solid var(--color-light-blue-secondary);
+    background-color: var(--color-light);
     box-shadow: none;
     transition: box-shadow 0.5s, border-color 0.25s ease-in-out; }
 
@@ -1877,14 +1879,14 @@ textarea {
 
 input::placeholder,
 textarea::placeholder {
-  color: #cacaca; }
+  color: var(--color-white-100); }
 
 input:disabled, input[readonly],
 textarea:disabled,
 textarea[readonly] {
   background-color: transparent;
   cursor: not-allowed;
-  border-color: #E1E4E6;
+  border-color: var(--color-white-300);
   box-shadow: none; }
   input:disabled:hover, input:disabled:focus, input[readonly]:hover, input[readonly]:focus,
   textarea:disabled:hover,
@@ -1896,7 +1898,7 @@ textarea[readonly] {
 [type='submit'],
 [type='button'] {
   appearance: none;
-  border-radius: 4px; }
+  border-radius: var(--border-radius-sxs); }
 
 input[type='search'] {
   box-sizing: border-box; }
@@ -1958,9 +1960,9 @@ label {
 
 .input-group-label {
   padding: 0 1rem;
-  border: 1px solid #618285;
-  background: #e6e6e6;
-  color: #000;
+  border: 1px solid var(--color-light-blue-secondary);
+  background: var(--color-white-200);
+  color: var(--color-black);
   text-align: center;
   white-space: nowrap;
   display: flex;
@@ -2021,19 +2023,19 @@ select {
   height: 3rem;
   margin: 0 0 0.75rem 0;
   padding: 0.5rem 0.47059rem;
-  border: 1px solid #618285;
+  border: 1px solid var(--color-light-blue-secondary);
   border-radius: 4px;
-  background-color: #fff;
+  background-color: var(--color-light);
   font-family: inherit;
   font-size: 1rem;
   font-weight: normal;
   line-height: 1.5;
-  color: #000;
+  color: var(--color-black);
   transition: box-shadow 0.5s, border-color 0.25s ease-in-out; }
   select:focus {
     outline: none;
-    border: 1px solid #618285;
-    background-color: #fff;
+    border: 1px solid var(--color-light-blue-secondary);
+    background-color: var(--color-light);
     box-shadow: none; }
   select:disabled {
     background-color: transparent;
@@ -2045,13 +2047,13 @@ select {
     background-image: none; }
 
 .is-invalid-input:not(:focus) {
-  border-color: red;
-  background-color: #ffe6e6; }
+  border-color: var(--color-red);
+  background-color: var(--color-light); }
   .is-invalid-input:not(:focus)::placeholder {
-    color: red; }
+    color: var(--color-red); }
 
 .is-invalid-label {
-  color: red; }
+  color: var(--color-red); }
 
 .form-error {
   display: none;
@@ -2059,7 +2061,7 @@ select {
   margin-bottom: 1rem;
   font-size: 0.75rem;
   font-weight: bold;
-  color: red; }
+  color: var(--color-red); }
   .form-error.is-visible {
     display: block; }
 
@@ -2086,11 +2088,11 @@ select {
     display: block;
     width: 0;
     height: 0;
-    border: inset 6px;
+    border: inset var(--border-radius-s);
     content: '';
     border-bottom-width: 0;
     border-top-style: solid;
-    border-color: #0060DF transparent transparent;
+    border-color: var(--color-blue-100) transparent transparent;
     position: absolute;
     top: 50%;
     margin-top: -3px;
@@ -2112,7 +2114,7 @@ select {
   position: relative; }
 
 .has-submenu-toggle > a {
-  margin-right: 40px; }
+  margin-right: var(--spacing-xxxl); }
 
 .submenu-toggle {
   position: absolute;
@@ -2129,7 +2131,7 @@ select {
     content: '';
     border-bottom-width: 0;
     border-top-style: solid;
-    border-color: #0060DF transparent transparent;
+    border-color: var(--color-blue-100) transparent transparent;
     top: 0;
     bottom: 0;
     margin: auto; }
@@ -2154,8 +2156,8 @@ select {
   padding: 0;
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 4px;
-  background-color: white;
-  color: #111111; }
+  background-color: var(--color-light);
+  color: var(--color-black-secondary); }
   .callout > :first-child {
     margin-top: 0; }
   .callout > :last-child {
@@ -2172,20 +2174,20 @@ select {
       right: 0;
       top: 0; }
   .callout.primary {
-    background-color: #70adff;
-    color: #111111; }
+    background-color: var(--color-blue-200);
+    color: var(--color-black-secondary); }
   .callout.secondary {
-    background-color: #e6f2f7;
-    color: #111111; }
+    background-color: var(--color-white-400);
+    color: var(--color-black-secondary); }
   .callout.success {
-    background-color: #9dedbb;
-    color: #111111; }
+    background-color: var(--color-green-100);
+    color: var(--color-black-secondary); }
   .callout.warning {
-    background-color: #ffd780;
-    color: #111111; }
+    background-color: var(--color-orange-100);
+    color: var(--color-black-secondary); }
   .callout.alert {
-    background-color: #e6a59b;
-    color: #111111; }
+    background-color: var(--color-red-100);
+    color: var(--color-black-secondary); }
   .callout.small {
     padding-top: 0.5rem;
     padding-right: 0.5rem;
@@ -2201,10 +2203,10 @@ select {
   margin-bottom: 1rem;
   border: 0;
   border-radius: 4px;
-  background: #fff;
+  background: var(--color-light);
   box-shadow: 0px 1px 4px 0px rgba(12, 12, 12, 0.1);
   overflow: hidden;
-  color: #111111;
+  color: var(--color-black-secondar);
   padding: 1rem; }
   .card > :last-child {
     margin-bottom: 0; }
@@ -2235,12 +2237,12 @@ select {
 
 .close-button {
   position: absolute;
-  color: #618285;
+  color: var(--color-light-blue-secondary);
   cursor: pointer; }
   [data-whatinput='mouse'] .close-button {
     outline: 0; }
   .close-button:hover, .close-button:focus {
-    color: #000; }
+    color: var(--color-black); }
   .close-button.small {
     right: 0.66rem;
     top: 0.33em;
@@ -2357,11 +2359,11 @@ select {
       margin-bottom: 0.25rem;
       text-align: center; }
   .menu .is-active > a {
-    background: #0060DF;
-    color: #fff; }
+    background: var(--color-blue-100);
+    color: var(--color-light); }
   .menu .active > a {
-    background: #0060DF;
-    color: #fff; }
+    background: var(--color-blue-100);
+    color: var(--color-light); }
   .menu.align-left {
     justify-content: flex-start; }
   .menu.align-right li {
@@ -2549,15 +2551,15 @@ ul, ol {
   ul.listing-border, ol.listing-border {
     padding-left: 0;
     margin: 1rem 0;
-    border-top: 1px solid #b5d2db; }
+    border-top: 1px solid var(--color-blue-300); }
     ul.listing-border li, ol.listing-border li {
       padding: 0.125rem 0;
-      border-bottom: 1px solid #b5d2db; }
+      border-bottom: 1px solid var(--color-blue-300); }
 
 input[type=radio].tabbed, input[type=checkbox].tabbed {
   box-shadow: none; }
   input[type=radio].tabbed + label, input[type=checkbox].tabbed + label {
-    box-shadow: 0 0 0px 3px #ff9012; }
+    box-shadow: 0 0 0px 3px var(--color-orange-200); }
 
 textarea {
   padding: 0.6em 0.3em;
@@ -2577,22 +2579,22 @@ button, .button, input[type="button"], input[type="submit"] {
   line-height: 1.35;
   text-align: center;
   cursor: pointer;
-  background-color: #0060DF;
-  color: #fff;
+  background-color: var(--color-blue-100);
+  color: var(--color-light);
   text-decoration: none;
-  outline: 1px solid #fff; }
+  outline: 1px solid var(--color-light); }
   [data-whatinput='mouse'] button, [data-whatinput='mouse'] .button, [data-whatinput='mouse'] input[type="button"], [data-whatinput='mouse'] input[type="submit"] {
     outline: 0; }
   button:hover, button:focus, .button:hover, .button:focus, input[type="button"]:hover, input[type="button"]:focus, input[type="submit"]:hover, input[type="submit"]:focus {
-    background-color: #0052be;
-    color: #fff; }
+    background-color: var(--color-blue-400);
+    color: var(--color-light); }
   button.button-settings, .button.button-settings, input[type="button"].button-settings, input[type="submit"].button-settings {
     background-image: url("cssimg/icons-sprite.png");
     background-repeat: no-repeat;
     background-position: 8px 12px;
     padding-left: 2.1rem; }
   button.tabbed, .button.tabbed, input[type="button"].tabbed, input[type="submit"].tabbed {
-    box-shadow: 0 0 0px 3px #ff9012; }
+    box-shadow: 0 0 0px 3px var(--color-orange-200); }
   button.close-button, .button.close-button, input[type="button"].close-button, input[type="submit"].close-button {
     background-color: transparent;
     outline: none;
@@ -2600,11 +2602,11 @@ button, .button, input[type="button"], input[type="submit"] {
     padding: 0.35em 0.6em; }
 
 a.tabbed, input[type=text].tabbed, textarea.tabbed, select.tabbed {
-  box-shadow: 0 0 0px 3px #ff9012; }
+  box-shadow: 0 0 0px 3px var(--color-orange-200); }
 
 .easy-reader-controls-container button,
 .tab-slide-out-grid-item button {
-  background-color: #fff; }
+  background-color: var(--color-light); }
 
 .easy-reader-controls-container .overlay-grid-item,
 .tab-slide-out-grid-item .overlay-grid-item {
@@ -2637,7 +2639,7 @@ nav span {
     width: 37px;
     height: 37px;
     vertical-align: bottom;
-    margin-right: 12px; }
+    margin-right: var(--spacing-sm); }
 
 .tool-card-title p {
   margin-bottom: 0; }
@@ -2663,23 +2665,23 @@ nav span {
       right: 0;
       bottom: 0;
       left: 0;
-      color: #eee;
-      background-color: white;
+      color: var(--color-light);
+      background-color: var(--color-light);
       border-radius: 3px;
-      box-shadow: inset 0 0 0 2px #ddd;
+      box-shadow: inset 0 0 0 2px var(--color-light);
       font-size: 1.9rem;
       font-weight: bolder;
       line-height: 1.9rem;
       text-align: center;
       transition: background-color 350ms 0ms ease, color 350ms 250ms ease, font-size 350ms 250ms ease; }
     .tool-card-title-select input[type="checkbox"]:checked:after {
-      color: #fff;
-      background-color: #3adb76;
-      box-shadow: inset 0 0 0 2px #3adb76; }
+      color: var(--color-light);
+      background-color: var(--color-green-200);
+      box-shadow: inset 0 0 0 2px var(--color-green-200); }
     .tool-card-title-select input[type="checkbox"].tabbed:after {
-      box-shadow: 0 0 0px 3px #ff9012; }
+      box-shadow: 0 0 0px 3px var(--color-orange-200); }
     .tool-card-title-select input[type="checkbox"].tabbed:checked:after {
-      box-shadow: 0 0 0px 3px #ff9012; }
+      box-shadow: 0 0 0px 3px var(--color-orange-200); }
   .tool-card-title-select > * {
     margin-right: 1rem; }
 
@@ -2691,20 +2693,20 @@ nav span {
   background-color: transparent !important; }
 
 .tool-card-config-settings .config-data-option-colorCombination ul li.colorCombination-option-container:nth-child(1) label {
-  color: #fff !important;
-  background-color: #000 !important; }
+  color: var(--color-light) !important;
+  background-color: var(--color-black) !important; }
 
 .tool-card-config-settings .config-data-option-colorCombination ul li.colorCombination-option-container:nth-child(2) label {
-  color: #f9dc5c !important;
-  background-color: #00006e !important; }
+  color: var(--color-yellow) !important;
+  background-color: var(--color-blue-500) !important; }
 
 .tool-card-config-settings .config-data-option-colorCombination ul li.colorCombination-option-container:nth-child(3) label {
-  color: #333 !important;
-  background-color: #f8f8f8 !important; }
+  color: var(--color-body-text) !important;
+  background-color: var(--color-light) !important; }
 
 .tool-card-config-settings .config-data-option-colorCombination ul li.colorCombination-option-container:nth-child(4) label {
-  color: #0000cc !important;
-  background-color: #fff !important; }
+  color: var(--color-blue-600) !important;
+  background-color: var(--color-light) !important; }
 
 .config-data-option-colorCombination ul {
   list-style: none;
@@ -2717,9 +2719,9 @@ nav span {
   margin: 0 4px 0 4px;
   border-style: solid;
   border-width: 1px;
-  border-color: black;
+  border-color: var(--color-black);
   min-width: 125px;
-  outline: 1px solid #fff; }
+  outline: 1px solid var(--color-light); }
 
 /* Page specific code
 --------------------------------------------------------------*/
