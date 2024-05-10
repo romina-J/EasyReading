@@ -1,9 +1,9 @@
 #customBtn {
     display: inline-block;
-    background: transparent;
+    background: white;
     color: rgb(0,57,94);
-    width: 190px;
-    border-radius: 16px;
+    width: 130px;
+    border-radius: 8px;
     border: thin solid rgb(0,57,94);
     /* box-shadow: 1px 1px 1px grey; */
     white-space: nowrap;
@@ -17,7 +17,7 @@ span.label {
     font-weight: normal;
 }
 span.icon {
-    background: url('../../images/google-icon-transparent.png') transparent 5px 50% no-repeat;
+    background: url('../../images/g-normal.png') transparent 5px 50% no-repeat;
     display: inline-block;
     vertical-align: middle;
     width: 42px;
@@ -26,9 +26,7 @@ span.icon {
 span.buttonText {
     display: inline-block;
     vertical-align: middle;
-    padding-left: 42px;
-    padding-right: 42px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: bold;
     /* Use the Roboto font that is loaded in the <head> */
     font-family: 'Roboto', sans-serif;
