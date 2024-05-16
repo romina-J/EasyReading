@@ -7,6 +7,22 @@ author: RJonuzaj
 
 In order to have a consistent handling of translations, the following rules shall be followed:
 
+## Goal
+
+The aim of this guide is to define how we will handle translations in terms of **usage**, **naming**, **approach** and **styling** in an attempt to **uniform our translations** to make them **easier to use** & **read**.
+
+## Word definitions
+
+A translation always has a **key** and a **value**: "scope.example": "Example". The key is used to reference the value / translation inside the code.
+
+We differentiate between **functional**, **common** and **package-scoped** translations.
+
+**functional**: A translation that is commonly used and has nothing to do with a specific feature
+
+**common**: A translation that is used within multiple packages
+
+**package-scoped**: A translation that is only used within a specific package (shared, widgets, …)
+
 ## General rules
 
 - While implementing (and already available inside the project) **always** use translations and not hard-coded strings!
