@@ -1,6 +1,6 @@
 # Software Development Lifecycle
 
-Using Jira from Atlassian, here is the Software Development Life Cycle (SDLC) for managing tasks.This SDLC framework in Jira ensures efficient task management and project tracking throughout the development process.
+Using Jira from Atlassian, here is the Software Development Life Cycle (SDLC) for managing tasks. This SDLC framework in Jira ensures efficient task management and project tracking throughout the development process.
 
 ## Task States
 
@@ -20,3 +20,7 @@ review --> |yes| po-review
 review --> |no| closed
 po-review -->|moved by PO| closed
 ````
+
+## Development LC
+
+[Development LC](https://integriert-studieren-jku.atlassian.net/wiki/x/MIAO)
