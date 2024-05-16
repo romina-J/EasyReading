@@ -29,7 +29,7 @@ following templates are avaliable:
   - ADRs when introducing new architecture (Tracing, etc...) **use `ADR` template**
     - Useful to gain an understanding why a certain tool/approach was used down the line
 - Inline Documentation for complex/non-obvious implementation details
-- JsDoc/ JavaDoc for utils functions
+- JsDoc/ NodeDoc for utils functions
 - Design Specs
   - for complex/non-obvious code structures (i.e Structure for Auth)  --> **use `Design Spec` Template**
   - should give an overview over the general functionality
