@@ -718,5 +718,20 @@
 	"Symbol Search": "Buscador de símbolos",
 	"Symbol Search with ARASAAC": "Búsqueda de símbolos ARASAAC",
 	"No images found.": "Imagen no encontrada.",
-	"Register new caretaker": "Register new caretaker"
+	"Register new caretaker": "Register new caretaker",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.Users language": "Mi idioma",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.English": "Inglés",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.French": "Francés",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.German": "Alemán",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.Spanish": "Español",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.Swedish": "Sueco",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.Turkish": "Turco",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.Russian": "Ruso",
+	"translate-ai.2.0.aws_tr.data-option.singleSelectList.optionList.Ukrainian": "Ucranio",
+	"translate-ai.2.0.aws_tr.data-option.property.language.label": "¿En qué idioma quieres traducir",
+	"translate-ai.2.0.aws_tr.title": "Traducir texto usando la API OpenAI",
+	"translate-ai.2.0.aws_tr.description": "Esta función traduce texto utilizando un modelo de traducción de AI",
+	"translate-ai.2.0.aws_tr.source-title": "https://openai.com/",
+	"translate-ai.2.0.aws_tr.source-url": "https://openai.com/",
+	"translate-ai.2.0.aws_tr.howToUse": ""
 }
