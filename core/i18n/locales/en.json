@@ -770,5 +770,14 @@
 	"Detects keywords found in the text": "Detects keywords found in the text",
 	"Symbol Search": "Symbol Search",
 	"Symbol Search with ARASAAC": "Symbol Search with ARASAAC",
-	"No images found.": "No images found."
+	"No images found.": "No images found.",
+	"translate-ai.2.0.hf_tr.title": "AI Text Translator",
+	"translate-ai.2.0.hf_tr.description": "This function translates text using an AI translation model.",
+	"translate-ai.2.0.hf_tr.source-title": "https://huggingface.co/",
+	"translate-ai.2.0.hf_tr.source-url": "https://huggingface.co/",
+	"translate-ai.2.0.hf_tr.howToUse": "",
+	"Hugging Face: Translate Paragraph": "Hugging Face: Translate Paragraph",
+	"Translate a paragraph via Hugging Face API": "Translate a paragraph via Hugging Face API",
+	"Hugging Face: Translate Word": "Hugging Face: Translate Word",
+	"Translate a word via Hugging Face API": "Translate a word via Hugging Face API"
 }
