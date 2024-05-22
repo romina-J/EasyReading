@@ -7,8 +7,8 @@ const ioType = rootRequire("core/IOtypes/iotypes");
 class Translate extends base.EngineBase {
     constructor() {
         super();
-        this.id = "Translate";
-        this.name = "Translate";
+        this.id = "AI Text Translator";
+        this.name = "AI Text Translator";
         this.description = "Translate a word or sentence from English to German";
         this.version = "1.0";
         this.versionDescription = "Initial Version";
